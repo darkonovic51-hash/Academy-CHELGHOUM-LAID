@@ -3,180 +3,721 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>تسجيل الدخول | لوحة التحكم</title>
+<title>لوحة التحكم | ETOILE CHELGHOUM LAID</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
 <style>
     :root {
-        --primary-dark: #0E4832; --primary-mid: #136F46; --red-accent: #C8102E;
-        --gold: #D4AF37; --white: #F2F2F2;
+        --primary-dark:#0E4832; --primary-mid:#136F46; --red-accent:#C8102E;
+        --gold:#D4AF37; --white:#F2F2F2; --black:#1A1A1A;
+        --shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
+        --shadow-medium: 0 12px 40px rgba(0,0,0,0.15);
+        --sidebar-w: 260px;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-        font-family:'Cairo',sans-serif; direction: rtl; min-height:100vh;
-        display:flex; align-items:center; justify-content:center;
-        background: linear-gradient(135deg, var(--primary-dark), #061f16);
-        position: relative; overflow:hidden;
+    body { font-family:'Cairo',sans-serif; direction:rtl; background:#f4f6f5; color:var(--black); }
+    a { text-decoration:none; color:inherit; }
+    button { font-family:'Cairo'; cursor:pointer; }
+
+    /* ===== LAYOUT ===== */
+    .app { display:flex; min-height:100vh; }
+    .sidebar {
+        width: var(--sidebar-w); background: var(--primary-dark); color:var(--white);
+        position:fixed; top:0; right:0; bottom:0; overflow-y:auto; z-index:100;
+        display:flex; flex-direction:column;
     }
-    body::before {
-        content:'★'; position:absolute; font-size:40rem; color:rgba(255,255,255,0.03);
-        top:-100px; right:-150px; font-family:'Bebas Neue';
+    .sidebar .brand {
+        display:flex; align-items:center; gap:10px; padding:22px 18px; border-bottom:1px solid rgba(255,255,255,0.08);
     }
-    .login-card {
-        position:relative; z-index:2; background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.1);
-        border-radius: 28px; padding: 44px 38px; width: 100%; max-width: 400px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.4); text-align:center;
+    .sidebar .brand .badge {
+        width:40px; height:40px; border-radius:50%; background:var(--white); color:var(--primary-dark);
+        display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue'; font-size:1.2rem;
     }
-    .login-card .logo {
-        width:76px; height:76px; border-radius:50%; background:var(--white);
-        margin:0 auto 18px; display:flex; align-items:center; justify-content:center;
-        border:3px solid var(--gold); font-family:'Bebas Neue'; font-size:1.6rem; color:var(--primary-dark);
+    .sidebar .brand span { font-family:'Bebas Neue'; letter-spacing:1px; font-size:1.05rem; }
+    .nav-group { padding:14px 10px; }
+    .nav-group .group-label { font-size:0.72rem; color:rgba(255,255,255,0.4); padding:8px 12px; letter-spacing:1px; }
+    .nav-btn {
+        display:flex; align-items:center; gap:12px; width:100%; padding:11px 14px; border:none; background:transparent;
+        color:rgba(255,255,255,0.8); border-radius:12px; font-size:0.9rem; font-weight:600; transition:0.25s; text-align:right;
     }
-    .login-card h1 { font-family:'Bebas Neue'; letter-spacing:2px; color:var(--white); font-size:1.8rem; margin-bottom:6px; }
-    .login-card p.sub { color:rgba(255,255,255,0.6); font-size:0.85rem; margin-bottom:26px; }
-    .login-card input {
-        width:100%; padding:14px 18px; border-radius:14px; border:1px solid rgba(255,255,255,0.15);
-        background: rgba(255,255,255,0.07); color:var(--white); font-family:'Cairo'; font-size:1rem;
-        margin-bottom:14px; text-align:center; letter-spacing:2px;
+    .nav-btn i { width:18px; text-align:center; color:var(--gold); }
+    .nav-btn:hover { background:rgba(255,255,255,0.06); color:var(--white); }
+    .nav-btn.active { background:var(--red-accent); color:var(--white); }
+    .nav-btn.active i { color:var(--white); }
+    .nav-btn .count-pill {
+        margin-right:auto; background:rgba(255,255,255,0.15); font-size:0.72rem; padding:2px 8px; border-radius:10px;
     }
-    .login-card input:focus { outline:none; border-color:var(--gold); }
-    .login-card input::placeholder { color:rgba(255,255,255,0.35); letter-spacing:0; }
-    .login-card button {
-        width:100%; padding:14px; border-radius:14px; border:none; background:var(--red-accent);
-        color:var(--white); font-weight:700; font-size:1rem; cursor:pointer; transition:0.3s;
+    .sidebar .logout-btn {
+        margin:16px 14px; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.15);
+        background:transparent; color:rgba(255,255,255,0.7); font-weight:700; font-size:0.85rem;
+        display:flex; align-items:center; justify-content:center; gap:8px; transition:0.3s;
     }
-    .login-card button:hover { background:#a00d24; transform:translateY(-2px); }
-    .login-card button:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
-    .msg { margin-top:14px; font-size:0.85rem; font-weight:600; min-height:20px; }
-    .msg.error { color:#FF8A8A; }
-    .msg.info { color:var(--gold); }
-    .msg.success { color:#7CD9A8; }
+    .sidebar .logout-btn:hover { background:rgba(255,255,255,0.08); color:var(--white); }
+
+    .main { flex:1; margin-right: var(--sidebar-w); padding:26px 30px; max-width: calc(100% - var(--sidebar-w)); }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:10px; }
+    .topbar h2 { font-family:'Bebas Neue'; font-size:1.9rem; color:var(--primary-dark); letter-spacing:1px; }
+    .topbar .view-site { background:var(--primary-mid); color:var(--white); padding:9px 18px; border-radius:30px; font-size:0.85rem; font-weight:700; border:none; display:flex; gap:8px; align-items:center; }
+
+    /* ===== PANELS ===== */
+    .panel { display:none; }
+    .panel.active { display:block; }
+
+    /* Dashboard overview */
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; margin-bottom:26px; }
+    .stat-card {
+        background:var(--white); border-radius:20px; padding:20px; box-shadow:var(--shadow-soft);
+        border-right:5px solid var(--gold); transition:0.3s;
+    }
+    .stat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-medium); }
+    .stat-card .val { font-family:'Bebas Neue'; font-size:2.2rem; color:var(--primary-dark); }
+    .stat-card .lbl { color:#777; font-size:0.85rem; font-weight:600; }
+
+    /* Toolbar + table (shared for generic CRUD) */
+    .panel-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+    .add-btn {
+        background:var(--red-accent); color:var(--white); border:none; padding:10px 20px; border-radius:30px;
+        font-weight:700; font-size:0.88rem; display:flex; gap:8px; align-items:center; transition:0.3s;
+    }
+    .add-btn:hover { background:#a00d24; transform:translateY(-2px); }
+    .data-table-wrap { background:var(--white); border-radius:20px; box-shadow:var(--shadow-soft); overflow-x:auto; }
+    table.data-table { width:100%; border-collapse:collapse; min-width:600px; }
+    table.data-table thead { background:var(--primary-dark); color:var(--white); }
+    table.data-table th { padding:14px 12px; font-size:0.85rem; text-align:center; white-space:nowrap; }
+    table.data-table td { padding:11px 12px; text-align:center; border-bottom:1px solid #eee; font-size:0.87rem; }
+    table.data-table tbody tr:hover { background:#f7faf8; }
+    table.data-table img.thumb { width:38px; height:38px; border-radius:50%; object-fit:cover; margin:0 auto; }
+    .row-actions { display:flex; gap:6px; justify-content:center; }
+    .row-actions button {
+        width:32px; height:32px; border-radius:8px; border:none; font-size:0.85rem; transition:0.25s;
+    }
+    .row-actions .edit-btn { background:#EAF4EE; color:var(--primary-mid); }
+    .row-actions .edit-btn:hover { background:var(--primary-mid); color:var(--white); }
+    .row-actions .del-btn { background:#FDEAEA; color:var(--red-accent); }
+    .row-actions .del-btn:hover { background:var(--red-accent); color:var(--white); }
+    .empty-row td { padding:30px; color:#999; }
+
+    /* Registration requests */
+    .req-card {
+        background:var(--white); border-radius:18px; box-shadow:var(--shadow-soft); padding:18px 20px; margin-bottom:14px;
+        border-right:5px solid var(--gold); display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;
+    }
+    .req-info h4 { font-family:'Cairo'; font-size:1.05rem; margin-bottom:6px; }
+    .req-info .req-meta { font-size:0.82rem; color:#777; display:flex; flex-wrap:wrap; gap:12px; }
+    .req-status { font-size:0.75rem; font-weight:700; padding:4px 12px; border-radius:20px; }
+    .req-status.pending { background:#FFF3D6; color:#B8860B; }
+    .req-status.accepted { background:#E1F6EA; color:#1D8348; }
+    .req-status.rejected { background:#FDEAEA; color:var(--red-accent); }
+    .req-status.needs_edit { background:#E6EEFB; color:#2A5CAA; }
+    .req-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .req-actions button { padding:8px 16px; border:none; border-radius:20px; font-size:0.8rem; font-weight:700; }
+    .req-actions .accept-btn { background:#1D8348; color:var(--white); }
+    .req-actions .reject-btn { background:var(--red-accent); color:var(--white); }
+    .req-actions .edit-req-btn { background:#2A5CAA; color:var(--white); }
+
+    /* Categories panel */
+    .cat-coach-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+    .cat-coach-card { background:var(--white); border-radius:18px; padding:18px; box-shadow:var(--shadow-soft); }
+    .cat-coach-card h4 { font-family:'Bebas Neue'; font-size:1.4rem; color:var(--primary-dark); margin-bottom:10px; }
+    .cat-coach-card input { width:100%; padding:10px 14px; border-radius:12px; border:1px solid #ddd; margin-bottom:10px; font-family:'Cairo'; }
+    .cat-coach-card button { width:100%; padding:9px; border:none; border-radius:12px; background:var(--primary-mid); color:var(--white); font-weight:700; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+        position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none;
+        align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px);
+    }
+    .modal-overlay.active { display:flex; }
+    .modal-box {
+        background:var(--white); border-radius:24px; width:100%; max-width:560px; max-height:88vh; overflow-y:auto;
+        box-shadow:0 30px 80px rgba(0,0,0,0.4);
+    }
+    .modal-head {
+        display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:1px solid #eee;
+        position:sticky; top:0; background:var(--white);
+    }
+    .modal-head h3 { font-family:'Bebas Neue'; color:var(--primary-dark); font-size:1.4rem; }
+    .modal-head .close-modal { background:none; border:none; font-size:1.4rem; color:#999; }
+    .modal-body { padding:22px 24px; display:grid; gap:14px; }
+    .modal-body label { font-size:0.85rem; font-weight:700; color:#555; margin-bottom:4px; display:block; }
+    .modal-body input, .modal-body select, .modal-body textarea {
+        width:100%; padding:11px 14px; border-radius:12px; border:1px solid #ddd; font-family:'Cairo'; font-size:0.92rem;
+    }
+    .modal-body textarea { min-height:80px; resize:vertical; }
+    .modal-foot { padding:16px 24px 22px; }
+    .save-btn { width:100%; padding:13px; border:none; border-radius:14px; background:var(--red-accent); color:var(--white); font-weight:700; font-size:1rem; }
+    .save-btn:hover { background:#a00d24; }
+    .toast {
+        position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--black); color:var(--white);
+        padding:12px 26px; border-radius:30px; font-size:0.9rem; z-index:3000; opacity:0; transition:0.3s; pointer-events:none;
+    }
+    .toast.show { opacity:1; transform:translate(-50%,-6px); }
+
+    @media (max-width:900px) {
+        .sidebar { width:220px; }
+        .main { margin-right:220px; max-width:calc(100% - 220px); }
+    }
+    @media (max-width:640px) {
+        .sidebar { transform:translateX(100%); transition:0.3s; width:250px; }
+        .sidebar.open { transform:translateX(0); }
+        .main { margin-right:0; max-width:100%; }
+        .mobile-toggle { display:block !important; }
+    }
+    .mobile-toggle {
+        display:none; position:fixed; top:16px; left:16px; z-index:200; background:var(--primary-dark);
+        color:var(--white); border:none; width:44px; height:44px; border-radius:12px; font-size:1.1rem;
+    }
 </style>
 </head>
 <body>
-    <div class="login-card">
-        <div class="logo">★</div>
-        <h1>لوحة التحكم</h1>
-        <p class="sub" id="modeSub">جارِ التحقق من إعدادات الدخول...</p>
-        <input type="password" id="codeInput" placeholder="كود الدخول" />
-        <input type="password" id="confirmInput" placeholder="تأكيد الكود" style="display:none;" />
-        <button id="submitBtn" disabled>تحميل...</button>
-        <div class="msg" id="msgBox"></div>
+    <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+
+    <div class="app">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand"><div class="badge">★</div><span>ETOILE ADMIN</span></div>
+
+            <div class="nav-group">
+                <div class="group-label">عام</div>
+                <button class="nav-btn active" data-panel="overview"><i class="fas fa-chart-line"></i> Dashboard</button>
+                <button class="nav-btn" data-panel="requests"><i class="fas fa-inbox"></i> طلبات التسجيل <span class="count-pill" id="reqCount">0</span></button>
+                <button class="nav-btn" data-panel="categories"><i class="fas fa-layer-group"></i> إدارة الفئات</button>
+            </div>
+
+            <div class="nav-group">
+                <div class="group-label">المحتوى الرياضي</div>
+                <button class="nav-btn" data-panel="players"><i class="fas fa-user-athlete"></i> اللاعبون</button>
+                <button class="nav-btn" data-panel="sessions"><i class="fas fa-calendar-check"></i> الحصص التدريبية</button>
+                <button class="nav-btn" data-panel="matches"><i class="fas fa-futbol"></i> المباريات</button>
+                <button class="nav-btn" data-panel="tournaments"><i class="fas fa-trophy"></i> البطولات</button>
+                <button class="nav-btn" data-panel="messages"><i class="fas fa-comment-dots"></i> رسائل الأكاديمية</button>
+            </div>
+
+            <div class="nav-group">
+                <div class="group-label">محتوى الموقع</div>
+                <button class="nav-btn" data-panel="news"><i class="fas fa-bullhorn"></i> شريط الأخبار</button>
+                <button class="nav-btn" data-panel="gallery"><i class="fas fa-images"></i> معرض الصور</button>
+                <button class="nav-btn" data-panel="staff"><i class="fas fa-user-tie"></i> الطاقم الفني</button>
+                <button class="nav-btn" data-panel="kits"><i class="fas fa-tshirt"></i> أطقم الأكاديمية</button>
+            </div>
+
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-right-from-bracket"></i> تسجيل الخروج</button>
+        </aside>
+
+        <!-- ===== MAIN ===== -->
+        <main class="main">
+            <div class="topbar">
+                <h2 id="panelTitle">نظرة عامة</h2>
+                <a href="../index.html" class="view-site" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i> عرض الموقع</a>
+            </div>
+
+            <!-- Overview -->
+            <section class="panel active" id="panel-overview">
+                <div class="stats-grid" id="statsGrid"></div>
+            </section>
+
+            <!-- Registration Requests -->
+            <section class="panel" id="panel-requests">
+                <div id="requestsList"></div>
+            </section>
+
+            <!-- Categories -->
+            <section class="panel" id="panel-categories">
+                <div class="cat-coach-grid" id="categoriesGrid"></div>
+            </section>
+
+            <!-- Generic CRUD panels (تُبنى تلقائيًا بالجافاسكريبت) -->
+            <section class="panel" id="panel-players">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="players"><i class="fas fa-plus"></i> إضافة لاعب</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-players"></table></div>
+            </section>
+            <section class="panel" id="panel-sessions">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="sessions"><i class="fas fa-plus"></i> إضافة حصة</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-sessions"></table></div>
+            </section>
+            <section class="panel" id="panel-matches">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="matches"><i class="fas fa-plus"></i> إضافة مباراة</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-matches"></table></div>
+            </section>
+            <section class="panel" id="panel-tournaments">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="tournaments"><i class="fas fa-plus"></i> إضافة بطولة</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-tournaments"></table></div>
+            </section>
+            <section class="panel" id="panel-messages">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="messages"><i class="fas fa-plus"></i> رسالة جديدة</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-messages"></table></div>
+            </section>
+            <section class="panel" id="panel-news">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="news"><i class="fas fa-plus"></i> خبر جديد</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-news"></table></div>
+            </section>
+            <section class="panel" id="panel-gallery">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="gallery"><i class="fas fa-plus"></i> إضافة صورة</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-gallery"></table></div>
+            </section>
+            <section class="panel" id="panel-staff">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="staff"><i class="fas fa-plus"></i> إضافة عضو</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-staff"></table></div>
+            </section>
+            <section class="panel" id="panel-kits">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="kits"><i class="fas fa-plus"></i> إضافة طقم</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-kits"></table></div>
+            </section>
+        </main>
     </div>
 
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="modalTitle">إضافة</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-foot"><button class="save-btn" id="saveBtn">حفظ</button></div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
     <script>
+        // ============================================================
+        // AUTH GUARD — أول سطر ينفّذ: التأكد إن المدير مسجل دخول فعلاً
+        // ============================================================
+        if (sessionStorage.getItem('adminAuthed') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('adminAuthed');
+            window.location.href = 'login.html';
+        });
+
         // ============================================================
         // CONFIG
         // ============================================================
         const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
-        const CODE_NODE = 'adminAccess/codeHash';
-
-        const modeSub = document.getElementById('modeSub');
-        const codeInput = document.getElementById('codeInput');
-        const confirmInput = document.getElementById('confirmInput');
-        const submitBtn = document.getElementById('submitBtn');
-        const msgBox = document.getElementById('msgBox');
-
-        let isSetupMode = false;
+        const CATEGORIES = ['U7','U9','U11','U13','U15','U17','U19'];
+        const catOptions = CATEGORIES.map(c => ({ value:c, label:c }));
 
         // ============================================================
-        // HASH HELPER (SHA-256 عبر Web Crypto API)
+        // RESOURCE DEFINITIONS — إعدادات كل قسم CRUD
+        // كل مورد: node (اسم العقدة في Firebase) + fields (أعمدة الجدول والفورم)
+        // ده قلب المحرك العام: عايز تضيف حقل جديد؟ زوّد سطر هنا بس.
         // ============================================================
-        async function sha256(text) {
-            const data = new TextEncoder().encode(text);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        const RESOURCES = {
+            players: {
+                node: 'players', title: 'اللاعبون',
+                fields: [
+                    { key:'name', label:'الاسم', type:'text', required:true },
+                    { key:'photoUrl', label:'رابط الصورة', type:'text' },
+                    { key:'number', label:'رقم القميص', type:'number' },
+                    { key:'position', label:'المركز', type:'select', options:[
+                        {value:'حارس مرمى',label:'حارس مرمى'},{value:'مدافع',label:'مدافع'},
+                        {value:'وسط',label:'وسط'},{value:'مهاجم',label:'مهاجم'}] },
+                    { key:'birthYear', label:'سنة الميلاد', type:'number' },
+                    { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
+                    { key:'status', label:'الحالة', type:'select', options:[
+                        {value:'active',label:'نشيط'},{value:'injured',label:'مصاب'},{value:'suspended',label:'موقوف'}] }
+                ]
+            },
+            sessions: {
+                node: 'sessions', title: 'الحصص التدريبية',
+                fields: [
+                    { key:'name', label:'اسم الحصة', type:'text', required:true },
+                    { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
+                    { key:'day', label:'اليوم', type:'text' },
+                    { key:'date', label:'التاريخ', type:'date' },
+                    { key:'time', label:'الساعة', type:'text' },
+                    { key:'field', label:'الملعب', type:'text' },
+                    { key:'coach', label:'المدرب', type:'text' },
+                    { key:'status', label:'الحالة', type:'select', options:[
+                        {value:'scheduled',label:'مجدولة'},{value:'finished',label:'منتهية'},{value:'canceled',label:'ملغاة'}] }
+                ]
+            },
+            matches: {
+                node: 'matches', title: 'المباريات',
+                fields: [
+                    { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
+                    { key:'opponent', label:'الفريق المنافس', type:'text', required:true },
+                    { key:'opponentLogo', label:'رابط شعار المنافس', type:'text' },
+                    { key:'homeLogo', label:'رابط شعار الأكاديمية', type:'text' },
+                    { key:'date', label:'التاريخ', type:'date' },
+                    { key:'time', label:'الساعة', type:'text' },
+                    { key:'field', label:'الملعب', type:'text' },
+                    { key:'type', label:'نوع المباراة', type:'text' },
+                    { key:'status', label:'الحالة', type:'select', options:[
+                        {value:'upcoming',label:'قادمة'},{value:'finished',label:'انتهت'},{value:'canceled',label:'ملغاة'}] },
+                    { key:'result', label:'النتيجة (بعد الانتهاء)', type:'text' },
+                    { key:'details', label:'رابط تفاصيل إضافي', type:'text' }
+                ]
+            },
+            tournaments: {
+                node: 'tournaments', title: 'البطولات',
+                fields: [
+                    { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
+                    { key:'name', label:'اسم البطولة', type:'text', required:true },
+                    { key:'logo', label:'رابط الشعار', type:'text' },
+                    { key:'organizer', label:'المنظم', type:'text' },
+                    { key:'place', label:'المكان', type:'text' },
+                    { key:'date', label:'التاريخ', type:'date' },
+                    { key:'period', label:'الفترة', type:'text' },
+                    { key:'teamsCount', label:'عدد الفرق', type:'number' },
+                    { key:'standings', label:'ترتيب المجموعة', type:'textarea' },
+                    { key:'files', label:'رابط الملفات المرفقة', type:'text' }
+                ]
+            },
+            messages: {
+                node: 'messages', title: 'رسائل الأكاديمية',
+                fields: [
+                    { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
+                    { key:'type', label:'نوع الرسالة', type:'select', options:[
+                        {value:'إعلان',label:'إعلان'},{value:'تنبيه',label:'تنبيه'},{value:'اجتماع',label:'اجتماع'},
+                        {value:'إشعار',label:'إشعار'},{value:'تهنئة',label:'تهنئة'},{value:'تعليق',label:'تعليق'}] },
+                    { key:'text', label:'نص الرسالة', type:'textarea', required:true },
+                    { key:'date', label:'التاريخ', type:'date' }
+                ]
+            },
+            news: {
+                node: 'news', title: 'شريط الأخبار',
+                fields: [ { key:'text', label:'نص الخبر', type:'textarea', required:true } ]
+            },
+            gallery: {
+                node: 'gallery', title: 'معرض الصور',
+                fields: [ { key:'url', label:'رابط الصورة', type:'text', required:true } ]
+            },
+            staff: {
+                node: 'staff', title: 'الطاقم الفني',
+                fields: [
+                    { key:'name', label:'الاسم', type:'text', required:true },
+                    { key:'role', label:'المنصب', type:'text' },
+                    { key:'bio', label:'نبذة مختصرة', type:'textarea' },
+                    { key:'photoUrl', label:'رابط الصورة', type:'text' }
+                ]
+            },
+            kits: {
+                node: 'kits', title: 'أطقم الأكاديمية',
+                fields: [
+                    { key:'name', label:'اسم الطقم', type:'text', required:true },
+                    { key:'color', label:'اللون (Hex)', type:'color' },
+                    { key:'photoUrl', label:'رابط الصورة', type:'text' }
+                ]
+            }
+        };
+
+        // كاش محلي للبيانات بعد كل تحميل، لتفادي الطلبات الزائدة
+        const cache = {};
+
+        // ============================================================
+        // FIREBASE REST HELPERS
+        // ============================================================
+        async function dbGet(node) {
+            const res = await fetch(`${DB_URL}${node}.json`);
+            const data = await res.json();
+            return data || {};
+        }
+        async function dbPost(node, payload) {
+            const res = await fetch(`${DB_URL}${node}.json`, {
+                method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+            });
+            return res.json(); // { name: "-Nxxxxx" } الـ id الجديد
+        }
+        async function dbPatch(node, id, payload) {
+            await fetch(`${DB_URL}${node}/${id}.json`, {
+                method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+            });
+        }
+        async function dbDelete(node, id) {
+            await fetch(`${DB_URL}${node}/${id}.json`, { method:'DELETE' });
         }
 
-        function showMsg(text, type) {
-            msgBox.textContent = text;
-            msgBox.className = 'msg ' + type;
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
         }
 
         // ============================================================
-        // INIT — نتأكد هل فيه كود محفوظ ولا لسه (أول مرة)
+        // SIDEBAR NAVIGATION
         // ============================================================
-        (async function init() {
-            // لو الجلسة متسجلة بالفعل، نروح مباشرة للوحة التحكم
-            if (sessionStorage.getItem('adminAuthed') === 'true') {
-                window.location.href = 'dashboard.html';
-                return;
-            }
-            try {
-                const res = await fetch(`${DB_URL}${CODE_NODE}.json`);
-                const existingHash = await res.json();
-                if (existingHash) {
-                    isSetupMode = false;
-                    modeSub.textContent = 'أدخل كود الدخول للمتابعة';
-                    submitBtn.textContent = 'دخول';
-                } else {
-                    isSetupMode = true;
-                    modeSub.textContent = 'أول استخدام: أنشئ كود الدخول الخاص بك';
-                    confirmInput.style.display = 'block';
-                    submitBtn.textContent = 'إنشاء الكود والدخول';
-                }
-                submitBtn.disabled = false;
-            } catch (err) {
-                showMsg('تعذّر الاتصال بقاعدة البيانات، تحقق من الإنترنت.', 'error');
-            }
-        })();
-
-        // ============================================================
-        // SUBMIT
-        // ============================================================
-        submitBtn.addEventListener('click', async () => {
-            const code = codeInput.value.trim();
-            if (!code || code.length < 4) {
-                showMsg('الكود يجب أن يكون 4 خانات على الأقل.', 'error');
-                return;
-            }
-            submitBtn.disabled = true;
-
-            if (isSetupMode) {
-                const confirmCode = confirmInput.value.trim();
-                if (code !== confirmCode) {
-                    showMsg('الكودان غير متطابقين.', 'error');
-                    submitBtn.disabled = false;
-                    return;
-                }
-                const hash = await sha256(code);
-                try {
-                    await fetch(`${DB_URL}${CODE_NODE}.json`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(hash)
-                    });
-                    showMsg('تم إنشاء الكود بنجاح، جارِ الدخول...', 'success');
-                    sessionStorage.setItem('adminAuthed', 'true');
-                    setTimeout(() => window.location.href = 'dashboard.html', 700);
-                } catch (err) {
-                    showMsg('تعذّر حفظ الكود، حاول مرة أخرى.', 'error');
-                    submitBtn.disabled = false;
-                }
-            } else {
-                try {
-                    const res = await fetch(`${DB_URL}${CODE_NODE}.json`);
-                    const storedHash = await res.json();
-                    const inputHash = await sha256(code);
-                    if (inputHash === storedHash) {
-                        showMsg('تم التحقق، جارِ الدخول...', 'success');
-                        sessionStorage.setItem('adminAuthed', 'true');
-                        setTimeout(() => window.location.href = 'dashboard.html', 500);
-                    } else {
-                        showMsg('الكود غير صحيح.', 'error');
-                        submitBtn.disabled = false;
-                    }
-                } catch (err) {
-                    showMsg('تعذّر التحقق، تحقق من الاتصال.', 'error');
-                    submitBtn.disabled = false;
-                }
-            }
+        const panelTitles = {
+            overview:'نظرة عامة', requests:'طلبات التسجيل', categories:'إدارة الفئات',
+            players:'اللاعبون', sessions:'الحصص التدريبية', matches:'المباريات',
+            tournaments:'البطولات', messages:'رسائل الأكاديمية', news:'شريط الأخبار',
+            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية'
+        };
+        document.querySelectorAll('.nav-btn[data-panel]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const key = btn.dataset.panel;
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                document.getElementById(`panel-${key}`).classList.add('active');
+                document.getElementById('panelTitle').textContent = panelTitles[key];
+                document.getElementById('sidebar').classList.remove('open');
+                loadPanel(key);
+            });
+        });
+        document.getElementById('mobileToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
         });
 
-        codeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !isSetupMode) submitBtn.click(); });
-        confirmInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+        function loadPanel(key) {
+            if (key === 'overview') return loadOverview();
+            if (key === 'requests') return loadRequests();
+            if (key === 'categories') return loadCategories();
+            if (RESOURCES[key]) return loadResourceTable(key);
+        }
+
+        // ============================================================
+        // GENERIC CRUD ENGINE
+        // ============================================================
+        async function loadResourceTable(key) {
+            const config = RESOURCES[key];
+            const raw = await dbGet(config.node);
+            cache[key] = raw; // نحتفظ بالـ id الحقيقي لكل عنصر (raw هو {id: {...}})
+            renderResourceTable(key);
+        }
+
+        function renderResourceTable(key) {
+            const config = RESOURCES[key];
+            const table = document.getElementById(`table-${key}`);
+            const entries = Object.entries(cache[key] || {});
+
+            const headCols = config.fields.map(f => `<th>${f.label}</th>`).join('');
+            let bodyRows;
+            if (entries.length === 0) {
+                bodyRows = `<tr class="empty-row"><td colspan="${config.fields.length + 1}">لا توجد عناصر بعد. اضغط "إضافة" للبدء.</td></tr>`;
+            } else {
+                bodyRows = entries.map(([id, item]) => {
+                    const cells = config.fields.map(f => {
+                        if (f.type === 'text' && f.key.toLowerCase().includes('url') && item[f.key]) {
+                            return `<td><img class="thumb" src="${item[f.key]}" onerror="this.style.visibility='hidden'" /></td>`;
+                        }
+                        let val = item[f.key] ?? '-';
+                        if (f.type === 'select') {
+                            const opt = (f.options || []).find(o => o.value === item[f.key]);
+                            val = opt ? opt.label : (item[f.key] || '-');
+                        }
+                        if (f.type === 'textarea' && typeof val === 'string' && val.length > 40) val = val.slice(0,40) + '...';
+                        return `<td>${val}</td>`;
+                    }).join('');
+                    return `<tr>
+                        ${cells}
+                        <td class="row-actions">
+                            <button class="edit-btn" data-key="${key}" data-id="${id}"><i class="fas fa-pen"></i></button>
+                            <button class="del-btn" data-key="${key}" data-id="${id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+            table.innerHTML = `<thead><tr>${headCols}<th>إجراءات</th></tr></thead><tbody>${bodyRows}</tbody>`;
+
+            table.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => openResourceModal(btn.dataset.key, btn.dataset.id));
+            });
+            table.querySelectorAll('.del-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('تأكيد حذف هذا العنصر؟')) return;
+                    await dbDelete(RESOURCES[btn.dataset.key].node, btn.dataset.id);
+                    delete cache[btn.dataset.key][btn.dataset.id];
+                    renderResourceTable(btn.dataset.key);
+                    showToast('تم الحذف بنجاح');
+                });
+            });
+        }
+
+        document.querySelectorAll('.add-btn[data-add]').forEach(btn => {
+            btn.addEventListener('click', () => openResourceModal(btn.dataset.add, null));
+        });
+
+        function fieldToHTML(field, value) {
+            const val = value ?? '';
+            if (field.type === 'select') {
+                const opts = (field.options || []).map(o =>
+                    `<option value="${o.value}" ${o.value === val ? 'selected' : ''}>${o.label}</option>`
+                ).join('');
+                return `<select data-field="${field.key}">${opts}</select>`;
+            }
+            if (field.type === 'textarea') {
+                return `<textarea data-field="${field.key}">${val}</textarea>`;
+            }
+            if (field.type === 'color') {
+                return `<input type="color" data-field="${field.key}" value="${val || '#0E4832'}" style="height:44px;padding:4px;" />`;
+            }
+            return `<input type="${field.type}" data-field="${field.key}" value="${val}" ${field.required ? 'required' : ''} />`;
+        }
+
+        function openResourceModal(key, id) {
+            const config = RESOURCES[key];
+            const item = id ? cache[key][id] : {};
+            document.getElementById('modalTitle').textContent = id ? `تعديل - ${config.title}` : `إضافة - ${config.title}`;
+            document.getElementById('modalBody').innerHTML = config.fields.map(f => `
+                <div><label>${f.label}</label>${fieldToHTML(f, item[f.key])}</div>
+            `).join('');
+            document.getElementById('modalOverlay').classList.add('active');
+
+            document.getElementById('saveBtn').onclick = async () => {
+                const payload = {};
+                config.fields.forEach(f => {
+                    const el = document.querySelector(`[data-field="${f.key}"]`);
+                    payload[f.key] = f.type === 'number' ? Number(el.value || 0) : el.value;
+                });
+                if (id) {
+                    await dbPatch(config.node, id, payload);
+                    cache[key][id] = { ...cache[key][id], ...payload };
+                } else {
+                    const res = await dbPost(config.node, payload);
+                    cache[key][res.name] = payload;
+                }
+                renderResourceTable(key);
+                closeModal();
+                showToast('تم الحفظ بنجاح');
+            };
+        }
+
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
+
+        // ============================================================
+        // REGISTRATION REQUESTS — قبول ينشئ لاعب تلقائيًا في /players
+        // ============================================================
+        async function loadRequests() {
+            const raw = await dbGet('registrationRequests');
+            cache.requests = raw;
+            renderRequests();
+        }
+
+        const statusLabels = { pending:'قيد الانتظار', accepted:'تم القبول', rejected:'مرفوض', needs_edit:'يحتاج تعديل' };
+
+        function renderRequests() {
+            const list = document.getElementById('requestsList');
+            const entries = Object.entries(cache.requests || {}).sort((a,b) =>
+                new Date(b[1].submittedAt || 0) - new Date(a[1].submittedAt || 0)
+            );
+            document.getElementById('reqCount').textContent = entries.filter(([,r]) => (r.status || 'pending') === 'pending').length;
+
+            if (entries.length === 0) {
+                list.innerHTML = '<div class="req-card">لا توجد طلبات تسجيل حاليًا.</div>';
+                return;
+            }
+            list.innerHTML = entries.map(([id, r]) => `
+                <div class="req-card">
+                    <div class="req-info">
+                        <h4>${r.firstName || ''} ${r.lastName || ''} <span class="req-status ${r.status || 'pending'}">${statusLabels[r.status || 'pending']}</span></h4>
+                        <div class="req-meta">
+                            <span><i class="fas fa-layer-group"></i> ${r.category || '-'}</span>
+                            <span><i class="fas fa-phone"></i> ${r.phone || '-'}</span>
+                            <span><i class="fas fa-user"></i> ولي الأمر: ${r.guardianName || '-'}</span>
+                            <span><i class="fas fa-calendar"></i> ${r.birthDate || '-'}</span>
+                        </div>
+                        ${r.editNote ? `<div style="margin-top:8px;font-size:0.82rem;color:#2A5CAA;"><i class="fas fa-comment"></i> ملاحظة: ${r.editNote}</div>` : ''}
+                    </div>
+                    <div class="req-actions">
+                        ${(r.status || 'pending') === 'pending' || r.status === 'needs_edit' ? `
+                            <button class="accept-btn" data-id="${id}"><i class="fas fa-check"></i> قبول</button>
+                            <button class="reject-btn" data-id="${id}"><i class="fas fa-times"></i> رفض</button>
+                            <button class="edit-req-btn" data-id="${id}"><i class="fas fa-pen"></i> طلب تعديل</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            list.querySelectorAll('.accept-btn').forEach(btn => {
+                btn.addEventListener('click', () => acceptRequest(btn.dataset.id));
+            });
+            list.querySelectorAll('.reject-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    await dbPatch('registrationRequests', btn.dataset.id, { status:'rejected' });
+                    cache.requests[btn.dataset.id].status = 'rejected';
+                    renderRequests();
+                    showToast('تم رفض الطلب');
+                });
+            });
+            list.querySelectorAll('.edit-req-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const note = prompt('اكتب ملاحظة التعديل المطلوبة لولي الأمر:');
+                    if (note === null) return;
+                    await dbPatch('registrationRequests', btn.dataset.id, { status:'needs_edit', editNote: note });
+                    cache.requests[btn.dataset.id].status = 'needs_edit';
+                    cache.requests[btn.dataset.id].editNote = note;
+                    renderRequests();
+                    showToast('تم إرسال طلب التعديل');
+                });
+            });
+        }
+
+        // عند القبول: يتم إنشاء ملف اللاعب تلقائيًا في /players بنفس بيانات الطلب
+        async function acceptRequest(id) {
+            const r = cache.requests[id];
+            const playerPayload = {
+                name: `${r.firstName || ''} ${r.lastName || ''}`.trim(),
+                category: r.category || 'U7',
+                position: r.position || '',
+                birthYear: r.birthDate ? new Date(r.birthDate).getFullYear() : '',
+                photoUrl: '', // يُرفع لاحقًا يدويًا من قسم اللاعبين (رفع الملفات يحتاج Firebase Storage)
+                status: 'active',
+                number: ''
+            };
+            await dbPost('players', playerPayload);
+            await dbPatch('registrationRequests', id, { status:'accepted' });
+            cache.requests[id].status = 'accepted';
+            renderRequests();
+            showToast('تم قبول الطلب وإنشاء ملف اللاعب تلقائيًا');
+        }
+
+        // ============================================================
+        // CATEGORIES — تعيين مدرب لكل فئة
+        // ============================================================
+        async function loadCategories() {
+            const raw = await dbGet('categoryCoaches');
+            cache.categoryCoaches = raw;
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = CATEGORIES.map(cat => `
+                <div class="cat-coach-card">
+                    <h4>${cat}</h4>
+                    <input type="text" placeholder="اسم المدرب" value="${raw[cat] || ''}" data-cat="${cat}" />
+                    <button data-save-cat="${cat}"><i class="fas fa-save"></i> حفظ</button>
+                </div>
+            `).join('');
+            grid.querySelectorAll('button[data-save-cat]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const cat = btn.dataset.saveCat;
+                    const val = document.querySelector(`input[data-cat="${cat}"]`).value;
+                    await fetch(`${DB_URL}categoryCoaches/${cat}.json`, {
+                        method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(val)
+                    });
+                    showToast(`تم حفظ مدرب فئة ${cat}`);
+                });
+            });
+        }
+
+        // ============================================================
+        // OVERVIEW (Dashboard) — إحصائيات سريعة
+        // ============================================================
+        async function loadOverview() {
+            const [players, requests, matches, news] = await Promise.all([
+                dbGet('players'), dbGet('registrationRequests'), dbGet('matches'), dbGet('news')
+            ]);
+            const playersCount = Object.keys(players).length;
+            const pendingCount = Object.values(requests).filter(r => (r.status || 'pending') === 'pending').length;
+            const upcomingMatches = Object.values(matches).filter(m => m.status === 'upcoming').length;
+            const newsCount = Object.keys(news).length;
+
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card"><div class="val">${playersCount}</div><div class="lbl">إجمالي اللاعبين</div></div>
+                <div class="stat-card"><div class="val">${pendingCount}</div><div class="lbl">طلبات تسجيل قيد الانتظار</div></div>
+                <div class="stat-card"><div class="val">${upcomingMatches}</div><div class="lbl">مباريات قادمة</div></div>
+                <div class="stat-card"><div class="val">${newsCount}</div><div class="lbl">أخبار في الشريط المتحرك</div></div>
+            `;
+            document.getElementById('reqCount').textContent = pendingCount;
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        loadOverview();
     </script>
 </body>
 </html>

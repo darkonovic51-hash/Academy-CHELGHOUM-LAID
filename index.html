@@ -59,6 +59,21 @@
         .section-title.center { display: block; text-align: center; }
         .section-title.center::after { right: 50%; transform: translateX(50%); }
 
+        /* ===== SCROLL REVEAL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
         /* Buttons */
         .btn-primary {
             display: inline-block;
@@ -111,6 +126,10 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 12px 0;
             transition: all 0.3s ease;
+        }
+        .navbar.scrolled {
+            background: rgba(14, 72, 50, 0.95);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.25);
         }
         .navbar .container {
             display: flex;
@@ -253,7 +272,11 @@
             background: linear-gradient(135deg, rgba(14,72,50,0.6) 0%, rgba(0,0,0,0.8) 100%),
                 url('https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true') center/cover no-repeat;
             filter: brightness(0.55) saturate(1.1);
-            transform: scale(1.02);
+            animation: kenBurns 22s ease-in-out infinite alternate;
+        }
+        @keyframes kenBurns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.12); }
         }
         .hero-fog {
             position: absolute;
@@ -283,6 +306,9 @@
             line-height: 1.1;
             color: var(--white);
             text-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: heroIn 1s ease forwards 0.2s;
         }
         .hero-content h1 .red { color: var(--red-accent); }
         .hero-content .sub-headline {
@@ -296,6 +322,9 @@
             border-radius: 60px;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: heroIn 1s ease forwards 0.5s;
         }
         .hero-content .description {
             font-size: 1.1rem;
@@ -304,6 +333,9 @@
             color: rgba(255, 255, 255, 0.8);
             font-weight: 300;
             line-height: 1.9;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: heroIn 1s ease forwards 0.8s;
         }
         .hero-buttons {
             display: flex;
@@ -311,6 +343,12 @@
             gap: 16px;
             justify-content: center;
             margin-top: 28px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: heroIn 1s ease forwards 1.1s;
+        }
+        @keyframes heroIn {
+            to { opacity: 1; transform: translateY(0); }
         }
         .scroll-indicator {
             position: absolute;
@@ -388,6 +426,12 @@
             border-radius: 20px;
             box-shadow: var(--shadow-soft);
             border: 1px solid #eee;
+            transition: all 0.35s ease;
+        }
+        .stat-item:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-medium);
+            border-color: var(--red-accent);
         }
         .stat-item .number {
             font-size: 2.6rem;
@@ -395,6 +439,31 @@
             color: var(--red-accent);
         }
         .stat-item .label { font-weight: 600; color: var(--primary-dark); }
+        .about-visual {
+            background: var(--primary-dark);
+            border-radius: 30px;
+            overflow: hidden;
+            min-height: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 4px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid var(--red-accent);
+            position: relative;
+            box-shadow: var(--shadow-medium);
+        }
+        .about-visual::before {
+            content: '★';
+            position: absolute;
+            font-size: 14rem;
+            color: rgba(255,255,255,0.04);
+            top: -30px;
+        }
 
         /* ===== GALLERY ===== */
         .gallery { padding: 80px 0; background: #f8f8f8; }
@@ -408,13 +477,13 @@
             border-radius: 20px;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.35s ease;
             position: relative;
             box-shadow: var(--shadow-soft);
             background: var(--primary-dark);
         }
         .masonry .item:hover {
-            transform: scale(1.01);
+            transform: scale(1.015);
             box-shadow: var(--shadow-heavy);
         }
         .masonry .item img {
@@ -423,18 +492,21 @@
             display: block;
             min-height: 200px;
             object-fit: cover;
+            transition: transform 0.5s ease;
         }
+        .masonry .item:hover img { transform: scale(1.06); }
         .masonry .item .overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%);
             opacity: 0;
             transition: opacity 0.3s ease;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
+            padding-bottom: 16px;
             color: white;
-            font-size: 2rem;
+            font-size: 1.6rem;
         }
         .masonry .item:hover .overlay { opacity: 1; }
 
@@ -472,7 +544,7 @@
         .players { padding: 80px 0; background: var(--white); }
         .player-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 30px;
         }
         .player-card {
@@ -488,6 +560,7 @@
         .player-card:hover {
             transform: translateY(-12px);
             box-shadow: var(--shadow-heavy);
+            border-color: var(--red-accent);
         }
         .player-card .img-wrap {
             background: var(--primary-dark);
@@ -502,7 +575,9 @@
             height: 100%;
             width: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
         }
+        .player-card:hover .img-wrap img { transform: scale(1.08); }
         .player-card .number {
             position: absolute;
             top: 10px;
@@ -515,6 +590,18 @@
             border-radius: 40px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
+        .player-card .cat-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            color: var(--primary-dark);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            padding: 3px 12px;
+            border-radius: 40px;
+            letter-spacing: 1px;
+        }
         .player-card h4 {
             font-size: 1.3rem;
             margin-top: 14px;
@@ -526,6 +613,21 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
+        .player-card .birth-year {
+            color: #999;
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+        .player-card .view-profile {
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--red-accent);
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .player-card .view-profile:hover { border-bottom-color: var(--red-accent); }
 
         /* ===== STAFF ===== */
         .staff { padding: 80px 0; background: #f8f8f8; }
@@ -542,10 +644,12 @@
             transition: all 0.4s ease;
             text-align: center;
             border: 1px solid #eee;
+            padding-bottom: 18px;
         }
         .staff-card:hover {
             transform: translateY(-10px);
             box-shadow: var(--shadow-heavy);
+            border-color: var(--primary-mid);
         }
         .staff-card .img-wrap {
             height: 240px;
@@ -559,13 +663,21 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
         }
+        .staff-card:hover .img-wrap img { transform: scale(1.08); }
         .staff-card h4 { font-size: 1.2rem; margin-top: 14px; }
         .staff-card .role {
             color: var(--red-accent);
             font-weight: 700;
             font-size: 0.95rem;
-            margin: 4px 0 12px;
+            margin: 4px 0 10px;
+        }
+        .staff-card .bio {
+            font-size: 0.85rem;
+            color: #666;
+            padding: 0 18px;
+            line-height: 1.6;
         }
 
         /* ===== KITS ===== */
@@ -582,9 +694,9 @@
             box-shadow: var(--shadow-soft);
             text-align: center;
             border: 1px solid #eee;
-            transition: 0.3s;
+            transition: 0.35s;
         }
-        .kit-card:hover { transform: scale(1.03); }
+        .kit-card:hover { transform: scale(1.03); box-shadow: var(--shadow-medium); }
         .kit-card .kit-img {
             height: 200px;
             display: flex;
@@ -592,11 +704,14 @@
             justify-content: center;
             padding: 20px;
             position: relative;
+            overflow: hidden;
         }
         .kit-card .kit-img img {
             height: 100%;
             object-fit: contain;
+            transition: transform 0.4s ease;
         }
+        .kit-card:hover .kit-img img { transform: scale(1.1) rotate(-2deg); }
         .kit-card h4 { margin: 14px 0 8px; }
 
         /* ===== AGE GROUPS ===== */
@@ -638,6 +753,7 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            display: block;
         }
         .age-item::before {
             content: '';
@@ -654,15 +770,22 @@
             border-color: var(--red-accent);
         }
         .age-item:hover::before { opacity: 0.15; }
-        .age-item .icon {
-            font-size: 3.6rem;
-            color: var(--gold);
-            font-family: 'Bebas Neue', sans-serif;
+        .age-item .icon-badge {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
             z-index: 2;
-            display: block;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            margin-bottom: 6px;
+        }
+        .age-item .icon-badge i {
+            font-size: 1.6rem;
+            color: var(--gold);
         }
         .age-item .label {
             font-weight: 700;
@@ -754,6 +877,19 @@
             font-size: 1.2rem;
             padding: 16px;
         }
+        .reg-form .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .form-status {
+            margin-top: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .form-status.success { color: #7CD9A8; }
+        .form-status.error { color: #FF8A8A; }
 
         /* ===== TICKER ===== */
         .ticker-wrap {
@@ -770,6 +906,7 @@
             gap: 40px;
             animation: tickerScroll 35s linear infinite;
             white-space: nowrap;
+            width: max-content;
         }
         .ticker-item {
             display: flex;
@@ -788,10 +925,15 @@
             margin: 0 8px;
             animation: pulseDot 1.6s ease-in-out infinite;
         }
-        .ticker-item .separator {
-            color: var(--gold);
-            font-size: 1.4rem;
+        .ticker-item .separator-logo {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: var(--white);
+            padding: 2px;
             margin: 0 12px;
+            animation: pulseDot 1.6s ease-in-out infinite;
         }
         @keyframes tickerScroll {
             0% { transform: translateX(100%); }
@@ -799,7 +941,7 @@
         }
         @keyframes pulseDot {
             0%,100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.6); }
+            50% { opacity: 0.4; transform: scale(0.85); }
         }
 
         /* ===== FOOTER ===== */
@@ -900,7 +1042,7 @@
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .age-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
             .age-item { padding: 20px 10px; }
-            .age-item .icon { font-size: 2.6rem; }
+            .age-item .icon-badge { width: 50px; height: 50px; }
             .age-item .label { font-size: 1.2rem; }
         }
     </style>
@@ -923,7 +1065,7 @@
                     <i class="fas fa-phone-alt"></i>
                     <span>+213 123 456 789</span>
                 </a>
-                <button class="nav-cta">
+                <button class="nav-cta" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">
                     <span>سجل الآن</span>
                     <i class="fas fa-arrow-left"></i>
                 </button>
@@ -935,16 +1077,16 @@
         <div class="container" style="position:relative;">
             <div class="nav-links" id="navLinks">
                 <div class="nav-links right" style="display:flex; gap:28px; justify-content:center; flex-wrap:wrap;">
-                    <a href="#" class="active">الرئيسية</a>
-                    <a href="#">الأكاديمية</a>
-                    <a href="#">البرامج</a>
-                    <a href="#">الفرق</a>
+                    <a href="#home" class="active">الرئيسية</a>
+                    <a href="#about">الأكاديمية</a>
+                    <a href="#ageGroups">البرامج</a>
+                    <a href="#players">الفرق</a>
                 </div>
                 <div class="nav-links left" style="display:flex; gap:28px; justify-content:center; flex-wrap:wrap;">
-                    <a href="#">المنشآت</a>
-                    <a href="#">الأخبار</a>
-                    <a href="#">المعرض</a>
-                    <a href="#">اتصل بنا</a>
+                    <a href="#kits">المنشآت</a>
+                    <a href="#news-section">الأخبار</a>
+                    <a href="#gallery">المعرض</a>
+                    <a href="#register">اتصل بنا</a>
                 </div>
             </div>
         </div>
@@ -974,17 +1116,17 @@
     <section class="about" id="about">
         <div class="container">
             <div class="about-grid">
-                <div class="about-text">
+                <div class="about-text reveal">
                     <h2>نبذة عن <span>الأكاديمية</span></h2>
                     <p>أكاديمية نجم شلغوم العيد هي صرح ريادي في تكوين المواهب الكروية، تجمع بين التدريب الاحترافي والتأطير التربوي في بيئة تحافظ على الانضباط، العمل الجماعي والتميز.</p>
                     <p>نهدف إلى بناء جيل من اللاعبين القادرين على المنافسة في أعلى المستويات، مع غرس قيم الروح الرياضية والالتزام.</p>
                     <div class="about-stats">
-                        <div class="stat-item"><div class="number">+120</div><div class="label">لاعب</div></div>
-                        <div class="stat-item"><div class="number">12</div><div class="label">مدرب</div></div>
-                        <div class="stat-item"><div class="number">7</div><div class="label">فئات</div></div>
+                        <div class="stat-item"><div class="number" data-target="120">0</div><div class="label">لاعب</div></div>
+                        <div class="stat-item"><div class="number" data-target="12">0</div><div class="label">مدرب</div></div>
+                        <div class="stat-item"><div class="number" data-target="7">0</div><div class="label">فئات</div></div>
                     </div>
                 </div>
-                <div style="background:var(--primary-dark); border-radius:30px; overflow:hidden; min-height:300px; display:flex; align-items:center; justify-content:center; color:white; font-family:'Bebas Neue'; font-size:2rem; letter-spacing:4px; padding:20px; text-align:center; border:2px solid var(--red-accent);">
+                <div class="about-visual reveal reveal-delay-2">
                     ★ ETOILE<br />CHELGHOUM LAID
                 </div>
             </div>
@@ -994,7 +1136,7 @@
     <!-- ===== GALLERY ===== -->
     <section class="gallery" id="gallery">
         <div class="container">
-            <h2 class="section-title center">معرض الصور</h2>
+            <h2 class="section-title center reveal">معرض الصور</h2>
             <div class="masonry" id="masonryGrid"></div>
         </div>
     </section>
@@ -1008,7 +1150,7 @@
     <!-- ===== PLAYERS ===== -->
     <section class="players" id="players">
         <div class="container">
-            <h2 class="section-title center">اللاعبون المميزون</h2>
+            <h2 class="section-title center reveal">اللاعبون المميزون</h2>
             <div class="player-grid" id="playerGrid"></div>
         </div>
     </section>
@@ -1016,7 +1158,7 @@
     <!-- ===== STAFF ===== -->
     <section class="staff" id="staff">
         <div class="container">
-            <h2 class="section-title center">الطاقم الفني</h2>
+            <h2 class="section-title center reveal">الطاقم الفني</h2>
             <div class="staff-grid" id="staffGrid"></div>
         </div>
     </section>
@@ -1024,7 +1166,7 @@
     <!-- ===== KITS ===== -->
     <section class="kits" id="kits">
         <div class="container">
-            <h2 class="section-title center">أطقم الأكاديمية</h2>
+            <h2 class="section-title center reveal">أطقم الأكاديمية</h2>
             <div class="kit-grid" id="kitGrid"></div>
         </div>
     </section>
@@ -1032,7 +1174,7 @@
     <!-- ===== AGE GROUPS ===== -->
     <section class="age-groups" id="ageGroups">
         <div class="container">
-            <h2 class="section-title center">الفئات العمرية</h2>
+            <h2 class="section-title center reveal">الفئات العمرية</h2>
             <div class="age-grid" id="ageGrid"></div>
         </div>
     </section>
@@ -1040,49 +1182,52 @@
     <!-- ===== REGISTRATION ===== -->
     <section class="registration" id="register">
         <div class="container">
-            <h2 class="section-title center">استمارة التسجيل</h2>
-            <form class="reg-form" id="regForm">
-                <div><label>اسم اللاعب</label><input type="text" placeholder="الاسم" required /></div>
-                <div><label>اللقب</label><input type="text" placeholder="اللقب" required /></div>
-                <div><label>تاريخ الميلاد</label><input type="date" required /></div>
-                <div><label>مكان الميلاد</label><input type="text" placeholder="مكان الميلاد" /></div>
+            <h2 class="section-title center reveal">استمارة التسجيل</h2>
+            <form class="reg-form reveal" id="regForm">
+                <div><label>اسم اللاعب</label><input type="text" name="firstName" placeholder="الاسم" required /></div>
+                <div><label>اللقب</label><input type="text" name="lastName" placeholder="اللقب" required /></div>
+                <div><label>تاريخ الميلاد</label><input type="date" name="birthDate" required /></div>
+                <div><label>مكان الميلاد</label><input type="text" name="birthPlace" placeholder="مكان الميلاد" /></div>
                 <div>
                     <label>الفئة المطلوبة</label>
-                    <select>
+                    <select name="category">
                         <option>U7</option><option>U9</option><option>U11</option>
                         <option>U13</option><option>U15</option><option>U17</option><option>U19</option>
                     </select>
                 </div>
-                <div><label>ولي الأمر</label><input type="text" placeholder="اسم ولي الأمر" /></div>
-                <div><label>رقم الهاتف</label><input type="tel" placeholder="رقم الهاتف" required /></div>
-                <div><label>البريد الإلكتروني</label><input type="email" placeholder="البريد الإلكتروني" /></div>
-                <div class="full"><label>العنوان</label><input type="text" placeholder="العنوان الكامل" /></div>
-                <div><label>المستوى الدراسي</label><input type="text" placeholder="المستوى الدراسي" /></div>
+                <div><label>ولي الأمر</label><input type="text" name="guardianName" placeholder="اسم ولي الأمر" /></div>
+                <div><label>رقم الهاتف</label><input type="tel" name="phone" placeholder="رقم الهاتف" required /></div>
+                <div><label>البريد الإلكتروني</label><input type="email" name="email" placeholder="البريد الإلكتروني" /></div>
+                <div class="full"><label>العنوان</label><input type="text" name="address" placeholder="العنوان الكامل" /></div>
+                <div><label>المستوى الدراسي</label><input type="text" name="educationLevel" placeholder="المستوى الدراسي" /></div>
                 <div>
                     <label>المركز</label>
-                    <select><option>حارس مرمى</option><option>مدافع</option><option>وسط</option><option>مهاجم</option></select>
+                    <select name="position"><option>حارس مرمى</option><option>مدافع</option><option>وسط</option><option>مهاجم</option></select>
                 </div>
                 <div>
                     <label>القدم المفضلة</label>
-                    <select><option>يمنى</option><option>يسرى</option><option>كلتاهما</option></select>
+                    <select name="preferredFoot"><option>يمنى</option><option>يسرى</option><option>كلتاهما</option></select>
                 </div>
-                <div><label>الطول (سم)</label><input type="number" placeholder="الطول" /></div>
-                <div><label>الوزن (كغ)</label><input type="number" placeholder="الوزن" /></div>
-                <div><label>الحالة الصحية</label><input type="text" placeholder="أي حالة صحية" /></div>
-                <div><label>النادي السابق</label><input type="text" placeholder="النادي السابق" /></div>
-                <div><label>صورة اللاعب</label><input type="file" accept="image/*" /></div>
-                <div><label>وثيقة الميلاد</label><input type="file" accept=".pdf,.jpg,.png" /></div>
+                <div><label>الطول (سم)</label><input type="number" name="height" placeholder="الطول" /></div>
+                <div><label>الوزن (كغ)</label><input type="number" name="weight" placeholder="الوزن" /></div>
+                <div><label>الحالة الصحية</label><input type="text" name="healthStatus" placeholder="أي حالة صحية" /></div>
+                <div><label>النادي السابق</label><input type="text" name="previousClub" placeholder="النادي السابق" /></div>
+                <div><label>صورة اللاعب</label><input type="file" name="playerPhoto" accept="image/*" /></div>
+                <div><label>وثيقة الميلاد</label><input type="file" name="birthDoc" accept=".pdf,.jpg,.png" /></div>
                 <div class="full" style="display:flex; align-items:center; gap:12px;">
-                    <input type="checkbox" id="consent" style="width:auto;" />
+                    <input type="checkbox" id="consent" required style="width:auto;" />
                     <label for="consent" style="margin:0; cursor:pointer;">موافقة ولي الأمر</label>
                 </div>
-                <div class="full"><button type="submit" class="btn-primary">إرسال</button></div>
+                <div class="full">
+                    <button type="submit" class="btn-primary" id="regSubmitBtn">إرسال</button>
+                    <div class="form-status" id="regStatus"></div>
+                </div>
             </form>
         </div>
     </section>
 
     <!-- ===== TICKER ===== -->
-    <div class="ticker-wrap">
+    <div class="ticker-wrap" id="news-section">
         <div class="container" style="overflow:hidden; padding:0 24px;">
             <div class="ticker" id="ticker"></div>
         </div>
@@ -1102,8 +1247,11 @@
                         <a href="#"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
-                <div><h4>روابط سريعة</h4><a href="#">الرئيسية</a><a href="#">الأكاديمية</a><a href="#">البرامج</a><a href="#">الفرق</a></div>
-                <div><h4>الفئات</h4><a href="#">U7</a><a href="#">U9</a><a href="#">U11</a><a href="#">U13</a><a href="#">U15</a><a href="#">U17</a><a href="#">U19</a></div>
+                <div><h4>روابط سريعة</h4><a href="#home">الرئيسية</a><a href="#about">الأكاديمية</a><a href="#ageGroups">البرامج</a><a href="#players">الفرق</a></div>
+                <div><h4>الفئات</h4>
+                    <a href="category.html?cat=U7">U7</a><a href="category.html?cat=U9">U9</a><a href="category.html?cat=U11">U11</a>
+                    <a href="category.html?cat=U13">U13</a><a href="category.html?cat=U15">U15</a><a href="category.html?cat=U17">U17</a><a href="category.html?cat=U19">U19</a>
+                </div>
                 <div>
                     <h4>اتصل بنا</h4>
                     <a href="tel:+213123456789"><i class="fas fa-phone-alt"></i> +213 123 456 789</a>
@@ -1121,57 +1269,77 @@
     <!-- ===== JAVASCRIPT ===== -->
     <script>
         // ============================================================
-        // IMAGES DATA - Using your provided image URLs
+        // FIREBASE CONFIG — عدّل الـ DB_URL هنا لو اتغير رابط القاعدة
         // ============================================================
-        const galleryImages = [
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695816008.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696257853.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696605103.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696637178.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
-        ];
+        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        const LOGO_URL = 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true';
 
-        const players = [
-            { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
-            { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' },
-            { name: 'سفيان بلقاسم', number: 4, position: 'مدافع', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
-            { name: 'محمد عمارة', number: 1, position: 'حارس مرمى', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
-        ];
-
-        const staff = [
-            { name: 'نبيل شلغوم', role: 'المدير الفني', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
-            { name: 'كريم عبدي', role: 'مدرب U19', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
-            { name: 'فوزي شرقي', role: 'مدرب U15', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' },
-            { name: 'رشيد بولحية', role: 'مدرب الحراس', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' }
-        ];
-
-        const kits = [
-            { name: 'طقم الأساسي', color: '#0E4832', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
-            { name: 'طقم الاحتياطي', color: '#F2F2F2', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
-            { name: 'طقم الثالث', color: '#C8102E', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' }
-        ];
+        // بيانات احتياطية (تظهر فقط لو فشلت القراءة من Firebase، أو لو النود لسه فاضي)
+        const FALLBACK = {
+            gallery: [
+                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true',
+                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695816008.jpg?raw=true',
+                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696257853.jpg?raw=true',
+                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696605103.jpg?raw=true',
+                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696637178.jpg?raw=true',
+                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
+            ].map(url => ({ url })),
+            players: [
+                { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15', birthYear: 2010, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
+                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17', birthYear: 2008, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' },
+                { name: 'سفيان بلقاسم', number: 4, position: 'مدافع', category: 'U13', birthYear: 2012, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
+                { name: 'محمد عمارة', number: 1, position: 'حارس مرمى', category: 'U19', birthYear: 2007, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
+            ],
+            staff: [
+                { name: 'نبيل شلغوم', role: 'المدير الفني', bio: 'خبرة أكثر من 15 سنة في تكوين الفئات الشبانية.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
+                { name: 'كريم عبدي', role: 'مدرب U19', bio: 'حاصل على شهادة CAF C في التدريب.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
+                { name: 'فوزي شرقي', role: 'مدرب U15', bio: 'متخصص في التطوير البدني والتقني للناشئين.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' },
+                { name: 'رشيد بولحية', role: 'مدرب الحراس', bio: 'مدرب حراس مرمى معتمد منذ 2015.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' }
+            ],
+            kits: [
+                { name: 'طقم الأساسي', color: '#0E4832', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
+                { name: 'طقم الاحتياطي', color: '#F2F2F2', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
+                { name: 'طقم الثالث', color: '#C8102E', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' }
+            ],
+            news: [
+                { text: '✧ افتتاح التسجيلات للموسم الجديد 2026-2027' },
+                { text: '✧ تأهل فريق U15 إلى نهائي البطولة الجهوية' },
+                { text: '✧ تكريم اللاعبين المميزين في حفل سنوي' },
+                { text: '✧ تنظيم دورة تدريبية للمدربين بالمعهد الوطني' },
+                { text: '✧ مشاركة أكاديمية نجم شلغوم العيد في بطولة المغرب العربي' }
+            ]
+        };
 
         const ageGroups = ['U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'U19'];
-        const ageIcons = ['👶', '🧒', '👦', '🧑', '👨', '🧑‍🦰', '🧑‍🦱'];
+        const ageIcons = ['fa-shoe-prints','fa-child-reaching','fa-child','fa-person-running','fa-person','fa-futbol','fa-trophy'];
+        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U19:'أولمبي' };
 
-        const news = [
-            '✧ افتتاح التسجيلات للموسم الجديد 2026-2027',
-            '✧ تأهل فريق U15 إلى نهائي البطولة الجهوية',
-            '✧ تكريم اللاعبين المميزين في حفل سنوي',
-            '✧ تنظيم دورة تدريبية للمدربين بالمعهد الوطني',
-            '✧ مشاركة أكاديمية نجم شلغوم العيد في بطولة المغرب العربي'
-        ];
+        // ============================================================
+        // FIREBASE REST HELPER — قراءة عبر REST API (بدون SDK كامل)
+        // node اسم العقدة في القاعدة، fallback مصفوفة بديلة لو فشلت القراءة
+        // ============================================================
+        async function fetchNode(node, fallback) {
+            try {
+                const res = await fetch(`${DB_URL}${node}.json`);
+                if (!res.ok) throw new Error('bad response');
+                const data = await res.json();
+                if (!data) return fallback;
+                // البيانات في Firebase بتيجي كـ Object {id: value} — بنحولها لمصفوفة
+                return Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+            } catch (err) {
+                console.warn(`تعذّرت قراءة "${node}" من Firebase، تم استخدام بيانات احتياطية.`, err);
+                return fallback;
+            }
+        }
 
         // ============================================================
         // RENDER FUNCTIONS
         // ============================================================
-
-        function renderGallery() {
+        function renderGallery(images) {
             const grid = document.getElementById('masonryGrid');
-            grid.innerHTML = galleryImages.map(src => `
-                <div class="item" data-src="${src}">
-                    <img src="${src}" alt="معرض الأكاديمية" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:white;font-size:2rem;\\'>📸</div>'" />
+            grid.innerHTML = images.map(g => `
+                <div class="item" data-src="${g.url}">
+                    <img src="${g.url}" alt="معرض الأكاديمية" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:white;font-size:2rem;\\'>📸</div>'" />
                     <div class="overlay"><i class="fas fa-search-plus"></i></div>
                 </div>
             `).join('');
@@ -1201,39 +1369,43 @@
             }
         });
 
-        function renderPlayers() {
+        function renderPlayers(players) {
             const grid = document.getElementById('playerGrid');
             grid.innerHTML = players.map(p => `
                 <div class="player-card">
                     <div class="img-wrap">
-                        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>⚽</div>'" />
-                        <span class="number">${p.number}</span>
+                        <img src="${p.photoUrl}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>⚽</div>'" />
+                        <span class="number">${p.number ?? ''}</span>
+                        ${p.category ? `<span class="cat-tag">${p.category}</span>` : ''}
                     </div>
                     <h4>${p.name}</h4>
-                    <p class="position">${p.position}</p>
+                    <p class="position">${p.position ?? ''}</p>
+                    ${p.birthYear ? `<p class="birth-year">مواليد ${p.birthYear}</p>` : ''}
+                    <a class="view-profile" href="player.html?id=${encodeURIComponent(p.id ?? p.name)}">عرض الملف ←</a>
                 </div>
             `).join('');
         }
 
-        function renderStaff() {
+        function renderStaff(staff) {
             const grid = document.getElementById('staffGrid');
             grid.innerHTML = staff.map(s => `
                 <div class="staff-card">
                     <div class="img-wrap">
-                        <img src="${s.img}" alt="${s.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>👨‍🏫</div>'" />
+                        <img src="${s.photoUrl}" alt="${s.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>👨‍🏫</div>'" />
                     </div>
                     <h4>${s.name}</h4>
-                    <p class="role">${s.role}</p>
+                    <p class="role">${s.role ?? ''}</p>
+                    ${s.bio ? `<p class="bio">${s.bio}</p>` : ''}
                 </div>
             `).join('');
         }
 
-        function renderKits() {
+        function renderKits(kits) {
             const grid = document.getElementById('kitGrid');
             grid.innerHTML = kits.map(k => `
                 <div class="kit-card">
                     <div class="kit-img" style="background:${k.color}; ${k.color === '#F2F2F2' ? 'color:#1A1A1A' : 'color:white'}">
-                        <img src="${k.img}" alt="${k.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-tshirt\\' style=\\'font-size:4rem;\\'></i>'" />
+                        <img src="${k.photoUrl}" alt="${k.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-tshirt\\' style=\\'font-size:4rem;\\'></i>'" />
                     </div>
                     <h4>${k.name}</h4>
                 </div>
@@ -1243,47 +1415,71 @@
         function renderAgeGroups() {
             const grid = document.getElementById('ageGrid');
             grid.innerHTML = ageGroups.map((age, index) => `
-                <div class="age-item" data-age="${age}">
+                <a class="age-item" href="category.html?cat=${age}" data-age="${age}">
                     <span class="age-number">${age}</span>
-                    <span class="icon">${ageIcons[index] || '⚽'}</span>
+                    <span class="icon-badge"><i class="fas ${ageIcons[index] || 'fa-futbol'}"></i></span>
                     <span class="label">${age}</span>
-                    <span class="sub-label">${getAgeLabel(age)}</span>
-                </div>
+                    <span class="sub-label">${ageLabels[age] || 'فئة'}</span>
+                </a>
             `).join('');
-            document.querySelectorAll('.age-item').forEach(el => {
-                el.addEventListener('click', function() {
-                    alert(`📋 سيتم فتح صفحة الفئة ${this.dataset.age}`);
-                });
-            });
         }
 
-        function getAgeLabel(age) {
-            const labels = {
-                'U7': 'براعم',
-                'U9': 'صغار',
-                'U11': 'ناشئين',
-                'U13': 'أشبال',
-                'U15': 'فتيان',
-                'U17': 'شباب',
-                'U19': 'أولمبي'
-            };
-            return labels[age] || 'فئة';
-        }
-
-        function renderTicker() {
+        function renderTicker(news) {
             const ticker = document.getElementById('ticker');
             const items = [...news, ...news];
             ticker.innerHTML = items.map(n => `
                 <span class="ticker-item">
                     <span class="dot"></span>
-                    ${n}
-                    <span class="separator">★</span>
+                    ${n.text}
+                    <img class="separator-logo" src="${LOGO_URL}" alt="★" onerror="this.style.display='none'" />
                 </span>
             `).join('');
         }
 
         // ============================================================
-        // NAVBAR TOGGLE
+        // SCROLL REVEAL
+        // ============================================================
+        function initScrollReveal() {
+            const targets = document.querySelectorAll(
+                '.player-card, .staff-card, .kit-card, .age-item, .masonry .item, .reveal'
+            );
+            targets.forEach(el => el.classList.add('reveal'));
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            targets.forEach(el => observer.observe(el));
+        }
+
+        // ============================================================
+        // ANIMATED STAT COUNTERS
+        // ============================================================
+        function initCounters() {
+            const counters = document.querySelectorAll('.stat-item .number');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target, 10) || 0;
+                    let current = 0;
+                    const step = Math.max(1, Math.ceil(target / 60));
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) { current = target; clearInterval(timer); }
+                        el.textContent = (target >= 100 ? '+' : '') + current;
+                    }, 25);
+                    observer.unobserve(el);
+                });
+            }, { threshold: 0.4 });
+            counters.forEach(c => observer.observe(c));
+        }
+
+        // ============================================================
+        // NAVBAR TOGGLE + SCROLL STYLE
         // ============================================================
         document.getElementById('navToggle').addEventListener('click', function() {
             document.getElementById('navLinks').classList.toggle('open');
@@ -1293,14 +1489,47 @@
                 document.getElementById('navLinks').classList.remove('open');
             });
         });
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+        });
 
         // ============================================================
-        // FORM SUBMIT
+        // FORM SUBMIT — إرسال فعلي إلى Firebase
         // ============================================================
-        document.getElementById('regForm').addEventListener('submit', function(e) {
+        document.getElementById('regForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            alert('✅ تم إرسال طلب التسجيل بنجاح!');
-            this.reset();
+            const btn = document.getElementById('regSubmitBtn');
+            const status = document.getElementById('regStatus');
+            const formData = new FormData(this);
+            const payload = {};
+            formData.forEach((value, key) => { payload[key] = value; });
+            payload.consent = document.getElementById('consent').checked;
+            payload.status = 'pending';
+            payload.submittedAt = new Date().toISOString();
+
+            btn.disabled = true;
+            btn.textContent = 'جارِ الإرسال...';
+            status.className = 'form-status';
+            status.textContent = '';
+
+            try {
+                const res = await fetch(`${DB_URL}registrationRequests.json`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('فشل الإرسال');
+                status.classList.add('success');
+                status.textContent = '✅ تم إرسال طلب التسجيل بنجاح! سنتواصل معك قريبًا.';
+                this.reset();
+            } catch (err) {
+                console.error(err);
+                status.classList.add('error');
+                status.textContent = '⚠️ تعذّر إرسال الطلب، حاول مرة أخرى أو تواصل معنا هاتفيًا.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'إرسال';
+            }
         });
 
         // ============================================================
@@ -1321,16 +1550,30 @@
         });
 
         // ============================================================
-        // INIT
+        // INIT — تحميل كل البيانات من Firebase ثم عرضها
         // ============================================================
-        renderGallery();
-        renderPlayers();
-        renderStaff();
-        renderKits();
-        renderAgeGroups();
-        renderTicker();
+        (async function init() {
+            renderAgeGroups();
 
-        console.log('✅ ETOILE CHELGHOUM LAID ACADEMY website loaded successfully!');
+            const [gallery, players, staff, kits, news] = await Promise.all([
+                fetchNode('gallery', FALLBACK.gallery),
+                fetchNode('players', FALLBACK.players),
+                fetchNode('staff', FALLBACK.staff),
+                fetchNode('kits', FALLBACK.kits),
+                fetchNode('news', FALLBACK.news)
+            ]);
+
+            renderGallery(gallery);
+            renderPlayers(players);
+            renderStaff(staff);
+            renderKits(kits);
+            renderTicker(news);
+
+            initScrollReveal();
+            initCounters();
+
+            console.log('✅ ETOILE CHELGHOUM LAID ACADEMY — الصفحة الرئيسية متصلة بـ Firebase وجاهزة.');
+        })();
     </script>
 </body>
 </html>

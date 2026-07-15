@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>أكاديمية تيكنو | Techno Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <style>
+        /* ===== الألوان ===== */
+        :root {
+            /* الهوية الأساسية */
+            --primary-blue: #0B2A6F;
+            --primary-blue-dark: #081F4D;
+            --primary-blue-light: #1E3F8F;
+            --accent-red: #D91E2E;
+            --accent-red-hover: #B51725;
+
+            /* خلفيات ونصوص */
+            --bg-page: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+
+            /* حالات */
+            --color-success: #22C55E;
+            --color-warning: #F59E0B;
+            --color-danger: #DC2626;
+
+            /* توافق مع أسماء المتغيرات القديمة بالكود (لتفادي تعديل الـ JS/HTML) */
+            --primary-gold: #D91E2E;
+            --gold-light: #B51725;
+            --secondary-gold: #B51725;
+            --cream: #F8FAFC;
+            --off-white: #F1F5F9;
+            --light-gray: #94A3B8;
+            --dark-gray: #475569;
+            --bg-card-hover: #FFF5F5;
+            --border-card: rgba(11, 42, 111, 0.10);
+            --shadow: 0 20px 45px rgba(11, 42, 111, 0.10);
+            --shadow-gold: 0 15px 35px rgba(217, 30, 46, 0.18);
+
+            --radius: 16px;
+            --radius-sm: 12px;
+            --transition: 0.35s cubic-bezier(0.22, 0.9, 0.35, 1);
+        }
+
+        /* ===== SCROLL REVEAL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 0.9, 0.35, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 0.9, 0.35, 1);
+        }
+        .reveal-stagger.visible > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0.05s; }
+        .reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.15s; }
+        .reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.25s; }
+        .reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.35s; }
+        .reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.45s; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal, .reveal-stagger > * {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+            background:
+                radial-gradient(circle at 15% 0%, rgba(10, 31, 92, 0.05), transparent 45%),
+                radial-gradient(circle at 85% 100%, rgba(212, 160, 23, 0.06), transparent 40%),
+                var(--cream);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.7;
+            letter-spacing: 0.1px;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--primary-blue-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-red); border-radius: 10px; }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-red-hover));
+            border: none;
+            padding: 13px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-decoration: none;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(217, 30, 46, 0.25);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(217, 30, 46, 0.38); background: linear-gradient(135deg, var(--accent-red-hover), var(--accent-red-hover)); }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 11px 30px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-decoration: none;
+        }
+        .btn-outline:hover { background: #FFFFFF; transform: translateY(-2px); color: var(--primary-blue); border-color: #FFFFFF; }
+
+        .btn-success { background: var(--color-success); border: none; color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-success:hover { background: #16A34A; transform: scale(1.05); }
+        .btn-danger { background: var(--color-danger); border: none; color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-danger:hover { background: #B91C1C; transform: scale(1.05); }
+        .btn-warning { background: var(--color-warning); border: none; color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-warning:hover { background: #D97706; transform: scale(1.05); }
+
+        /* ===== TYPOGRAPHY ===== */
+        .section-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text-dark);
+        }
+        .section-title span { color: var(--accent-red); }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-red), var(--primary-blue));
+            margin: 12px auto 0;
+            border-radius: 5px;
+        }
+        .section-title, .hero h1, .logo span, h1, h2, h3, h4 {
+            font-family: 'Cairo', 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: -25px auto 40px;
+            font-size: 1.05rem;
+            opacity: 0.9;
+        }
+
+        /* ===== HEADER ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 14px 30px;
+            background: transparent;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar.scrolled {
+            background: rgba(248, 250, 252, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(11, 42, 111, 0.08);
+            padding: 10px 30px;
+            box-shadow: 0 4px 24px rgba(11, 42, 111, 0.08);
+        }
+        .navbar.scrolled .logo span { color: var(--text-dark); }
+        .navbar.scrolled .nav-links a { color: var(--text-dark); }
+        .navbar.scrolled .nav-links a:hover { color: var(--accent-red); }
+        .navbar.scrolled .lang-switch { background: rgba(11, 42, 111, 0.08); }
+        .navbar.scrolled .lang-switch button { color: var(--text-muted); }
+        .navbar.scrolled .menu-btn { color: var(--text-dark); }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo img { height: 45px; width: auto; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3)); }
+        .logo span {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.5px;
+            animation: wiggle 2s ease-in-out infinite;
+        }
+        .logo span .accent { color: var(--accent-red); }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-links a:hover { color: #FFFFFF; border-bottom-color: var(--accent-red); }
+        .lang-switch {
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 30px;
+            padding: 3px 6px;
+        }
+        .lang-switch button {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .lang-switch button.active { background: var(--accent-red); color: #FFFFFF; }
+        .lang-switch button:hover { color: #FFFFFF; }
+        .menu-btn { display: none; font-size: 1.6rem; color: #FFFFFF; cursor: pointer; }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 92vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 50px;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background: url('https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_0000000072e871f4ac3fd1c6f3928600.png') no-repeat center center/cover;
+            z-index: -2;
+            animation: heroSlide 15s ease-in-out infinite alternate;
+        }
+        @keyframes heroSlide {
+            0% { transform: scale(1.05) translateX(-3%); }
+            100% { transform: scale(1.05) translateX(3%); }
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #081F4D 0%, rgba(11,42,111,0.75) 55%, rgba(217,30,46,0.55) 100%);
+            z-index: -1;
+        }
+        .hero-overlay::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 40%;
+            background: linear-gradient(0deg, rgba(8, 31, 77, 0.92) 0%, transparent 100%);
+        }
+        .hero-content {
+            max-width: 850px;
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            padding: 48px 42px;
+            box-shadow: 0 20px 60px rgba(8, 31, 77, 0.35);
+        }
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.4);
+        }
+        .hero h1 .highlight { color: #FF6B6B; }
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.92);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+        /* ===== DIVIDER ===== */
+        .section-divider {
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-red), var(--primary-blue));
+            position: relative;
+        }
+        .section-divider::after {
+            content: '⚡';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--accent-red);
+            font-size: 1rem;
+            background: var(--cream);
+            padding: 0 16px;
+        }
+
+        /* ===== SECTIONS ===== */
+        section { padding: 60px 0; }
+        .section-dark { background: var(--cream); }
+        .section-light { background: var(--off-white); }
+
+        /* ===== CARDS ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 34px 24px;
+            text-align: center;
+            border: 1px solid var(--border-card);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(217,30,46,0.06), transparent 60%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(217, 30, 46, 0.35);
+            box-shadow: var(--shadow-gold);
+            background: var(--bg-card-hover);
+        }
+        .card:hover::before { opacity: 1; }
+        .card i {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            margin-bottom: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(217, 30, 46, 0.08);
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+        .card:hover i { transform: scale(1.08) rotate(-4deg); background: rgba(217, 30, 46, 0.14); }
+        .card h3 { font-size: 1.2rem; margin-bottom: 8px; color: var(--text-dark); font-weight: 700; position: relative; z-index: 1; }
+        .card p { color: var(--text-muted); opacity: 1; font-size: 0.95rem; line-height: 1.7; position: relative; z-index: 1; }
+
+        /* ===== GALLERY ===== */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+        .gallery-item {
+            border-radius: 18px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            aspect-ratio: 4 / 3;
+            border: 1px solid var(--border-card);
+            transition: transform 0.45s cubic-bezier(0.22, 0.9, 0.35, 1), box-shadow 0.45s ease, border-color 0.45s ease;
+        }
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -150%;
+            width: 60%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.7s ease;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .gallery-item:hover::after { left: 150%; }
+        .gallery-item:hover {
+            border-color: rgba(217, 30, 46, 0.45);
+            box-shadow: var(--shadow-gold);
+            transform: translateY(-8px) scale(1.03) rotate(-0.5deg);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.22, 0.9, 0.35, 1);
+        }
+        .gallery-item:hover img { transform: scale(1.12) rotate(1deg); }
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%;
+            padding: 16px;
+            background: linear-gradient(0deg, rgba(8, 31, 77, 0.92), transparent);
+            transform: translateY(60%);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+        .gallery-item:hover .overlay { transform: translateY(0); opacity: 1; }
+        .gallery-item .overlay span { color: #FFFFFF; font-weight: 600; font-size: 0.95rem; }
+
+        /* ===== VIDEO ===== */
+        .video-wrapper {
+            max-width: 850px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--accent-red);
+        }
+        .video-wrapper video { width: 100%; display: block; background: #000; }
+
+        /* ===== COACH ===== */
+        .coach-single {
+            max-width: 380px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-card);
+            transition: var(--transition);
+            text-align: center;
+        }
+        .coach-single:hover { transform: translateY(-5px); border-color: var(--accent-red); box-shadow: var(--shadow); }
+        .coach-single .coach-images {
+            position: relative;
+            height: 380px;
+            overflow: hidden;
+        }
+        .coach-single .coach-images img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .coach-single .coach-images img.active { opacity: 1; }
+        .coach-single .info { padding: 20px; }
+        .coach-single .info h4 { font-size: 1.3rem; color: var(--text-dark); margin-bottom: 4px; }
+        .coach-single .info .role { color: var(--accent-red); font-weight: 600; font-size: 0.95rem; }
+        .coach-single .info .details { color: var(--text-muted); opacity: 1; font-size: 0.85rem; margin-top: 6px; }
+
+        /* ===== REGISTRATION ===== */
+        .registration-wrapper {
+            max-width: 780px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            border-radius: var(--radius);
+            padding: 45px 38px 38px;
+            border: 1px solid rgba(217, 30, 46, 0.20);
+            box-shadow: var(--shadow-gold);
+            position: relative;
+        }
+        .registration-wrapper::before {
+            content: '⭐ سجّل الآن';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-red-hover));
+            color: #FFFFFF;
+            font-weight: 800;
+            padding: 6px 30px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 18px rgba(217, 30, 46, 0.35);
+        }
+        .registration-wrapper .form-group { margin-bottom: 20px; position: relative; }
+        .registration-wrapper label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+        .registration-wrapper label i {
+            color: var(--accent-red);
+            font-size: 0.9rem;
+            width: 16px;
+            text-align: center;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap i.field-icon {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        .registration-wrapper input,
+        .registration-wrapper select {
+            width: 100%;
+            padding: 14px 44px 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid rgba(11, 42, 111, 0.12);
+            background: #FFFFFF;
+            color: var(--text-dark);
+            font-size: 0.98rem;
+            font-family: inherit;
+            transition: var(--transition);
+            appearance: none;
+        }
+        .registration-wrapper select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath fill='%23D91E2E' d='M7 9 0 0h14z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 16px center;
+        }
+        .registration-wrapper input:focus,
+        .registration-wrapper select:focus {
+            border-color: var(--accent-red);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(217, 30, 46, 0.12);
+            background: #FFFFFF;
+        }
+        .registration-wrapper input:focus ~ i.field-icon { color: var(--accent-red); }
+        .registration-wrapper .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+        .reg-submit-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .reg-submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .reg-locations-info {
+            text-align: center;
+            margin-bottom: 28px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        .reg-locations-info h3 {
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .reg-location-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== SCHEDULE (مخفي لكن الكود موجود) ===== */
+        .schedule-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 25px;
+            border: 1px solid var(--border-card);
+            overflow-x: auto;
+        }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+        .schedule-table th {
+            background: var(--accent-red);
+            color: #fff;
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .schedule-table td {
+            padding: 10px 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+        .schedule-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+        .schedule-table .category-cell { font-weight: 600; color: var(--accent-red); }
+
+        /* ===== PLAYERS (مخفي لكن الكود موجود) ===== */
+        .players-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .player-item {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid var(--border-card);
+        }
+        .player-item .name { font-weight: 600; color: var(--text-dark); font-size: 1rem; }
+        .player-item .position { color: var(--text-muted); font-size: 0.8rem; }
+        .player-item .category-badge {
+            display: inline-block;
+            background: var(--accent-red);
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* ===== CONTACT ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+        }
+        .contact-info p {
+            margin: 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-muted);
+        }
+        .contact-info i { color: var(--accent-red); width: 22px; }
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-card);
+            background: #FFFFFF;
+            color: var(--text-dark);
+            font-size: 1rem;
+            margin-bottom: 14px;
+            transition: 0.2s;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus { border-color: var(--accent-red); outline: none; }
+        .contact-form textarea { min-height: 100px; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--primary-blue-dark);
+            padding: 50px 20px 25px;
+            border-top: 1px solid rgba(217, 30, 46, 0.15);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 35px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .footer-col h4 { color: #FFFFFF; margin-bottom: 14px; font-size: 1.05rem; }
+        .footer-col p, .footer-col a {
+            color: var(--light-gray);
+            opacity: 0.7;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .footer-col a:hover { color: var(--accent-red); opacity: 1; }
+        .footer-social {
+            display: flex;
+            gap: 14px;
+            margin-top: 10px;
+        }
+        .footer-social a { color: var(--light-gray); font-size: 1.3rem; transition: 0.2s; }
+        .footer-social a:hover { color: var(--accent-red); }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 25px;
+            margin-top: 35px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--light-gray);
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        /* ===== ADMIN PANEL ===== */
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: var(--primary-blue-dark);
+            border: none;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(8, 31, 77, 0.35);
+            transition: 0.3s;
+        }
+        .admin-toggle:hover { background: var(--accent-red); transform: translateY(-2px); }
+
+        .admin-panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(8, 31, 77, 0.55);
+            backdrop-filter: blur(6px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+        .admin-panel-overlay.active { display: flex; }
+
+        .admin-panel {
+            background: #F5F7FA;
+            border-radius: 0;
+            max-width: 100%;
+            width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            border: none;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* شاشة تسجيل الدخول */
+        .admin-login-screen {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
+        }
+        .admin-login-box {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 24px;
+            padding: 40px 36px;
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+        }
+        .admin-login-box h2 { color: #FFFFFF; font-size: 1.5rem; margin-bottom: 22px; }
+        #adminPassInput {
+            padding: 12px 20px;
+            border-radius: 60px;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            width: 100%;
+            max-width: 260px;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            outline: none;
+            transition: var(--transition);
+        }
+        #adminPassInput:focus { border-color: var(--accent-red); box-shadow: 0 0 0 4px rgba(217,30,46,0.2); }
+        #adminPassInput::placeholder { color: rgba(255,255,255,0.6); }
+        #adminLogin button[onclick="adminLogin()"] {
+            background: var(--accent-red);
+            border: none;
+            padding: 12px 26px;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 8px;
+            transition: var(--transition);
+        }
+        #adminLogin button[onclick="adminLogin()"]:hover { background: var(--accent-red-hover); transform: translateY(-2px); }
+        #adminLoginError { color: #FCA5A5; margin-top: 10px; font-size: 0.9rem; }
+
+        .close-admin {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            z-index: 20;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #FFFFFF;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        .close-admin:hover { background: var(--accent-red); border-color: var(--accent-red); }
+
+        /* ===== SHELL: SIDEBAR + MAIN ===== */
+        #adminContent { flex: 1; display: flex; overflow: hidden; }
+        .admin-shell { display: flex; width: 100%; height: 100%; }
+
+        .admin-sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: var(--primary-blue-dark);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        .admin-sidebar-brand {
+            color: #FFFFFF;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 10px 24px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 10px;
+        }
+        .admin-sidebar-brand i { color: var(--accent-red); }
+        .admin-nav { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+        .admin-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            padding: 11px 16px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .admin-nav-link i { width: 18px; text-align: center; color: rgba(255,255,255,0.5); transition: var(--transition); }
+        .admin-nav-link:hover { background: var(--primary-blue-light); color: #FFFFFF; }
+        .admin-nav-link:hover i { color: #FFFFFF; }
+        .admin-nav-link.active {
+            background: var(--accent-red);
+            color: #FFFFFF;
+        }
+        .admin-nav-link.active i { color: #FFFFFF; }
+
+        .admin-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 30px 60px;
+            background: #F5F7FA;
+            scroll-behavior: smooth;
+        }
+
+        .admin-panel h2 { color: var(--text-dark); margin-bottom: 20px; text-align: center; font-size: 1.8rem; }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .admin-stat {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            border: 1px solid var(--border-card);
+            box-shadow: 0 4px 16px rgba(11,42,111,0.06);
+            transition: var(--transition);
+        }
+        .admin-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(11,42,111,0.10); }
+        .admin-stat .num { font-size: 1.9rem; font-weight: 800; color: var(--primary-blue); }
+        .admin-stat .label { color: var(--text-muted); font-size: 0.82rem; margin-top: 4px; }
+
+        .admin-section {
+            margin-top: 6px;
+            margin-bottom: 34px;
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 22px 22px 26px;
+            border: 1px solid var(--border-card);
+            box-shadow: 0 4px 16px rgba(11,42,111,0.05);
+            scroll-margin-top: 20px;
+        }
+        .admin-section h3 {
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== الجداول ===== */
+        .admin-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        .admin-panel table th {
+            background: var(--primary-blue-dark);
+            color: #FFFFFF;
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .admin-panel table td {
+            padding: 11px 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(11,42,111,0.08);
+            color: var(--text-dark);
+        }
+        .admin-panel table tbody tr { transition: background 0.2s ease; }
+        .admin-panel table tbody tr:hover { background: rgba(11,42,111,0.04); }
+
+        .admin-panel table .del-btn {
+            background: var(--color-danger);
+            border: none;
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .admin-panel table .del-btn:hover { background: #B91C1C; transform: scale(1.05); }
+        .admin-panel table .approve-btn {
+            background: var(--color-success);
+            border: none;
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-left: 6px;
+        }
+        .admin-panel table .approve-btn:hover { background: #16A34A; transform: scale(1.05); }
+        .admin-panel table .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: #B45309; }
+        .status-badge.approved { background: rgba(34, 197, 94, 0.15); color: #15803D; }
+        .status-badge.rejected { background: rgba(220, 38, 38, 0.15); color: #B91C1C; }
+
+        /* ===== نماذج لوحة التحكم ===== */
+        .admin-panel .admin-form input,
+        .admin-panel .admin-form textarea {
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border-card);
+            background: #FFFFFF;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        .admin-panel .admin-form input:focus,
+        .admin-panel .admin-form textarea:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(11,42,111,0.10);
+        }
+        .admin-panel .admin-form button {
+            background: var(--accent-red);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .admin-panel .admin-form button:hover { background: var(--accent-red-hover); transform: translateY(-1px); }
+
+        /* رؤوس الجداول موحدة بالهوية الجديدة */
+        .admin-panel .table-gallery th,
+        .admin-panel .table-videos th,
+        .admin-panel .table-schedule th,
+        .admin-panel .table-matches th,
+        .admin-panel .table-players th,
+        .admin-panel .table-registrations th {
+            background: var(--primary-blue-dark);
+        }
+
+        .admin-panel .admin-table-wrap {
+            overflow-x: auto;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-card);
+        }
+        .admin-panel .admin-table-wrap table { min-width: 700px; }
+
+        /* جدول الأسبوعي في لوحة التحكم */
+        .weekly-schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .weekly-schedule-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border-card);
+            transition: var(--transition);
+        }
+        .weekly-schedule-card:hover { box-shadow: 0 8px 20px rgba(11,42,111,0.08); transform: translateY(-2px); }
+        .weekly-schedule-card .day-title {
+            font-weight: 700;
+            color: var(--accent-red);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .weekly-schedule-card .day-time {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
+        .weekly-schedule-card .day-field {
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            text-align: center;
+            opacity: 0.65;
+        }
+
+        /* ===== MATCHES DESIGN ===== */
+        .matches-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .match-card {
+            background: linear-gradient(145deg, #1a1a2e, #0A0A0F);
+            border-radius: 24px;
+            padding: 25px 20px;
+            border: 2px solid var(--accent-red);
+            box-shadow: 0 10px 30px rgba(217, 30, 46, 0.15);
+            text-align: center;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .match-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(217,30,46,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .match-card:hover { transform: translateY(-6px); box-shadow: 0 15px 40px rgba(217, 30, 46, 0.25); }
+        .match-card .vs {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-red);
+            margin: 6px 0;
+        }
+        .match-card .opponent {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+        .match-card .match-date {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            margin: 6px 0;
+        }
+        .match-card .match-location {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        .match-card .match-badge {
+            display: inline-block;
+            background: var(--accent-red);
+            color: #fff;
+            padding: 2px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+        .match-card .academy-name {
+            color: var(--accent-red);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* ===== نافذة نجاح احترافية ===== */
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .payment-modal.active { display: flex; }
+
+        .payment-modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #0A0A0F);
+            border: 2px solid var(--accent-red);
+            border-radius: 30px;
+            padding: 35px 25px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(217, 30, 46, 0.2);
+            animation: modalPop 0.3s ease;
+        }
+
+        /* نافذة النجاح الجديدة */
+        .success-modal-content {
+            background: #FFFFFF;
+            border-radius: 28px;
+            max-width: 420px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(10, 31, 92, 0.35);
+            animation: modalPop 0.35s ease;
+            text-align: center;
+        }
+        .success-modal-header {
+            background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
+            padding: 22px 20px;
+            position: relative;
+        }
+        .success-modal-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-red-hover), var(--accent-red));
+        }
+        .success-modal-logo { height: 54px; width: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3)); }
+        .success-modal-body { padding: 30px 26px 28px; }
+        .success-icon {
+            width: 68px; height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-success), #16A34A);
+            display: flex; align-items: center; justify-content: center;
+            margin: -56px auto 16px;
+            border: 5px solid #FFFFFF;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+        }
+        .success-icon i { color: #FFFFFF; font-size: 1.6rem; }
+        .success-modal-body h3 { color: var(--text-dark); font-size: 1.4rem; margin-bottom: 10px; font-weight: 800; }
+        .success-modal-body p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 22px; }
+        .success-modal-body .close-modal {
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-red-hover));
+            border: none; color: #fff; padding: 12px 32px; border-radius: 60px;
+            font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .success-modal-body .close-modal:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(217, 30, 46, 0.35); }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== ANIMATIONS خفيفة ===== */
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-1.5deg) scale(1); }
+            50% { transform: rotate(1.5deg) scale(1.02); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3rem; }
+            .section-title { font-size: 2rem; }
+        }
+        @media (max-width: 850px) {
+            .navbar { padding: 10px 16px; background: rgba(248, 250, 252, 0.92); }
+            .navbar .logo span { color: var(--text-dark); }
+            .navbar .nav-links a { color: var(--text-dark); }
+            .navbar .lang-switch { background: rgba(11, 42, 111, 0.08); }
+            .navbar .lang-switch button { color: var(--text-muted); }
+            .navbar .menu-btn { color: var(--text-dark); }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                padding: 16px 0;
+                gap: 12px;
+                background: #FFFFFF;
+                position: absolute;
+                top: 100%; left: 0;
+                border-bottom: 1px solid rgba(217, 30, 46, 0.15);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+            .nav-links.show { display: flex; }
+            .menu-btn { display: block; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .hero-content { padding: 28px 18px; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .registration-wrapper { padding: 20px; }
+            .registration-wrapper .form-row { grid-template-columns: 1fr; }
+            section { padding: 40px 0; }
+            .section-title { font-size: 1.6rem; }
+            .admin-panel { padding: 0; }
+            .admin-shell { flex-direction: column; }
+            .admin-sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 10px 12px;
+            }
+            .admin-sidebar-brand { display: none; }
+            .admin-nav { flex-direction: row; padding: 0; gap: 6px; }
+            .admin-nav-link { white-space: nowrap; padding: 8px 14px; }
+            .admin-nav-link span { display: none; }
+            .admin-main { padding: 18px 16px 40px; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.7rem; }
+            .btn-primary, .btn-outline { padding: 8px 20px; font-size: 0.85rem; }
+            .hero-buttons { gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="navbar" id="navbar">
+    <div class="logo">
+        <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/42aaf4132007f328e33d2aeaa0b05670a9e3f332/1000015229-removebg-preview.png" alt="شعار الأكاديمية">
+        <span>تيكنو <span class="accent">Academy</span></span>
+    </div>
+    <div class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></div>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#home">الرئيسية</a></li>
+        <li><a href="#about">عن الأكاديمية</a></li>
+        <li><a href="#coach">المدير الفني</a></li>
+        <li><a href="#gallery">المعرض</a></li>
+        <li><a href="#videos">الفيديوهات</a></li>
+        <li><a href="#kits">الأطقم</a></li>
+        <li><a href="#registration">التسجيل</a></li>
+        <li><a href="#contact">اتصل بنا</a></li>
+        <li>
+            <div class="lang-switch">
+                <button class="active">عربي</button>
+                <button>EN</button>
+            </div>
+        </li>
+    </ul>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="home" class="hero reveal">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>أكاديمية <span class="highlight">تيكنو</span><br>لكرة القدم</h1>
+        <p>حيث تُصنع المواهب وتُكتب الأساطير. نعدّ الجيل القادم من أبطال كرة القدم.</p>
+        <div class="hero-buttons">
+            <a href="#registration" class="btn-primary">سجل الآن</a>
+            <a href="#about" class="btn-outline">اكتشف الأكاديمية</a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== ABOUT ===== -->
+<section id="about" class="section-dark reveal">
+    <div class="container">
+        <h2 class="section-title">عن <span>الأكاديمية</span></h2>
+        <p class="section-subtitle">أكاديمية تيكنو – رؤية رياضية متكاملة لبناء جيل من الأبطال.</p>
+        <div class="card-grid reveal-stagger">
+            <div class="card">
+                <i class="fas fa-eye"></i>
+                <h3>رؤيتنا</h3>
+                <p>تخريج جيل من اللاعبين المحترفين القادرين على تمثيل الأكاديمية والوطن في المحافل الدولية.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-bullhorn"></i>
+                <h3>رسالتنا</h3>
+                <p>توفير بيئة تدريبية عالمية المستوى وتطوير المهارات الفنية والبدنية والنفسية للاعبين.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-trophy"></i>
+                <h3>قيمنا</h3>
+                <p>الانضباط، العمل الجماعي، الاحترام، التميز، والشغف – أساس نجاح كل لاعب.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== COACH ===== -->
+<section id="coach" class="section-light reveal">
+    <div class="container">
+        <h2 class="section-title">المدير <span>الفني</span></h2>
+        <p class="section-subtitle">قيادة فنية وخبرة عالية لبناء جيل من الأبطال.</p>
+        <div class="coach-single">
+            <div class="coach-images" id="coachImages">
+                <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_00000000a83071f4b07064e223ab137a.png" alt="المدير الفني 1" class="active">
+                <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_000000000bfc71f4a42e28bf294e7c60.png" alt="المدير الفني 2">
+            </div>
+            <div class="info">
+                <h4>المدير الفني</h4>
+                <div class="role">مدرب وطني معتمد – UEFA B</div>
+                <div class="details">خبرة 15 سنة في تدريب الفئات العمرية، درب أكثر من 200 لاعب، وقاد فرقاً للفوز ببطولات وطنية.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== GALLERY ===== -->
+<section id="gallery" class="section-dark reveal">
+    <div class="container">
+        <h2 class="section-title">معرض <span>الصور</span></h2>
+        <p class="section-subtitle">لقطات من التدريبات، المباريات، والمناسبات التي تعكس روح الأكاديمية.</p>
+        <div class="gallery-grid reveal-stagger" id="galleryGrid"></div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== VIDEOS ===== -->
+<section id="videos" class="section-light reveal">
+    <div class="container">
+        <h2 class="section-title">🎥 فيديوهات <span>الأكاديمية</span></h2>
+        <p class="section-subtitle">شاهد نبذة عن مقر تدريباتنا في برج الكيفان – تجربة حية لأجواء التدريب.</p>
+        <div class="video-wrapper" id="videoWrapper"></div>
+        <p style="text-align:center; color:var(--text-muted); margin-top:10px; font-size:0.85rem;">📍 فيديو تعريفي لمقر تدريبات فرع برج الكيفان – ملاعب مغطاة</p>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== KITS ===== -->
+<section id="kits" class="section-dark reveal">
+    <div class="container">
+        <h2 class="section-title">الأطقم <span>الرسمية</span></h2>
+        <p class="section-subtitle">طقم أكاديمية تيكنو الرسمي – هوية الفريق.</p>
+        <div style="text-align:center;">
+            <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/69ae9be65ac8b6eaed6ba4e2f91e0da0a08be6ea/file_000000008d0c71f4a336c5c667ccc948.png" alt="الطقم الرسمي" style="max-width:100%; border-radius:var(--radius); box-shadow:var(--shadow);">
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== REGISTRATION ===== -->
+<section id="registration" class="section-light reveal">
+    <div class="container">
+        <h2 class="section-title">سجل <span>الآن</span></h2>
+        <p class="section-subtitle">انضم إلى أكاديمية تيكنو وكن جزءاً من مستقبل كرة القدم.</p>
+        
+        <div class="reg-locations-info">
+            <h3><i class="fas fa-map-marker-alt"></i> أكاديميتنا موجودة في</h3>
+            <div style="display:flex; justify-content:center; gap:25px; flex-wrap:wrap;">
+                <div class="reg-location-item"><i class="fas fa-phone-alt" style="color:var(--accent-red);"></i><strong style="color:var(--accent-red);">باب الزوار:</strong> 05.52.47.41.40</div>
+                <div class="reg-location-item"><i class="fas fa-phone-alt" style="color:var(--accent-red);"></i><strong style="color:var(--accent-red);">برج الكيفان:</strong> 05.57.76.86.08</div>
+                <div class="reg-location-item"><i class="fas fa-phone-alt" style="color:var(--accent-red);"></i><strong style="color:var(--accent-red);">الخروبة:</strong> 07.91.96.16.63</div>
+            </div>
+        </div>
+        <div class="registration-wrapper">
+            <form id="registrationForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> الاسم الشخصي</label>
+                        <div class="input-wrap">
+                            <input type="text" id="regFirstName" placeholder="مثال: أحمد" required>
+                            <i class="fas fa-id-card field-icon"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> اللقب العائلي</label>
+                        <div class="input-wrap">
+                            <input type="text" id="regLastName" placeholder="مثال: بن سليمان" required>
+                            <i class="fas fa-id-card field-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> رقم الهاتف</label>
+                        <div class="input-wrap">
+                            <input type="tel" id="regPhone" placeholder="05XXXXXXXX" required>
+                            <i class="fas fa-mobile-alt field-icon"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-birthday-cake"></i> الفئة العمرية</label>
+                        <select id="regCategory">
+                            <option value="U11">تحت 11 سنة (U11)</option>
+                            <option value="U12">تحت 12 سنة (U12)</option>
+                            <option value="U13">تحت 13 سنة (U13)</option>
+                            <option value="U14">تحت 14 سنة (U14)</option>
+                            <option value="U15">تحت 15 سنة (U15)</option>
+                            <option value="U16">تحت 16 سنة (U16)</option>
+                            <option value="U17">تحت 17 سنة (U17)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> المكان</label>
+                    <select id="regLocation">
+                        <option value="باب الزوار">باب الزوار</option>
+                        <option value="برج الكيفان">برج الكيفان</option>
+                        <option value="الخروبة">الخروبة</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary reg-submit-btn">
+                    <i class="fas fa-paper-plane"></i> إرسال طلب التسجيل
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact" class="section-light reveal">
+    <div class="container">
+        <h2 class="section-title">تواصل <span>معنا</span></h2>
+        <p class="section-subtitle">نحن هنا للإجابة على استفساراتكم. تواصلوا معنا عبر أي من القنوات التالية.</p>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3 style="color:var(--text-dark); margin-bottom:16px; font-size:1.2rem;">معلومات الاتصال</h3>
+                <p><i class="fas fa-map-marker-alt"></i> المركب الرياضي، برج الكيفان، الجزائر</p>
+                <p><i class="fas fa-phone-alt"></i> 05.52.47.41.40</p>
+                <p><i class="fas fa-envelope"></i> info@technoacademy.dz</p>
+                <p><i class="fab fa-facebook"></i> <a href="https://www.facebook.com/profile.php?id=100063920144998" target="_blank" style="color:var(--accent-red); text-decoration:none;">تابعنا على فيسبوك</a></p>
+                <div style="display:flex; gap:14px; margin-top:16px;">
+                    <a href="https://www.facebook.com/profile.php?id=100063920144998" target="_blank" style="color:var(--text-muted); font-size:1.6rem; transition:0.2s;"><i class="fab fa-facebook"></i></a>
+                    <a href="#" style="color:var(--text-muted); font-size:1.6rem; transition:0.2s;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="color:var(--text-muted); font-size:1.6rem; transition:0.2s;"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="contact-form">
+                <input type="text" placeholder="الاسم الكامل">
+                <input type="email" placeholder="البريد الإلكتروني">
+                <input type="tel" placeholder="رقم الهاتف">
+                <textarea placeholder="رسالتك..."></textarea>
+                <button class="btn-primary">إرسال الرسالة</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/42aaf4132007f328e33d2aeaa0b05670a9e3f332/1000015229-removebg-preview.png" alt="شعار" style="height:40px; width:auto;">
+                <span style="font-size:1.2rem; font-weight:800; color:#FFFFFF;">تيكنو <span style="color:var(--accent-red);">Academy</span></span>
+            </div>
+            <p style="opacity:0.6; font-size:0.9rem;">أكاديمية كرة القدم الرائدة في الجزائر، نصنع النجوم ونبني المستقبل.</p>
+        </div>
+        <div class="footer-col">
+            <h4>روابط سريعة</h4>
+            <a href="#home">الرئيسية</a>
+            <a href="#about">عن الأكاديمية</a>
+            <a href="#registration">التسجيل</a>
+            <a href="#contact">اتصل بنا</a>
+        </div>
+        <div class="footer-col">
+            <h4>تواصل معنا</h4>
+            <p>📞 05.52.47.41.40</p>
+            <p>📧 info@technoacademy.dz</p>
+            <p>📍 برج الكيفان، الجزائر</p>
+            <div class="footer-social">
+                <a href="https://www.facebook.com/profile.php?id=100063920144998" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 أكاديمية تيكنو – جميع الحقوق محفوظة
+    </div>
+</footer>
+
+<!-- ===== نافذة نجاح التسجيل ===== -->
+<div class="payment-modal" id="successModal">
+    <div class="success-modal-content">
+        <div class="success-modal-header">
+            <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/42aaf4132007f328e33d2aeaa0b05670a9e3f332/1000015229-removebg-preview.png" alt="شعار الأكاديمية" class="success-modal-logo">
+        </div>
+        <div class="success-modal-body">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <h3>تم التسجيل بنجاح</h3>
+            <p>تم استلام طلبك بنجاح، سيتواصل معك فريق أكاديمية تيكنو في أقرب وقت.</p>
+            <button class="close-modal" id="closeSuccessModal"><i class="fas fa-check-circle"></i> تمام</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ADMIN TOGGLE ===== -->
+<button class="admin-toggle" id="adminToggle"><i class="fas fa-cog"></i> إدارة</button>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div class="admin-panel-overlay" id="adminPanel">
+    <div class="admin-panel">
+        <button class="close-admin" id="closeAdmin"><i class="fas fa-times"></i> إغلاق</button>
+        <div id="adminLogin" class="admin-login-screen">
+            <div class="admin-login-box">
+                <h2>🔐 لوحة تحكم المسؤول</h2>
+                <input type="password" id="adminPassInput" placeholder="أدخل كلمة السر">
+                <button onclick="adminLogin()">دخول</button>
+                <div id="adminLoginError" style="display:none;">❌ كلمة سر غير صحيحة</div>
+            </div>
+        </div>
+        <div id="adminContent" style="display:none;">
+        <div class="admin-shell">
+            <aside class="admin-sidebar">
+                <div class="admin-sidebar-brand"><i class="fas fa-shield-alt"></i> لوحة التحكم</div>
+                <nav class="admin-nav">
+                    <a href="#adm-stats" class="admin-nav-link active"><i class="fas fa-chart-pie"></i><span>نظرة عامة</span></a>
+                    <a href="#adm-registrations" class="admin-nav-link"><i class="fas fa-clipboard-list"></i><span>طلبات التسجيل</span></a>
+                    <a href="#adm-players" class="admin-nav-link"><i class="fas fa-users"></i><span>اللاعبون المعتمدون</span></a>
+                    <a href="#adm-gallery" class="admin-nav-link"><i class="fas fa-images"></i><span>المعرض</span></a>
+                    <a href="#adm-videos" class="admin-nav-link"><i class="fas fa-video"></i><span>الفيديوهات</span></a>
+                    <a href="#adm-schedule" class="admin-nav-link"><i class="fas fa-calendar-alt"></i><span>جدول التدريبات</span></a>
+                    <a href="#adm-matches" class="admin-nav-link"><i class="fas fa-futbol"></i><span>المباريات الودية</span></a>
+                    <a href="#adm-security" class="admin-nav-link"><i class="fas fa-key"></i><span>الأمان</span></a>
+                </nav>
+            </aside>
+            <div class="admin-main">
+            <div id="adm-stats"><div class="admin-stats" id="adminStats"></div></div>
+
+            <!-- ===== طلبات التسجيل ===== -->
+            <div class="admin-section" id="adm-registrations">
+                <h3>📋 طلبات التسجيل</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-registrations">
+                        <thead><tr><th>#</th><th>الاسم</th><th>اللقب</th><th>الهاتف</th><th>الفئة</th><th>المكان</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th></tr></thead>
+                        <tbody id="adminRegistrations"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== قائمة اللاعبين المعتمدين ===== -->
+            <div class="admin-section" id="adm-players">
+                <h3>👕 قائمة اللاعبين المعتمدين</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-players">
+                        <thead><tr><th>#</th><th>الاسم</th><th>اللقب</th><th>الفئة</th><th>الهاتف</th><th>حذف</th></tr></thead>
+                        <tbody id="adminPlayersList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== إدارة المعرض ===== -->
+            <div class="admin-section" id="adm-gallery">
+                <h3>🖼️ إدارة المعرض</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-gallery">
+                        <thead><tr><th>#</th><th>العنوان</th><th>رابط الصورة</th><th>حذف</th></tr></thead>
+                        <tbody id="adminGalleryList"></tbody>
+                    </table>
+                </div>
+                <div class="admin-form" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <input type="text" id="newGalleryTitle" placeholder="عنوان الصورة" style="flex:1; min-width:150px;">
+                    <input type="text" id="newGalleryUrl" placeholder="رابط الصورة" style="flex:2; min-width:200px;">
+                    <button onclick="addGalleryItem()">إضافة صورة</button>
+                </div>
+            </div>
+
+            <!-- ===== إدارة الفيديوهات ===== -->
+            <div class="admin-section" id="adm-videos">
+                <h3>🎥 إدارة الفيديوهات</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-videos">
+                        <thead><tr><th>#</th><th>العنوان</th><th>رابط الفيديو</th><th>حذف</th></tr></thead>
+                        <tbody id="adminVideoList"></tbody>
+                    </table>
+                </div>
+                <div class="admin-form" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <input type="text" id="newVideoTitle" placeholder="عنوان الفيديو" style="flex:1; min-width:150px;">
+                    <input type="text" id="newVideoUrl" placeholder="رابط الفيديو" style="flex:2; min-width:200px;">
+                    <button onclick="addVideo()">إضافة فيديو</button>
+                </div>
+            </div>
+
+            <!-- ===== جدول التدريبات الأسبوعي ===== -->
+            <div class="admin-section" id="adm-schedule">
+                <h3>📅 جدول التدريبات الأسبوعي</h3>
+                <div class="weekly-schedule-grid" id="adminScheduleContainer"></div>
+                <button onclick="addScheduleRow()" style="background:var(--accent-red); border:none; padding:8px 18px; border-radius:30px; color:#fff; font-weight:700; cursor:pointer; margin-top:12px;">+ إضافة صف</button>
+                <button onclick="saveScheduleAdmin()" style="background:var(--primary-blue); border:none; padding:8px 18px; border-radius:30px; color:#fff; font-weight:700; cursor:pointer; margin-top:12px; margin-right:8px;">💾 حفظ الجدول</button>
+            </div>
+
+            <!-- ===== إدارة المباريات ===== -->
+            <div class="admin-section" id="adm-matches">
+                <h3>⚽ إدارة المباريات الودية</h3>
+                <div id="adminMatchesContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px;"></div>
+                <div class="admin-form" style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <input type="text" id="newMatchOpponent" placeholder="اسم الخصم" style="flex:1; min-width:120px;">
+                    <input type="text" id="newMatchDate" placeholder="التاريخ" style="flex:1; min-width:120px;">
+                    <input type="text" id="newMatchLocation" placeholder="المكان" style="flex:1; min-width:120px;">
+                    <button onclick="addMatch()">+ إضافة مباراة</button>
+                </div>
+                <button onclick="saveMatchesAdmin()" style="background:var(--primary-blue); border:none; padding:8px 18px; border-radius:30px; color:#fff; font-weight:700; cursor:pointer; margin-top:10px;">💾 حفظ المباريات</button>
+            </div>
+
+            <!-- ===== الأمان ===== -->
+            <div class="admin-section" id="adm-security">
+                <h3>🔑 تغيير كلمة السر</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <input type="password" id="newAdminPass" placeholder="كلمة سر جديدة" style="padding:10px; border-radius:12px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff; width:200px;">
+                    <button onclick="changeAdminPassword()" style="background:var(--accent-red); border:none; padding:8px 20px; border-radius:30px; color:#fff; font-weight:700; cursor:pointer;">تغيير</button>
+                </div>
+            </div>
+            </div><!-- /.admin-main -->
+            </div><!-- /.admin-shell -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // 1. إعدادات Firebase
+    // ================================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyCyNanQ-kKG70ThYujTYXHj6ySYFReSH0s",
+        authDomain: "academy-tecni.firebaseapp.com",
+        databaseURL: "https://academy-tecni-default-rtdb.firebaseio.com",
+        projectId: "academy-tecni",
+        storageBucket: "academy-tecni.firebasestorage.app",
+        messagingSenderId: "857198194842",
+        appId: "1:857198194842:web:f2c077424dca6bd9c5af23",
+        measurementId: "G-FDTN8JMB5R"
+    };
+
+    try {
+        firebase.initializeApp(firebaseConfig);
+        console.log('✅ Firebase initialized');
+    } catch (e) {
+        console.error('❌ Firebase init error:', e);
+    }
+    const database = firebase.database();
+
+    // ================================================================
+    // 2. البيانات الافتراضية
+    // ================================================================
+    const defaultGallery = [
+        { id: 1, title: 'لاعبو الأكاديمية', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_0000000080887246a3ae03f9d509af06.png' },
+        { id: 2, title: 'معرض الأكاديمية 1', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_00000000bf50722f865fdd37161eb04e.png' },
+        { id: 3, title: 'معرض الأكاديمية 2', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/7b5f5a9c030c088f4af9797c2a1365727d7b3274/file_00000000464071f4b244348f594f097c.png' },
+        { id: 4, title: 'معرض الأكاديمية 3', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/ed7625f1c04b4c31a91a01fcafb72048fc1c5993/file_000000006e6471f48132a02c81c00658.png' },
+        { id: 5, title: 'تجديد عقد لاعب', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_00000000c71471fd9f054dee930088ad.png' }
+    ];
+    const defaultVideos = [
+        { id: 1, title: 'فيديو تعريفي بالأكاديمية', url: 'https://raw.githubusercontent.com/darkonovic51-hash/Academy-Tecnho-football-/42aaf4132007f328e33d2aeaa0b05670a9e3f332/%E2%96%AA%EF%B8%8F%D9%86%D8%A8%D8%B0%D8%A9%20%D8%B9%D9%86%20%D9%85%D9%82%D8%B1%20%D8%AA%D8%AF%D8%B1%D9%8A%D8%A8%D8%A7%D8%AA%20%D8%A3%D9%83%D8%A7%D8%AF%D9%8A%D9%85%D9%8A%D8%AA%D9%86%D8%A7%20%D9%81%D8%B1%D8%B9%20_%20%D8%A8%D8%B1%D8%AC%20%D8%A7%D9%84%D9%83%D9%8A%D9%81%D8%A7%D9%86%20_%20%D9%81%D9%8A%20%D9%85%D9%84%D8%A7%D8%B9%D8%A8%20%D9%85%D8%BA%D8%B7%D8%A7%D8%A9%20%D8%8C%20%D8%A3%D9%85%D8%A7%D9%83%D9%86%20%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%20%D8%AC%D8%AF%20.mp4' }
+    ];
+    const defaultSchedule = [
+        { id: 1, category: 'تحت 11 سنة (U11)', days: 'السبت - الأربعاء', time: '16:00 - 17:30', field: 'الملعب الرئيسي' },
+        { id: 2, category: 'تحت 12 سنة (U12)', days: 'الأحد - الخميس', time: '16:00 - 17:30', field: 'الملعب الرئيسي' },
+        { id: 3, category: 'تحت 13 سنة (U13)', days: 'الإثنين - الجمعة', time: '17:30 - 19:00', field: 'الملعب الثانوي' },
+        { id: 4, category: 'تحت 14 سنة (U14)', days: 'الثلاثاء - السبت', time: '17:30 - 19:00', field: 'الملعب الثانوي' },
+        { id: 5, category: 'تحت 15 سنة (U15)', days: 'الأحد - الأربعاء', time: '19:00 - 20:30', field: 'الملعب الرئيسي' },
+        { id: 6, category: 'تحت 16 سنة (U16)', days: 'الإثنين - الخميس', time: '19:00 - 20:30', field: 'الملعب الرئيسي' },
+        { id: 7, category: 'تحت 17 سنة (U17)', days: 'الثلاثاء - الجمعة', time: '20:30 - 22:00', field: 'الملعب الرئيسي' }
+    ];
+    const defaultMatches = [];
+    const defaultPlayers = [];
+
+    // ================================================================
+    // 3. الحالة العامة
+    // ================================================================
+    let appData = {
+        gallery: [],
+        videos: [],
+        schedule: [],
+        matches: [],
+        players: [],
+        registrations: [] // سيتم جلبها بشكل منفصل
+    };
+
+    // ================================================================
+    // 4. دوال قراءة وكتابة Firebase
+    // ================================================================
+    function saveToFirebase(path, data) {
+        return database.ref(path).set(data)
+            .then(() => console.log(`✅ Saved ${path}`))
+            .catch((err) => {
+                console.warn(`⚠️ Failed to save ${path}, storing locally:`, err);
+                localStorage.setItem('fb_' + path.replace('/', '_'), JSON.stringify(data));
+            });
+    }
+
+    function getFromFirebase(path) {
+        return database.ref(path).once('value')
+            .then(snapshot => snapshot.val())
+            .catch((err) => {
+                console.warn(`⚠️ Failed to fetch ${path}, using local:`, err);
+                const local = localStorage.getItem('fb_' + path.replace('/', '_'));
+                return local ? JSON.parse(local) : null;
+            });
+    }
+
+    // ================================================================
+    // 5. تحميل جميع البيانات
+    // ================================================================
+    async function loadAllData() {
+        try {
+            const [gallery, videos, schedule, matches, players] = await Promise.all([
+                getFromFirebase('academyData/gallery'),
+                getFromFirebase('academyData/videos'),
+                getFromFirebase('academyData/schedule'),
+                getFromFirebase('academyData/matches'),
+                getFromFirebase('academyData/players')
+            ]);
+
+            appData.gallery = gallery || defaultGallery;
+            appData.videos = videos || defaultVideos;
+            appData.schedule = schedule || defaultSchedule;
+            appData.matches = matches || defaultMatches;
+            appData.players = players || defaultPlayers;
+
+            if (!gallery) await saveToFirebase('academyData/gallery', appData.gallery);
+            if (!videos) await saveToFirebase('academyData/videos', appData.videos);
+            if (!schedule) await saveToFirebase('academyData/schedule', appData.schedule);
+            if (!matches) await saveToFirebase('academyData/matches', appData.matches);
+            if (!players) await saveToFirebase('academyData/players', appData.players);
+
+            console.log('✅ All data loaded from Firebase');
+        } catch (error) {
+            console.error('❌ Error loading data:', error);
+            // استخدام البيانات المحلية إذا وجدت
+            const local = localStorage.getItem('fb_academyData');
+            if (local) {
+                try {
+                    const parsed = JSON.parse(local);
+                    appData = parsed;
+                } catch (e) {}
+            } else {
+                appData.gallery = defaultGallery;
+                appData.videos = defaultVideos;
+                appData.schedule = defaultSchedule;
+                appData.matches = defaultMatches;
+                appData.players = defaultPlayers;
+            }
+        }
+    }
+
+    // ================================================================
+    // 6. دوال العرض
+    // ================================================================
+    function renderGallery() {
+        const container = document.getElementById('galleryGrid');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!appData.gallery || appData.gallery.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);">لا توجد صور في المعرض.</p>';
+            return;
+        }
+        appData.gallery.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+            div.innerHTML = `
+                <img src="${item.url}" alt="${item.title}" loading="lazy">
+                <div class="overlay"><span>${item.title}</span></div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function renderVideos() {
+        const container = document.getElementById('videoWrapper');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!appData.videos || appData.videos.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted);">لا توجد فيديوهات.</p>';
+            return;
+        }
+        const video = appData.videos[0];
+        container.innerHTML = `
+            <video controls preload="metadata" poster="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_0000000072e871f4ac3fd1c6f3928600.png">
+                <source src="${video.url}" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+        `;
+    }
+
+    function renderSchedule() {
+        const container = document.getElementById('scheduleWrapper');
+        if (!container) return;
+        if (!appData.schedule || appData.schedule.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:25px;"><i class="fas fa-calendar-alt" style="font-size:2rem; color:var(--accent-red); opacity:0.5;"></i><p style="color:var(--text-muted); margin-top:8px;">لا توجد بيانات تدريب.</p></div>`;
+            return;
+        }
+        let html = `<table class="schedule-table"><thead><tr><th>الفئة</th><th>الأيام</th><th>الوقت</th><th>الملعب</th></tr></thead><tbody>`;
+        appData.schedule.forEach(row => {
+            html += `<tr><td class="category-cell">${row.category}</td><td>${row.days || '—'}</td><td>${row.time || '—'}</td><td>${row.field || '—'}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    function renderMatches() {
+        const container = document.getElementById('matchesContainer');
+        if (!container) return;
+        if (!appData.matches || appData.matches.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; background:var(--bg-card); border-radius:var(--radius); border:1px dashed rgba(217,30,46,0.2);">
+                    <i class="fas fa-calendar-alt" style="font-size:2.5rem; color:var(--accent-red); opacity:0.4;"></i>
+                    <h3 style="color:var(--text-dark); margin-top:10px; font-size:1.2rem;">لا توجد مباريات ودية حالياً</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem;">سيتم الإعلان عن المباريات القادمة فور اعتماد الجدول الزمني.</p>
+                </div>
+            `;
+            return;
+        }
+        let html = `<div class="matches-showcase">`;
+        appData.matches.forEach(m => {
+            html += `
+                <div class="match-card">
+                    <div class="academy-name">⭐ أكاديمية تيكنو</div>
+                    <div class="vs">VS</div>
+                    <div class="opponent">${m.opponent || 'خصم'}</div>
+                    <div class="match-date">📅 ${m.date || 'تاريخ'}</div>
+                    <div class="match-location">📍 ${m.location || 'مكان'}</div>
+                    <span class="match-badge">⚽ مباراة ودية</span>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    function renderPlayers() {
+        const container = document.getElementById('playersContainer');
+        if (!container) return;
+        if (!appData.players || appData.players.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; background:var(--bg-card); border-radius:var(--radius); border:1px dashed rgba(217,30,46,0.2);">
+                    <i class="fas fa-users" style="font-size:2.5rem; color:var(--accent-red); opacity:0.4;"></i>
+                    <h3 style="color:var(--text-dark); margin-top:10px; font-size:1.2rem;">لا يوجد لاعبون مسجلون</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem;">يمكن للمسؤول إضافة اللاعبين من لوحة التحكم.</p>
+                </div>
+            `;
+            return;
+        }
+        let html = `<div class="players-list">`;
+        appData.players.forEach(p => {
+            html += `
+                <div class="player-item">
+                    <div class="name">${p.firstName || p.name} ${p.lastName || ''}</div>
+                    <div class="position">${p.category || 'فئة'}</div>
+                    ${p.category ? `<span class="category-badge">${p.category}</span>` : ''}
+                </div>
+            `;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    // ================================================================
+    // 7. دوال الإدارة (مع حفظ تلقائي)
+    // ================================================================
+    function renderAdminGallery() {
+        const tbody = document.getElementById('adminGalleryList');
+        tbody.innerHTML = '';
+        appData.gallery.forEach((item, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = idx + 1;
+            row.insertCell(1).innerText = item.title;
+            row.insertCell(2).innerHTML = `<a href="${item.url}" target="_blank" style="color:var(--accent-red);">رابط</a>`;
+            row.insertCell(3).innerHTML = `<button class="del-btn" onclick="deleteGalleryItem(${idx})">✕</button>`;
+        });
+    }
+
+    async function addGalleryItem() {
+        const title = document.getElementById('newGalleryTitle').value.trim();
+        const url = document.getElementById('newGalleryUrl').value.trim();
+        if (!title || !url) { alert('الرجاء إدخال عنوان ورابط الصورة'); return; }
+        appData.gallery.push({ id: Date.now(), title, url });
+        await saveToFirebase('academyData/gallery', appData.gallery);
+        document.getElementById('newGalleryTitle').value = '';
+        document.getElementById('newGalleryUrl').value = '';
+        renderAdminGallery();
+        renderGallery();
+    }
+
+    async function deleteGalleryItem(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذه الصورة؟')) return;
+        appData.gallery.splice(idx, 1);
+        await saveToFirebase('academyData/gallery', appData.gallery);
+        renderAdminGallery();
+        renderGallery();
+    }
+
+    function renderAdminVideos() {
+        const tbody = document.getElementById('adminVideoList');
+        tbody.innerHTML = '';
+        appData.videos.forEach((item, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = idx + 1;
+            row.insertCell(1).innerText = item.title;
+            row.insertCell(2).innerHTML = `<a href="${item.url}" target="_blank" style="color:var(--accent-red);">رابط</a>`;
+            row.insertCell(3).innerHTML = `<button class="del-btn" onclick="deleteVideoItem(${idx})">✕</button>`;
+        });
+    }
+
+    async function addVideo() {
+        const title = document.getElementById('newVideoTitle').value.trim();
+        const url = document.getElementById('newVideoUrl').value.trim();
+        if (!title || !url) { alert('الرجاء إدخال عنوان ورابط الفيديو'); return; }
+        appData.videos.push({ id: Date.now(), title, url });
+        await saveToFirebase('academyData/videos', appData.videos);
+        document.getElementById('newVideoTitle').value = '';
+        document.getElementById('newVideoUrl').value = '';
+        renderAdminVideos();
+        renderVideos();
+    }
+
+    async function deleteVideoItem(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذا الفيديو؟')) return;
+        appData.videos.splice(idx, 1);
+        await saveToFirebase('academyData/videos', appData.videos);
+        renderAdminVideos();
+        renderVideos();
+    }
+
+    function renderAdminSchedule() {
+        const container = document.getElementById('adminScheduleContainer');
+        container.innerHTML = '';
+        appData.schedule.forEach((row, idx) => {
+            const card = document.createElement('div');
+            card.className = 'weekly-schedule-card';
+            card.innerHTML = `
+                <div class="day-title">${row.category}</div>
+                <div class="day-time">📅 ${row.days || '—'}</div>
+                <div class="day-time">⏰ ${row.time || '—'}</div>
+                <div class="day-field">🏟️ ${row.field || '—'}</div>
+                <div style="margin-top:10px;">
+                    <input value="${row.days || ''}" data-idx="${idx}" data-field="days" placeholder="الأيام" class="schedule-admin-input" style="width:100%; padding:6px 10px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff; margin-bottom:4px;">
+                    <input value="${row.time || ''}" data-idx="${idx}" data-field="time" placeholder="الوقت" class="schedule-admin-input" style="width:100%; padding:6px 10px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff; margin-bottom:4px;">
+                    <input value="${row.field || ''}" data-idx="${idx}" data-field="field" placeholder="الملعب" class="schedule-admin-input" style="width:100%; padding:6px 10px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <button onclick="deleteScheduleRow(${idx})" style="background:var(--color-danger); border:none; color:#fff; padding:3px 12px; border-radius:20px; cursor:pointer; margin-top:6px; width:100%;">✕ حذف</button>
+                </div>
+            `;
+            container.appendChild(card);
+
+            // إضافة مستمعي التغيير
+            card.querySelectorAll('.schedule-admin-input').forEach(inp => {
+                inp.addEventListener('change', function() {
+                    const idx2 = parseInt(this.dataset.idx);
+                    const field = this.dataset.field;
+                    appData.schedule[idx2][field] = this.value;
+                    saveToFirebase('academyData/schedule', appData.schedule);
+                    renderSchedule();
+                });
+            });
+        });
+    }
+
+    async function addScheduleRow() {
+        appData.schedule.push({ id: Date.now(), category: 'فئة جديدة', days: '—', time: '—', field: '—' });
+        await saveToFirebase('academyData/schedule', appData.schedule);
+        renderAdminSchedule();
+        renderSchedule();
+    }
+
+    async function deleteScheduleRow(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذا الصف؟')) return;
+        appData.schedule.splice(idx, 1);
+        await saveToFirebase('academyData/schedule', appData.schedule);
+        renderAdminSchedule();
+        renderSchedule();
+    }
+
+    async function saveScheduleAdmin() {
+        await saveToFirebase('academyData/schedule', appData.schedule);
+        renderSchedule();
+        alert('✅ تم حفظ جدول التدريبات');
+    }
+
+    function renderAdminMatches() {
+        const container = document.getElementById('adminMatchesContainer');
+        container.innerHTML = '';
+        appData.matches.forEach((m, idx) => {
+            const div = document.createElement('div');
+            div.style.cssText = 'background:var(--bg-card); border-radius:16px; padding:16px; border:1px solid var(--border-card);';
+            div.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <input value="${m.opponent || ''}" data-idx="${idx}" data-field="opponent" placeholder="الخصم" class="match-admin-input" style="width:100%; padding:8px 12px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <input value="${m.date || ''}" data-idx="${idx}" data-field="date" placeholder="التاريخ" class="match-admin-input" style="width:100%; padding:8px 12px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <input value="${m.location || ''}" data-idx="${idx}" data-field="location" placeholder="المكان" class="match-admin-input" style="width:100%; padding:8px 12px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <button onclick="deleteMatch(${idx})" style="background:var(--color-danger); border:none; color:#fff; padding:4px; border-radius:20px; cursor:pointer;">✕ حذف</button>
+                </div>
+            `;
+            container.appendChild(div);
+
+            div.querySelectorAll('.match-admin-input').forEach(inp => {
+                inp.addEventListener('change', function() {
+                    const idx2 = parseInt(this.dataset.idx);
+                    const field = this.dataset.field;
+                    appData.matches[idx2][field] = this.value;
+                    saveToFirebase('academyData/matches', appData.matches);
+                    renderMatches();
+                });
+            });
+        });
+    }
+
+    async function addMatch() {
+        const opponent = document.getElementById('newMatchOpponent').value.trim();
+        const date = document.getElementById('newMatchDate').value.trim();
+        const location = document.getElementById('newMatchLocation').value.trim();
+        if (!opponent || !date || !location) { alert('الرجاء ملء جميع الحقول'); return; }
+        appData.matches.push({ id: Date.now(), opponent, date, location });
+        await saveToFirebase('academyData/matches', appData.matches);
+        document.getElementById('newMatchOpponent').value = '';
+        document.getElementById('newMatchDate').value = '';
+        document.getElementById('newMatchLocation').value = '';
+        renderAdminMatches();
+        renderMatches();
+    }
+
+    async function deleteMatch(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذه المباراة؟')) return;
+        appData.matches.splice(idx, 1);
+        await saveToFirebase('academyData/matches', appData.matches);
+        renderAdminMatches();
+        renderMatches();
+    }
+
+    async function saveMatchesAdmin() {
+        await saveToFirebase('academyData/matches', appData.matches);
+        renderMatches();
+        alert('✅ تم حفظ المباريات');
+    }
+
+    // ================================================================
+    // 8. طلبات التسجيل والموافقة عليها
+    // ================================================================
+    async function saveRegistration(regData) {
+        try {
+            const newRef = database.ref('registrations').push();
+            await newRef.set({
+                ...regData,
+                status: 'pending',
+                timestamp: firebase.database.ServerValue.TIMESTAMP || Date.now()
+            });
+            console.log('✅ Registration saved to Firebase');
+        } catch (error) {
+            console.warn('⚠️ Failed to save registration, storing locally:', error);
+            let local = JSON.parse(localStorage.getItem('fb_registrations_local')) || [];
+            local.push({ ...regData, status: 'pending', id: Date.now(), timestamp: Date.now() });
+            localStorage.setItem('fb_registrations_local', JSON.stringify(local));
+        }
+    }
+
+    function getRegistrations(callback) {
+        database.ref('registrations').orderByChild('timestamp').once('value')
+            .then(snapshot => {
+                const data = snapshot.val();
+                const registrations = [];
+                if (data) {
+                    Object.keys(data).forEach(key => registrations.push({ id: key, ...data[key] }));
+                }
+                callback(registrations);
+            })
+            .catch(error => {
+                console.warn('⚠️ Failed to fetch registrations, using local:', error);
+                const local = JSON.parse(localStorage.getItem('fb_registrations_local')) || [];
+                callback(local);
+            });
+    }
+
+    function deleteRegistration(id, callback) {
+        database.ref('registrations/' + id).remove()
+            .then(() => callback())
+            .catch(error => {
+                console.warn('⚠️ Failed to delete registration, trying local:', error);
+                let local = JSON.parse(localStorage.getItem('fb_registrations_local')) || [];
+                local = local.filter(item => item.id != id);
+                localStorage.setItem('fb_registrations_local', JSON.stringify(local));
+                callback();
+            });
+    }
+
+    async function approveRegistration(id, regData) {
+        // تحديث حالة الطلب إلى approved
+        await database.ref('registrations/' + id).update({ status: 'approved' });
+
+        // إضافة اللاعب إلى قائمة اللاعبين
+        const playerData = {
+            id: Date.now(),
+            firstName: regData.firstName,
+            lastName: regData.lastName,
+            phone: regData.phone,
+            category: regData.category,
+            location: regData.location
+        };
+        appData.players.push(playerData);
+        await saveToFirebase('academyData/players', appData.players);
+        renderPlayers();
+        renderAdminDashboard();
+    }
+
+    // ================================================================
+    // 9. نموذج التسجيل
+    // ================================================================
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        if (submitBtn.disabled) return;
+
+        const firstName = document.getElementById('regFirstName').value.trim();
+        const lastName = document.getElementById('regLastName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const category = document.getElementById('regCategory').value;
+        const location = document.getElementById('regLocation').value;
+
+        if (!firstName || !lastName || !phone) {
+            alert('❌ الرجاء ملء جميع الحقول المطلوبة');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        const originalBtnHTML = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الإرسال...';
+
+        const regData = {
+            firstName,
+            lastName,
+            phone,
+            category,
+            location,
+            date: new Date().toLocaleString('ar-EG')
+        };
+
+        try {
+            await saveRegistration(regData);
+
+            const formData = new FormData();
+            formData.append('الاسم الشخصي', firstName);
+            formData.append('اللقب العائلي', lastName);
+            formData.append('رقم الهاتف', phone);
+            formData.append('الفئة', category);
+            formData.append('المكان', location);
+            formData.append('_subject', '🔔 طلب تسجيل جديد - أكاديمية تيكنو');
+            formData.append('_captcha', 'false');
+
+            await fetch('https://formsubmit.co/ajax/darkonovic51@gmail.com', {
+                method: 'POST',
+                body: formData
+            });
+
+            document.getElementById('successModal').classList.add('active');
+            this.reset();
+        } catch (error) {
+            console.error(error);
+            alert('❌ حدث خطأ، لكن بياناتك محفوظة.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHTML;
+        }
+    });
+
+    // ================================================================
+    // 10. لوحة التحكم
+    // ================================================================
+    const ADMIN_PASSWORD_KEY = 'techno_admin_pass';
+    let adminPassword = localStorage.getItem(ADMIN_PASSWORD_KEY) || 'admin2025';
+    let adminLoggedIn = false;
+
+    window.adminLogin = function() {
+        const input = document.getElementById('adminPassInput').value;
+        if (input === adminPassword) {
+            adminLoggedIn = true;
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            renderAdminDashboard();
+        } else {
+            document.getElementById('adminLoginError').style.display = 'block';
+            setTimeout(() => document.getElementById('adminLoginError').style.display = 'none', 3000);
+        }
+    };
+
+    function renderAdminDashboard() {
+        // إحصائيات
+        getRegistrations((registrations) => {
+            const pending = registrations.filter(r => r.status === 'pending').length;
+            const approved = registrations.filter(r => r.status === 'approved').length;
+            document.getElementById('adminStats').innerHTML = `
+                <div class="admin-stat"><div class="num">${registrations.length}</div><div class="label">إجمالي الطلبات</div></div>
+                <div class="admin-stat"><div class="num" style="color:var(--color-warning);">${pending}</div><div class="label">في الانتظار</div></div>
+                <div class="admin-stat"><div class="num" style="color:var(--color-success);">${approved}</div><div class="label">معتمدين</div></div>
+                <div class="admin-stat"><div class="num">${appData.players.length}</div><div class="label">اللاعبون المعتمدون</div></div>
+                <div class="admin-stat"><div class="num">${appData.gallery.length}</div><div class="label">الصور</div></div>
+                <div class="admin-stat"><div class="num">${appData.matches.length}</div><div class="label">المباريات</div></div>
+            `;
+
+            // طلبات التسجيل
+            const tbody = document.getElementById('adminRegistrations');
+            tbody.innerHTML = '';
+            registrations.forEach((reg, idx) => {
+                const row = tbody.insertRow();
+                const statusClass = reg.status === 'approved' ? 'approved' : 'pending';
+                const statusText = reg.status === 'approved' ? '✔ معتمد' : '⏳ قيد الانتظار';
+                row.insertCell(0).innerText = idx + 1;
+                row.insertCell(1).innerText = reg.firstName || '';
+                row.insertCell(2).innerText = reg.lastName || '';
+                row.insertCell(3).innerText = reg.phone || '';
+                row.insertCell(4).innerText = reg.category || '';
+                row.insertCell(5).innerText = reg.location || '';
+                row.insertCell(6).innerText = reg.date || '';
+                row.insertCell(7).innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                const actions = row.insertCell(8);
+                if (reg.status === 'pending') {
+                    actions.innerHTML = `
+                        <button class="approve-btn" onclick="approveRegistrationHandler('${reg.id}')">✔ اعتماد</button>
+                        <button class="del-btn" onclick="deleteRegistrationHandler('${reg.id}')">✕</button>
+                    `;
+                } else {
+                    actions.innerHTML = `<button class="del-btn" onclick="deleteRegistrationHandler('${reg.id}')">✕</button>`;
+                }
+            });
+        });
+
+        // قائمة اللاعبين المعتمدين
+        renderAdminPlayersList();
+        renderAdminGallery();
+        renderAdminVideos();
+        renderAdminSchedule();
+        renderAdminMatches();
+    }
+
+    function renderAdminPlayersList() {
+        const tbody = document.getElementById('adminPlayersList');
+        tbody.innerHTML = '';
+        appData.players.forEach((p, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = idx + 1;
+            row.insertCell(1).innerText = p.firstName || p.name || '';
+            row.insertCell(2).innerText = p.lastName || '';
+            row.insertCell(3).innerText = p.category || '';
+            row.insertCell(4).innerText = p.phone || '';
+            row.insertCell(5).innerHTML = `<button class="del-btn" onclick="deletePlayerHandler(${idx})">✕</button>`;
+        });
+    }
+
+    window.deletePlayerHandler = async function(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذا اللاعب؟')) return;
+        appData.players.splice(idx, 1);
+        await saveToFirebase('academyData/players', appData.players);
+        renderAdminDashboard();
+        renderPlayers();
+    };
+
+    window.approveRegistrationHandler = async function(id) {
+        if (!confirm('هل تريد اعتماد هذا الطلب وتحويل اللاعب إلى قائمة اللاعبين؟')) return;
+        // جلب بيانات الطلب
+        const snapshot = await database.ref('registrations/' + id).once('value');
+        const regData = snapshot.val();
+        if (regData) {
+            await approveRegistration(id, regData);
+            renderAdminDashboard();
+            renderPlayers();
+        }
+    };
+
+    window.deleteRegistrationHandler = function(id) {
+        if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
+        deleteRegistration(id, () => renderAdminDashboard());
+    };
+
+    window.changeAdminPassword = function() {
+        const newPass = document.getElementById('newAdminPass').value.trim();
+        if (newPass.length < 4) { alert('كلمة السر يجب أن تكون 4 أحرف على الأقل'); return; }
+        adminPassword = newPass;
+        localStorage.setItem(ADMIN_PASSWORD_KEY, adminPassword);
+        alert('✅ تم تغيير كلمة السر بنجاح');
+        document.getElementById('newAdminPass').value = '';
+    };
+
+    // ================================================================
+    // 11. دالة Scroll Reveal باستخدام IntersectionObserver
+    // ================================================================
+    function initScrollReveal() {
+        const targets = document.querySelectorAll('.reveal, .reveal-stagger');
+        if (!targets.length) return;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+        targets.forEach(el => observer.observe(el));
+    }
+
+    // ================================================================
+    // 12. تهيئة الموقع
+    // ================================================================
+    async function init() {
+        try {
+            await loadAllData();
+            renderGallery();
+            renderVideos();
+            console.log('✅ Website initialized successfully');
+        } catch (error) {
+            console.error('❌ Initialization error:', error);
+            document.body.innerHTML = `
+                <div style="text-align:center; padding:50px; color:red; direction:rtl;">
+                    <h2>حدث خطأ في تحميل الموقع</h2>
+                    <p>يرجى تحديث الصفحة أو المحاولة لاحقاً.</p>
+                    <p style="font-size:12px; color:gray;">${error.message}</p>
+                    <button onclick="location.reload()" style="margin-top:20px; padding:10px 30px; background:var(--accent-red); border:none; border-radius:30px; color:#fff; cursor:pointer;">تحديث الصفحة</button>
+                </div>
+            `;
+        }
+
+        // الهيدر والقوائم
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+        if (menuBtn && navLinks) {
+            menuBtn.addEventListener('click', () => navLinks.classList.toggle('show'));
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (navLinks) navLinks.classList.remove('show');
+                }
+            });
+        });
+
+        // فتح/إغلاق لوحة التحكم
+        document.getElementById('adminToggle').addEventListener('click', function() {
+            document.getElementById('adminPanel').classList.toggle('active');
+            if (adminLoggedIn) renderAdminDashboard();
+        });
+
+        document.getElementById('closeAdmin').addEventListener('click', function() {
+            document.getElementById('adminPanel').classList.remove('active');
+        });
+
+        // صور المدير الفني
+        let coachIndex = 0;
+        const coachImages = document.querySelectorAll('#coachImages img');
+        if (coachImages.length > 1) {
+            setInterval(() => {
+                coachImages.forEach(img => img.classList.remove('active'));
+                coachIndex = (coachIndex + 1) % coachImages.length;
+                coachImages[coachIndex].classList.add('active');
+            }, 3000);
+        }
+
+        // نافذة نجاح التسجيل
+        const successModal = document.getElementById('successModal');
+        const closeSuccessBtn = document.getElementById('closeSuccessModal');
+        if (closeSuccessBtn) {
+            closeSuccessBtn.addEventListener('click', () => successModal.classList.remove('active'));
+        }
+        if (successModal) {
+            successModal.addEventListener('click', (e) => {
+                if (e.target === successModal) successModal.classList.remove('active');
+            });
+        }
+
+        // تفعيل Scroll Reveal
+        initScrollReveal();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

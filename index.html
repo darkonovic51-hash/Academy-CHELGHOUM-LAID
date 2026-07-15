@@ -15,9 +15,12 @@
             --black: #1A1A1A;
             --white: #F2F2F2;
             --gold: #D4AF37;
+            --gold-light: #F3DFA0;
             --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.4);
             --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.08);
             --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --ticker-height: 42px;
+            --navbar-height: 78px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -113,10 +116,68 @@
             transform: translateY(-3px);
         }
 
+        /* ===== TOP NEWS TICKER (منقول لأعلى الصفحة + لون فاتح مميز) ===== */
+        .ticker-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--ticker-height);
+            z-index: 1001;
+            background: linear-gradient(90deg, var(--gold-light) 0%, var(--gold) 100%);
+            border-bottom: 2px solid var(--primary-dark);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        .ticker {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            animation: tickerScroll 32s linear infinite;
+            white-space: nowrap;
+            width: max-content;
+        }
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+        .ticker-item .dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: var(--red-accent);
+            border-radius: 50%;
+            margin: 0 6px;
+            animation: pulseDot 1.6s ease-in-out infinite;
+        }
+        .ticker-item .separator-logo {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: var(--white);
+            padding: 2px;
+            margin: 0 10px;
+            border: 1px solid rgba(14,72,50,0.2);
+        }
+        @keyframes tickerScroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        @keyframes pulseDot {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
         /* ===== NAVBAR ===== */
         .navbar {
             position: fixed;
-            top: 0;
+            top: var(--ticker-height);
             left: 0;
             width: 100%;
             z-index: 999;
@@ -222,13 +283,14 @@
             display: none;
             flex: 1;
             justify-content: center;
-            gap: 28px;
+            gap: 24px;
             margin: 0 20px;
+            flex-wrap: wrap;
         }
         .nav-links a {
             color: rgba(255, 255, 255, 0.85);
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             transition: all 0.3s ease;
             padding-bottom: 4px;
             border-bottom: 2px solid transparent;
@@ -255,7 +317,7 @@
             transition: all 0.3s ease;
         }
 
-        /* ===== HERO ===== */
+        /* ===== HERO (صورة أفتح ومميزة بصريًا) ===== */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -264,14 +326,16 @@
             justify-content: center;
             background: var(--primary-dark);
             overflow: hidden;
-            padding-top: 100px;
+            padding-top: calc(var(--ticker-height) + var(--navbar-height) + 40px);
         }
         .hero-bg {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(14,72,50,0.6) 0%, rgba(0,0,0,0.8) 100%),
+            background:
+                linear-gradient(135deg, rgba(14,72,50,0.42) 0%, rgba(0,0,0,0.55) 100%),
+                linear-gradient(0deg, rgba(212,175,55,0.12), rgba(212,175,55,0.12)),
                 url('https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true') center/cover no-repeat;
-            filter: brightness(0.55) saturate(1.1);
+            filter: brightness(0.82) saturate(1.2) contrast(1.05);
             animation: kenBurns 22s ease-in-out infinite alternate;
         }
         @keyframes kenBurns {
@@ -281,16 +345,16 @@
         .hero-fog {
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at 30% 50%, rgba(14,72,50,0.4) 0%, transparent 70%),
-                radial-gradient(ellipse at 70% 50%, rgba(0,0,0,0.3) 0%, transparent 60%);
+            background: radial-gradient(ellipse at 30% 50%, rgba(14,72,50,0.28) 0%, transparent 70%),
+                radial-gradient(ellipse at 70% 30%, rgba(212,175,55,0.15) 0%, transparent 60%);
             pointer-events: none;
         }
         .hero-glass {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(1.5px);
+            -webkit-backdrop-filter: blur(1.5px);
         }
         .hero-content {
             position: relative;
@@ -305,7 +369,7 @@
             letter-spacing: 4px;
             line-height: 1.1;
             color: var(--white);
-            text-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
             opacity: 0;
             transform: translateY(30px);
             animation: heroIn 1s ease forwards 0.2s;
@@ -314,14 +378,14 @@
         .hero-content .sub-headline {
             font-size: clamp(1.2rem, 2.5vw, 2rem);
             font-weight: 300;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             margin-top: 16px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.35);
             display: inline-block;
             padding: 8px 36px;
             border-radius: 60px;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(212,175,55,0.35);
             opacity: 0;
             transform: translateY(30px);
             animation: heroIn 1s ease forwards 0.5s;
@@ -330,7 +394,7 @@
             font-size: 1.1rem;
             max-width: 700px;
             margin: 24px auto;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.88);
             font-weight: 300;
             line-height: 1.9;
             opacity: 0;
@@ -360,7 +424,7 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.6);
             font-size: 0.75rem;
             letter-spacing: 2px;
             animation: floatDown 2.4s ease-in-out infinite;
@@ -368,7 +432,7 @@
         .scroll-indicator .mouse {
             width: 28px;
             height: 42px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 20px;
             position: relative;
         }
@@ -380,7 +444,7 @@
             transform: translateX(-50%);
             width: 4px;
             height: 10px;
-            background: var(--red-accent);
+            background: var(--gold);
             border-radius: 4px;
             animation: scrollWheel 2s ease-in-out infinite;
         }
@@ -540,145 +604,87 @@
         }
         .lightbox .close:hover { transform: rotate(90deg); color: var(--red-accent); }
 
-        /* ===== PLAYERS ===== */
+        /* ===== PLAYERS — بطاقتين فقط، صورة بدون وصف، تصميم Spotlight احترافي ===== */
         .players { padding: 80px 0; background: var(--white); }
         .player-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 30px;
-        }
-        .player-card {
-            background: var(--white);
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.4s ease;
-            border: 1px solid #eee;
-            text-align: center;
-            padding-bottom: 20px;
-        }
-        .player-card:hover {
-            transform: translateY(-12px);
-            box-shadow: var(--shadow-heavy);
-            border-color: var(--red-accent);
-        }
-        .player-card .img-wrap {
-            background: var(--primary-dark);
-            height: 220px;
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             justify-content: center;
+            gap: 36px;
+        }
+        .player-spotlight-card {
             position: relative;
+            width: 280px;
+            aspect-ratio: 3 / 4;
+            border-radius: 28px;
             overflow: hidden;
+            background: linear-gradient(160deg, var(--primary-dark), var(--black));
+            box-shadow: var(--shadow-medium);
+            border: 2px solid transparent;
+            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .player-card .img-wrap img {
-            height: 100%;
+        .player-spotlight-card:hover {
+            transform: translateY(-14px);
+            box-shadow: var(--shadow-heavy);
+            border-color: var(--gold);
+        }
+        .player-spotlight-card img {
             width: 100%;
+            height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.6s ease;
         }
-        .player-card:hover .img-wrap img { transform: scale(1.08); }
-        .player-card .number {
+        .player-spotlight-card:hover img { transform: scale(1.08); }
+        .player-spotlight-card::after {
+            content: '';
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--red-accent);
-            color: white;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.8rem;
-            padding: 4px 16px;
-            border-radius: 40px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 35%);
+            pointer-events: none;
         }
-        .player-card .cat-tag {
+        .player-spotlight-card .shine {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.9);
-            color: var(--primary-dark);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1rem;
-            padding: 3px 12px;
-            border-radius: 40px;
-            letter-spacing: 1px;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 40%, rgba(212,175,55,0.25) 50%, transparent 60%);
+            transform: translateX(-120%);
+            transition: transform 0.7s ease;
+            pointer-events: none;
         }
-        .player-card h4 {
-            font-size: 1.3rem;
-            margin-top: 14px;
-            font-family: 'Cairo', sans-serif;
-            font-weight: 700;
-        }
-        .player-card .position {
-            color: var(--primary-mid);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .player-card .birth-year {
-            color: #999;
-            font-size: 0.8rem;
-            margin-top: 2px;
-        }
-        .player-card .view-profile {
-            display: inline-block;
-            margin-top: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--red-accent);
-            border-bottom: 1px solid transparent;
-            transition: 0.3s;
-        }
-        .player-card .view-profile:hover { border-bottom-color: var(--red-accent); }
+        .player-spotlight-card:hover .shine { transform: translateX(120%); }
 
-        /* ===== STAFF ===== */
+        /* ===== STAFF — 3 بطاقات فقط، صورة بدون وصف ===== */
         .staff { padding: 80px 0; background: #f8f8f8; }
         .staff-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 30px;
-        }
-        .staff-card {
-            background: var(--white);
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.4s ease;
-            text-align: center;
-            border: 1px solid #eee;
-            padding-bottom: 18px;
-        }
-        .staff-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-heavy);
-            border-color: var(--primary-mid);
-        }
-        .staff-card .img-wrap {
-            height: 240px;
-            background: var(--primary-dark);
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             justify-content: center;
-            overflow: hidden;
+            gap: 36px;
         }
-        .staff-card .img-wrap img {
+        .staff-spotlight-card {
+            position: relative;
+            width: 240px;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-medium);
+            border: 3px solid var(--white);
+            outline: 2px solid rgba(212,175,55,0.4);
+            outline-offset: 4px;
+            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .staff-spotlight-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            outline-color: var(--red-accent);
+            box-shadow: var(--shadow-heavy);
+        }
+        .staff-spotlight-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.6s ease;
         }
-        .staff-card:hover .img-wrap img { transform: scale(1.08); }
-        .staff-card h4 { font-size: 1.2rem; margin-top: 14px; }
-        .staff-card .role {
-            color: var(--red-accent);
-            font-weight: 700;
-            font-size: 0.95rem;
-            margin: 4px 0 10px;
-        }
-        .staff-card .bio {
-            font-size: 0.85rem;
-            color: #666;
-            padding: 0 18px;
-            line-height: 1.6;
-        }
+        .staff-spotlight-card:hover img { transform: scale(1.1); }
 
         /* ===== KITS ===== */
         .kits { padding: 80px 0; background: var(--white); }
@@ -891,59 +897,6 @@
         .form-status.success { color: #7CD9A8; }
         .form-status.error { color: #FF8A8A; }
 
-        /* ===== TICKER ===== */
-        .ticker-wrap {
-            background: var(--black);
-            padding: 14px 0;
-            border-top: 2px solid var(--red-accent);
-            border-bottom: 2px solid var(--red-accent);
-            overflow: hidden;
-            position: relative;
-        }
-        .ticker {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            animation: tickerScroll 35s linear infinite;
-            white-space: nowrap;
-            width: max-content;
-        }
-        .ticker-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            color: var(--white);
-            font-weight: 600;
-            font-size: 1rem;
-        }
-        .ticker-item .dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--red-accent);
-            border-radius: 50%;
-            margin: 0 8px;
-            animation: pulseDot 1.6s ease-in-out infinite;
-        }
-        .ticker-item .separator-logo {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            object-fit: contain;
-            background: var(--white);
-            padding: 2px;
-            margin: 0 12px;
-            animation: pulseDot 1.6s ease-in-out infinite;
-        }
-        @keyframes tickerScroll {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        @keyframes pulseDot {
-            0%,100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-        }
-
         /* ===== FOOTER ===== */
         .footer {
             background: var(--black);
@@ -1026,6 +979,8 @@
             .nav-links.right { justify-content: flex-start; }
         }
         @media (max-width: 600px) {
+            :root { --ticker-height: 34px; --navbar-height: 70px; }
+            .ticker-item { font-size: 0.78rem; }
             .nav-actions .nav-cta span { display: none; }
             .nav-actions .nav-cta { padding: 8px 14px; }
             .nav-logo { width: 60px; height: 60px; top: 0px; }
@@ -1044,10 +999,17 @@
             .age-item { padding: 20px 10px; }
             .age-item .icon-badge { width: 50px; height: 50px; }
             .age-item .label { font-size: 1.2rem; }
+            .player-spotlight-card { width: 220px; }
+            .staff-spotlight-card { width: 180px; }
         }
     </style>
 </head>
 <body>
+    <!-- ===== TOP NEWS TICKER ===== -->
+    <div class="ticker-wrap" id="news-section">
+        <div class="ticker" id="ticker"></div>
+    </div>
+
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar" id="navbar">
         <div class="container">
@@ -1076,17 +1038,17 @@
         </div>
         <div class="container" style="position:relative;">
             <div class="nav-links" id="navLinks">
-                <div class="nav-links right" style="display:flex; gap:28px; justify-content:center; flex-wrap:wrap;">
+                <div class="nav-links right" style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">
                     <a href="#home" class="active">الرئيسية</a>
                     <a href="#about">الأكاديمية</a>
-                    <a href="#ageGroups">البرامج</a>
-                    <a href="#players">الفرق</a>
-                </div>
-                <div class="nav-links left" style="display:flex; gap:28px; justify-content:center; flex-wrap:wrap;">
-                    <a href="#kits">المنشآت</a>
-                    <a href="#news-section">الأخبار</a>
                     <a href="#gallery">المعرض</a>
-                    <a href="#register">اتصل بنا</a>
+                    <a href="#players">اللاعبون</a>
+                </div>
+                <div class="nav-links left" style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">
+                    <a href="#staff">الطاقم الفني</a>
+                    <a href="#kits">الأطقم</a>
+                    <a href="#ageGroups">الفئات العمرية</a>
+                    <a href="#register">التسجيل</a>
                 </div>
             </div>
         </div>
@@ -1147,7 +1109,7 @@
         <img src="" alt="Lightbox" id="lightboxImg" />
     </div>
 
-    <!-- ===== PLAYERS ===== -->
+    <!-- ===== PLAYERS (بطاقتين فقط، صورة بدون وصف) ===== -->
     <section class="players" id="players">
         <div class="container">
             <h2 class="section-title center reveal">اللاعبون المميزون</h2>
@@ -1155,7 +1117,7 @@
         </div>
     </section>
 
-    <!-- ===== STAFF ===== -->
+    <!-- ===== STAFF (3 بطاقات فقط، صورة بدون وصف) ===== -->
     <section class="staff" id="staff">
         <div class="container">
             <h2 class="section-title center reveal">الطاقم الفني</h2>
@@ -1226,15 +1188,8 @@
         </div>
     </section>
 
-    <!-- ===== TICKER ===== -->
-    <div class="ticker-wrap" id="news-section">
-        <div class="container" style="overflow:hidden; padding:0 24px;">
-            <div class="ticker" id="ticker"></div>
-        </div>
-    </div>
-
     <!-- ===== FOOTER ===== -->
-    <footer class="footer">
+    <footer class="footer" id="contact">
         <div class="container">
             <div class="footer-grid">
                 <div>
@@ -1269,12 +1224,11 @@
     <!-- ===== JAVASCRIPT ===== -->
     <script>
         // ============================================================
-        // FIREBASE CONFIG — عدّل الـ DB_URL هنا لو اتغير رابط القاعدة
+        // FIREBASE CONFIG
         // ============================================================
         const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
         const LOGO_URL = 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true';
 
-        // بيانات احتياطية (تظهر فقط لو فشلت القراءة من Firebase، أو لو النود لسه فاضي)
         const FALLBACK = {
             gallery: [
                 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true',
@@ -1285,16 +1239,13 @@
                 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
             ].map(url => ({ url })),
             players: [
-                { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15', birthYear: 2010, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
-                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17', birthYear: 2008, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' },
-                { name: 'سفيان بلقاسم', number: 4, position: 'مدافع', category: 'U13', birthYear: 2012, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
-                { name: 'محمد عمارة', number: 1, position: 'حارس مرمى', category: 'U19', birthYear: 2007, photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
+                { name: 'أحمد زروقي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
+                { name: 'ياسين بن عمر', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
             ],
             staff: [
-                { name: 'نبيل شلغوم', role: 'المدير الفني', bio: 'خبرة أكثر من 15 سنة في تكوين الفئات الشبانية.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
-                { name: 'كريم عبدي', role: 'مدرب U19', bio: 'حاصل على شهادة CAF C في التدريب.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
-                { name: 'فوزي شرقي', role: 'مدرب U15', bio: 'متخصص في التطوير البدني والتقني للناشئين.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' },
-                { name: 'رشيد بولحية', role: 'مدرب الحراس', bio: 'مدرب حراس مرمى معتمد منذ 2015.', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' }
+                { name: 'نبيل شلغوم', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
+                { name: 'كريم عبدي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
+                { name: 'فوزي شرقي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' }
             ],
             kits: [
                 { name: 'طقم الأساسي', color: '#0E4832', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
@@ -1315,8 +1266,7 @@
         const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U19:'أولمبي' };
 
         // ============================================================
-        // FIREBASE REST HELPER — قراءة عبر REST API (بدون SDK كامل)
-        // node اسم العقدة في القاعدة، fallback مصفوفة بديلة لو فشلت القراءة
+        // FIREBASE REST HELPER
         // ============================================================
         async function fetchNode(node, fallback) {
             try {
@@ -1324,7 +1274,6 @@
                 if (!res.ok) throw new Error('bad response');
                 const data = await res.json();
                 if (!data) return fallback;
-                // البيانات في Firebase بتيجي كـ Object {id: value} — بنحولها لمصفوفة
                 return Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
             } catch (err) {
                 console.warn(`تعذّرت قراءة "${node}" من Firebase، تم استخدام بيانات احتياطية.`, err);
@@ -1369,33 +1318,25 @@
             }
         });
 
+        // بطاقتين فقط، صورة بدون أي وصف
         function renderPlayers(players) {
             const grid = document.getElementById('playerGrid');
-            grid.innerHTML = players.map(p => `
-                <div class="player-card">
-                    <div class="img-wrap">
-                        <img src="${p.photoUrl}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>⚽</div>'" />
-                        <span class="number">${p.number ?? ''}</span>
-                        ${p.category ? `<span class="cat-tag">${p.category}</span>` : ''}
-                    </div>
-                    <h4>${p.name}</h4>
-                    <p class="position">${p.position ?? ''}</p>
-                    ${p.birthYear ? `<p class="birth-year">مواليد ${p.birthYear}</p>` : ''}
-                    <a class="view-profile" href="player.html?id=${encodeURIComponent(p.id ?? p.name)}">عرض الملف ←</a>
+            const featured = players.slice(0, 2);
+            grid.innerHTML = featured.map(p => `
+                <div class="player-spotlight-card">
+                    <img src="${p.photoUrl}" alt="لاعب مميز" loading="lazy" onerror="this.style.display='none'" />
+                    <div class="shine"></div>
                 </div>
             `).join('');
         }
 
+        // 3 بطاقات فقط، صورة بدون أي وصف
         function renderStaff(staff) {
             const grid = document.getElementById('staffGrid');
-            grid.innerHTML = staff.map(s => `
-                <div class="staff-card">
-                    <div class="img-wrap">
-                        <img src="${s.photoUrl}" alt="${s.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>👨‍🏫</div>'" />
-                    </div>
-                    <h4>${s.name}</h4>
-                    <p class="role">${s.role ?? ''}</p>
-                    ${s.bio ? `<p class="bio">${s.bio}</p>` : ''}
+            const featured = staff.slice(0, 3);
+            grid.innerHTML = featured.map(s => `
+                <div class="staff-spotlight-card">
+                    <img src="${s.photoUrl}" alt="عضو الطاقم الفني" loading="lazy" onerror="this.style.display='none'" />
                 </div>
             `).join('');
         }
@@ -1441,7 +1382,7 @@
         // ============================================================
         function initScrollReveal() {
             const targets = document.querySelectorAll(
-                '.player-card, .staff-card, .kit-card, .age-item, .masonry .item, .reveal'
+                '.player-spotlight-card, .staff-spotlight-card, .kit-card, .age-item, .masonry .item, .reveal'
             );
             targets.forEach(el => el.classList.add('reveal'));
             const observer = new IntersectionObserver((entries) => {
@@ -1542,15 +1483,15 @@
                 e.preventDefault();
                 const target = document.querySelector(href);
                 if (target) {
-                    const navHeight = document.querySelector('.navbar').offsetHeight;
-                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+                    const offset = document.querySelector('.navbar').offsetHeight + document.querySelector('.ticker-wrap').offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset - 20;
                     window.scrollTo({ top: targetPosition, behavior: 'smooth' });
                 }
             });
         });
 
         // ============================================================
-        // INIT — تحميل كل البيانات من Firebase ثم عرضها
+        // INIT
         // ============================================================
         (async function init() {
             renderAgeGroups();
@@ -1572,7 +1513,7 @@
             initScrollReveal();
             initCounters();
 
-            console.log('✅ ETOILE CHELGHOUM LAID ACADEMY — الصفحة الرئيسية متصلة بـ Firebase وجاهزة.');
+            console.log('✅ ETOILE CHELGHOUM LAID ACADEMY — الصفحة الرئيسية جاهزة.');
         })();
     </script>
 </body>

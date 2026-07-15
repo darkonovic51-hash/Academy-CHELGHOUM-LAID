@@ -4,15 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>ETOILE CHELGHOUM LAID ACADEMY</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
-    <!-- Font Awesome 6 (Free) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <style>
-        /* ============================================================
-                   ROOT VARIABLES (Identity)
-                   ============================================================ */
         :root {
             --primary-dark: #0E4832;
             --primary-mid: #136F46;
@@ -20,62 +15,28 @@
             --black: #1A1A1A;
             --white: #F2F2F2;
             --gold: #D4AF37;
-
-            /* Additional for premium feel */
             --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.4);
             --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.08);
-            --glass-bg: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
-
-        /* ============================================================
-                   RESET & BASE
-                   ============================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: var(--white);
+            background: var(--white);
             color: var(--black);
             direction: rtl;
             line-height: 1.7;
             overflow-x: hidden;
         }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-        ul {
-            list-style: none;
-        }
-        img {
-            max-width: 100%;
-            display: block;
-        }
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* ============================================================
-                   TYPOGRAPHY
-                   ============================================================ */
-        h1,
-        h2,
-        h3,
-        .headline,
-        .bebas {
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        h1, h2, h3, .headline, .bebas {
             font-family: 'Bebas Neue', sans-serif;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
-
         .section-title {
             font-size: 3rem;
             font-family: 'Bebas Neue', sans-serif;
@@ -95,18 +56,10 @@
             background: var(--red-accent);
             border-radius: 4px;
         }
-        .section-title.center {
-            display: block;
-            text-align: center;
-        }
-        .section-title.center::after {
-            right: 50%;
-            transform: translateX(50%);
-        }
+        .section-title.center { display: block; text-align: center; }
+        .section-title.center::after { right: 50%; transform: translateX(50%); }
 
-        /* ============================================================
-                   BUTTONS
-                   ============================================================ */
+        /* Buttons */
         .btn-primary {
             display: inline-block;
             background: var(--primary-mid);
@@ -126,7 +79,6 @@
             transform: translateY(-3px);
             box-shadow: 0 12px 28px rgba(19, 111, 70, 0.45);
         }
-
         .btn-secondary {
             display: inline-block;
             background: transparent;
@@ -146,18 +98,7 @@
             transform: translateY(-3px);
         }
 
-        .btn-red {
-            background: var(--red-accent);
-            box-shadow: 0 8px 20px rgba(200, 16, 46, 0.3);
-        }
-        .btn-red:hover {
-            background: #a00d24;
-            box-shadow: 0 12px 28px rgba(200, 16, 46, 0.45);
-        }
-
-        /* ============================================================
-                   01. NAVBAR (Glassmorphism + Centered Logo)
-                   ============================================================ */
+        /* ===== NAVBAR ===== */
         .navbar {
             position: fixed;
             top: 0;
@@ -171,7 +112,6 @@
             padding: 12px 0;
             transition: all 0.3s ease;
         }
-
         .navbar .container {
             display: flex;
             align-items: center;
@@ -179,8 +119,6 @@
             flex-wrap: wrap;
             position: relative;
         }
-
-        /* Left side (social icons) */
         .nav-social {
             display: flex;
             align-items: center;
@@ -205,8 +143,6 @@
             transform: scale(1.1);
             border-color: var(--white);
         }
-
-        /* Center Logo */
         .nav-logo {
             position: absolute;
             left: 50%;
@@ -233,8 +169,6 @@
             border-radius: 50%;
             background: var(--white);
         }
-
-        /* Right side (phone + CTA) */
         .nav-actions {
             display: flex;
             align-items: center;
@@ -248,10 +182,7 @@
             font-weight: 600;
             font-size: 0.95rem;
         }
-        .nav-phone i {
-            font-size: 1.2rem;
-            color: var(--gold);
-        }
+        .nav-phone i { font-size: 1.2rem; color: var(--gold); }
         .nav-cta {
             background: var(--red-accent);
             color: var(--white);
@@ -266,15 +197,8 @@
             align-items: center;
             gap: 8px;
         }
-        .nav-cta:hover {
-            background: #a00d24;
-            transform: scale(1.04);
-        }
-        .nav-cta i {
-            font-size: 0.8rem;
-        }
-
-        /* Nav Links (hidden on mobile, shown on desktop) */
+        .nav-cta:hover { background: #a00d24; transform: scale(1.04); }
+        .nav-cta i { font-size: 0.8rem; }
         .nav-links {
             display: none;
             flex: 1;
@@ -291,13 +215,10 @@
             border-bottom: 2px solid transparent;
             white-space: nowrap;
         }
-        .nav-links a:hover,
-        .nav-links a.active {
+        .nav-links a:hover, .nav-links a.active {
             color: var(--white);
             border-bottom-color: var(--red-accent);
         }
-
-        /* Mobile menu toggle */
         .nav-toggle {
             display: flex;
             flex-direction: column;
@@ -315,9 +236,7 @@
             transition: all 0.3s ease;
         }
 
-        /* ============================================================
-                   02. HERO SECTION (Cinematic)
-                   ============================================================ */
+        /* ===== HERO ===== */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -328,27 +247,21 @@
             overflow: hidden;
             padding-top: 100px;
         }
-
         .hero-bg {
             position: absolute;
             inset: 0;
-            background: 
-                linear-gradient(135deg, rgba(14,72,50,0.7) 0%, rgba(0,0,0,0.8) 100%),
-                url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&q=80') center/cover no-repeat;
-            filter: brightness(0.5) saturate(1.1);
+            background: linear-gradient(135deg, rgba(14,72,50,0.6) 0%, rgba(0,0,0,0.8) 100%),
+                url('https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true') center/cover no-repeat;
+            filter: brightness(0.55) saturate(1.1);
             transform: scale(1.02);
         }
-
-        /* Fog overlay */
         .hero-fog {
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at 30% 50%, rgba(14, 72, 50, 0.5) 0%, transparent 70%),
-                radial-gradient(ellipse at 70% 50%, rgba(0, 0, 0, 0.4) 0%, transparent 60%);
+            background: radial-gradient(ellipse at 30% 50%, rgba(14,72,50,0.4) 0%, transparent 70%),
+                radial-gradient(ellipse at 70% 50%, rgba(0,0,0,0.3) 0%, transparent 60%);
             pointer-events: none;
         }
-
-        /* Glass overlay */
         .hero-glass {
             position: absolute;
             inset: 0;
@@ -356,7 +269,6 @@
             backdrop-filter: blur(2px);
             -webkit-backdrop-filter: blur(2px);
         }
-
         .hero-content {
             position: relative;
             z-index: 5;
@@ -364,7 +276,6 @@
             text-align: center;
             padding: 40px 20px;
         }
-
         .hero-content h1 {
             font-size: clamp(2.8rem, 8vw, 5.5rem);
             font-family: 'Bebas Neue', sans-serif;
@@ -373,10 +284,7 @@
             color: var(--white);
             text-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
         }
-        .hero-content h1 .red {
-            color: var(--red-accent);
-        }
-
+        .hero-content h1 .red { color: var(--red-accent); }
         .hero-content .sub-headline {
             font-size: clamp(1.2rem, 2.5vw, 2rem);
             font-weight: 300;
@@ -389,7 +297,6 @@
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
         .hero-content .description {
             font-size: 1.1rem;
             max-width: 700px;
@@ -398,7 +305,6 @@
             font-weight: 300;
             line-height: 1.9;
         }
-
         .hero-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -406,8 +312,6 @@
             justify-content: center;
             margin-top: 28px;
         }
-
-        /* Scroll indicator */
         .scroll-indicator {
             position: absolute;
             bottom: 30px;
@@ -443,33 +347,16 @@
             animation: scrollWheel 2s ease-in-out infinite;
         }
         @keyframes scrollWheel {
-            0%,
-            100% {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                opacity: 0.2;
-                transform: translateX(-50%) translateY(12px);
-            }
+            0%,100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            50% { opacity: 0.2; transform: translateX(-50%) translateY(12px); }
         }
         @keyframes floatDown {
-            0%,
-            100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                transform: translateX(-50%) translateY(8px);
-            }
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
         }
 
-        /* ============================================================
-                   03. ABOUT SECTION
-                   ============================================================ */
-        .about {
-            padding: 80px 0;
-            background: var(--white);
-        }
+        /* ===== ABOUT ===== */
+        .about { padding: 80px 0; background: var(--white); }
         .about-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -481,9 +368,7 @@
             font-family: 'Bebas Neue', sans-serif;
             color: var(--primary-dark);
         }
-        .about-text h2 span {
-            color: var(--red-accent);
-        }
+        .about-text h2 span { color: var(--red-accent); }
         .about-text p {
             margin: 20px 0;
             font-size: 1.05rem;
@@ -509,18 +394,10 @@
             font-family: 'Bebas Neue', sans-serif;
             color: var(--red-accent);
         }
-        .stat-item .label {
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
+        .stat-item .label { font-weight: 600; color: var(--primary-dark); }
 
-        /* ============================================================
-                   04. GALLERY (Masonry + Lightbox)
-                   ============================================================ */
-        .gallery {
-            padding: 80px 0;
-            background: #f8f8f8;
-        }
+        /* ===== GALLERY ===== */
+        .gallery { padding: 80px 0; background: #f8f8f8; }
         .masonry {
             columns: 3 260px;
             column-gap: 20px;
@@ -559,22 +436,9 @@
             color: white;
             font-size: 2rem;
         }
-        .masonry .item:hover .overlay {
-            opacity: 1;
-        }
-        .masonry .item .placeholder-text {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255,255,255,0.5);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-        }
+        .masonry .item:hover .overlay { opacity: 1; }
 
-        /* Lightbox (simple) */
+        /* Lightbox */
         .lightbox {
             position: fixed;
             inset: 0;
@@ -586,9 +450,7 @@
             backdrop-filter: blur(8px);
             padding: 40px;
         }
-        .lightbox.active {
-            display: flex;
-        }
+        .lightbox.active { display: flex; }
         .lightbox img {
             max-width: 90%;
             max-height: 90%;
@@ -604,18 +466,10 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .lightbox .close:hover {
-            transform: rotate(90deg);
-            color: var(--red-accent);
-        }
+        .lightbox .close:hover { transform: rotate(90deg); color: var(--red-accent); }
 
-        /* ============================================================
-                   05. PLAYERS (Featured)
-                   ============================================================ */
-        .players {
-            padding: 80px 0;
-            background: var(--white);
-        }
+        /* ===== PLAYERS ===== */
+        .players { padding: 80px 0; background: var(--white); }
         .player-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -673,13 +527,8 @@
             font-size: 0.9rem;
         }
 
-        /* ============================================================
-                   06. STAFF
-                   ============================================================ */
-        .staff {
-            padding: 80px 0;
-            background: #f8f8f8;
-        }
+        /* ===== STAFF ===== */
+        .staff { padding: 80px 0; background: #f8f8f8; }
         .staff-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -711,10 +560,7 @@
             height: 100%;
             object-fit: cover;
         }
-        .staff-card h4 {
-            font-size: 1.2rem;
-            margin-top: 14px;
-        }
+        .staff-card h4 { font-size: 1.2rem; margin-top: 14px; }
         .staff-card .role {
             color: var(--red-accent);
             font-weight: 700;
@@ -722,13 +568,8 @@
             margin: 4px 0 12px;
         }
 
-        /* ============================================================
-                   07. KITS
-                   ============================================================ */
-        .kits {
-            padding: 80px 0;
-            background: var(--white);
-        }
+        /* ===== KITS ===== */
+        .kits { padding: 80px 0; background: var(--white); }
         .kit-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -743,9 +584,7 @@
             border: 1px solid #eee;
             transition: 0.3s;
         }
-        .kit-card:hover {
-            transform: scale(1.03);
-        }
+        .kit-card:hover { transform: scale(1.03); }
         .kit-card .kit-img {
             height: 200px;
             display: flex;
@@ -758,70 +597,113 @@
             height: 100%;
             object-fit: contain;
         }
-        .kit-card .kit-img .kit-label {
-            color: rgba(255,255,255,0.8);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 2px;
-        }
-        .kit-card h4 {
-            margin: 14px 0 8px;
-        }
+        .kit-card h4 { margin: 14px 0 8px; }
 
-        /* ============================================================
-                   08. AGE GROUPS (U7 - U19)
-                   ============================================================ */
+        /* ===== AGE GROUPS ===== */
         .age-groups {
             padding: 80px 0;
-            background: #f8f8f8;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 100%);
+            position: relative;
+            overflow: hidden;
         }
+        .age-groups::before {
+            content: '★';
+            position: absolute;
+            right: -50px;
+            top: -80px;
+            font-size: 25rem;
+            color: rgba(255,255,255,0.03);
+            font-family: 'Bebas Neue', sans-serif;
+            transform: rotate(15deg);
+        }
+        .age-groups .section-title { color: var(--white); }
+        .age-groups .section-title::after { background: var(--red-accent); }
         .age-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 25px;
+            position: relative;
+            z-index: 2;
         }
         .age-item {
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 30px;
-            padding: 30px 10px;
+            padding: 30px 15px 25px;
             text-align: center;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid #eee;
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .age-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--red-accent), var(--primary-dark));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            border-radius: 30px;
         }
         .age-item:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-heavy);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
             border-color: var(--red-accent);
         }
+        .age-item:hover::before { opacity: 0.15; }
         .age-item .icon {
-            font-size: 3.2rem;
-            color: var(--primary-mid);
+            font-size: 3.6rem;
+            color: var(--gold);
             font-family: 'Bebas Neue', sans-serif;
+            position: relative;
+            z-index: 2;
+            display: block;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 6px;
         }
         .age-item .label {
             font-weight: 700;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-family: 'Bebas Neue', sans-serif;
-            color: var(--primary-dark);
+            color: var(--white);
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+            display: block;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .age-item .sub-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            font-weight: 300;
+            position: relative;
+            z-index: 2;
+            display: block;
+            margin-top: 4px;
             letter-spacing: 1px;
         }
+        .age-item .age-number {
+            position: absolute;
+            bottom: -10px;
+            left: -10px;
+            font-size: 4rem;
+            font-family: 'Bebas Neue', sans-serif;
+            color: rgba(255,255,255,0.04);
+            z-index: 1;
+            letter-spacing: 2px;
+        }
 
-        /* ============================================================
-                   09. REGISTRATION FORM
-                   ============================================================ */
+        /* ===== REGISTRATION ===== */
         .registration {
             padding: 80px 0;
             background: var(--primary-dark);
             color: var(--white);
         }
-        .registration .section-title {
-            color: var(--white);
-        }
-        .registration .section-title::after {
-            background: var(--red-accent);
-        }
+        .registration .section-title { color: var(--white); }
+        .registration .section-title::after { background: var(--red-accent); }
         .reg-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -832,9 +714,7 @@
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
-        .reg-form .full {
-            grid-column: 1 / -1;
-        }
+        .reg-form .full { grid-column: 1 / -1; }
         .reg-form label {
             font-weight: 600;
             font-size: 0.9rem;
@@ -842,9 +722,7 @@
             display: block;
             margin-bottom: 4px;
         }
-        .reg-form input,
-        .reg-form select,
-        .reg-form textarea {
+        .reg-form input, .reg-form select, .reg-form textarea {
             width: 100%;
             padding: 14px 18px;
             border-radius: 16px;
@@ -855,30 +733,21 @@
             transition: 0.3s;
             font-size: 1rem;
         }
-        .reg-form input:focus,
-        .reg-form select:focus,
-        .reg-form textarea:focus {
+        .reg-form input:focus, .reg-form select:focus, .reg-form textarea:focus {
             outline: none;
             border-color: var(--red-accent);
             background: rgba(255, 255, 255, 0.1);
         }
-        .reg-form input::placeholder,
-        .reg-form textarea::placeholder {
+        .reg-form input::placeholder, .reg-form textarea::placeholder {
             color: rgba(255, 255, 255, 0.3);
         }
-        .reg-form input[type="file"] {
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.04);
-        }
+        .reg-form input[type="file"] { padding: 10px; background: rgba(255, 255, 255, 0.04); }
         .reg-form input[type="checkbox"] {
             width: auto;
             padding: 0;
             accent-color: var(--red-accent);
         }
-        .reg-form textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
+        .reg-form textarea { min-height: 100px; resize: vertical; }
         .reg-form .btn-primary {
             width: 100%;
             justify-content: center;
@@ -886,9 +755,7 @@
             padding: 16px;
         }
 
-        /* ============================================================
-                   10. TICKER (News)
-                   ============================================================ */
+        /* ===== TICKER ===== */
         .ticker-wrap {
             background: var(--black);
             padding: 14px 0;
@@ -927,28 +794,15 @@
             margin: 0 12px;
         }
         @keyframes tickerScroll {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
         @keyframes pulseDot {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.4;
-                transform: scale(0.6);
-            }
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.6); }
         }
 
-        /* ============================================================
-                   11. FOOTER
-                   ============================================================ */
+        /* ===== FOOTER ===== */
         .footer {
             background: var(--black);
             color: rgba(255, 255, 255, 0.7);
@@ -968,14 +822,8 @@
             letter-spacing: 1px;
             margin-bottom: 16px;
         }
-        .footer a {
-            display: block;
-            margin-bottom: 8px;
-            transition: 0.3s;
-        }
-        .footer a:hover {
-            color: var(--red-accent);
-        }
+        .footer a { display: block; margin-bottom: 8px; transition: 0.3s; }
+        .footer a:hover { color: var(--red-accent); }
         .footer-bottom {
             text-align: center;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -1004,13 +852,9 @@
             transform: scale(1.1);
         }
 
-        /* ============================================================
-                   RESPONSIVE
-                   ============================================================ */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
-            .nav-links {
-                display: none;
-            }
+            .nav-links { display: none; }
             .nav-links.open {
                 display: flex;
                 flex-direction: column;
@@ -1024,148 +868,56 @@
                 gap: 12px;
                 border-bottom: 2px solid var(--red-accent);
             }
-            .nav-links.open a {
-                padding: 8px 0;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            }
-            .nav-toggle {
-                display: flex;
-            }
-            .nav-phone span {
-                display: none;
-            }
-            .nav-logo {
-                width: 70px;
-                height: 70px;
-                top: -4px;
-            }
-            .about-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            .reg-form {
-                grid-template-columns: 1fr;
-            }
-            .reg-form .full {
-                grid-column: 1;
-            }
-            .hero-content h1 {
-                font-size: 2.6rem;
-            }
+            .nav-links.open a { padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+            .nav-toggle { display: flex; }
+            .nav-phone span { display: none; }
+            .nav-logo { width: 70px; height: 70px; top: -4px; }
+            .about-grid { grid-template-columns: 1fr; gap: 30px; }
+            .reg-form { grid-template-columns: 1fr; }
+            .reg-form .full { grid-column: 1; }
+            .hero-content h1 { font-size: 2.6rem; }
         }
-
         @media (min-width: 1025px) {
-            .nav-toggle {
-                display: none;
-            }
-            .nav-links {
-                display: flex;
-            }
-            .nav-links.left {
-                justify-content: flex-end;
-            }
-            .nav-links.right {
-                justify-content: flex-start;
-            }
+            .nav-toggle { display: none; }
+            .nav-links { display: flex; }
+            .nav-links.left { justify-content: flex-end; }
+            .nav-links.right { justify-content: flex-start; }
         }
-
         @media (max-width: 600px) {
-            .nav-actions .nav-cta span {
-                display: none;
-            }
-            .nav-actions .nav-cta {
-                padding: 8px 14px;
-            }
-            .nav-logo {
-                width: 60px;
-                height: 60px;
-                top: 0px;
-            }
-            .section-title {
-                font-size: 2.2rem;
-            }
-            .about-stats {
-                grid-template-columns: 1fr 1fr;
-            }
-            .masonry {
-                columns: 2 140px;
-            }
-            .hero-content .sub-headline {
-                font-size: 1rem;
-                padding: 6px 20px;
-            }
-            .hero-buttons .btn-primary,
-            .hero-buttons .btn-secondary {
+            .nav-actions .nav-cta span { display: none; }
+            .nav-actions .nav-cta { padding: 8px 14px; }
+            .nav-logo { width: 60px; height: 60px; top: 0px; }
+            .section-title { font-size: 2.2rem; }
+            .about-stats { grid-template-columns: 1fr 1fr; }
+            .masonry { columns: 2 140px; }
+            .hero-content .sub-headline { font-size: 1rem; padding: 6px 20px; }
+            .hero-buttons .btn-primary, .hero-buttons .btn-secondary {
                 padding: 12px 28px;
                 font-size: 0.95rem;
                 width: 100%;
             }
-            .reg-form {
-                padding: 20px;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
-            }
-        }
-
-        /* ============================================================
-                   UTILITY
-                   ============================================================ */
-        .text-center {
-            text-align: center;
-        }
-        .mt-20 {
-            margin-top: 20px;
-        }
-        .mb-20 {
-            margin-bottom: 20px;
-        }
-        .gap-8 {
-            gap: 8px;
-        }
-        .flex-center {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Image placeholder fallback */
-        .img-placeholder {
-            background: var(--primary-dark);
-            color: rgba(255,255,255,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            width: 100%;
-            height: 100%;
-            min-height: 200px;
+            .reg-form { padding: 20px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .age-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
+            .age-item { padding: 20px 10px; }
+            .age-item .icon { font-size: 2.6rem; }
+            .age-item .label { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
-    <!-- ============================================================
-    NAVBAR
-    ============================================================ -->
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar" id="navbar">
         <div class="container">
-            <!-- Left: Social Icons -->
             <div class="nav-social">
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
             </div>
-
-            <!-- Center: Logo -->
             <div class="nav-logo">
                 <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" alt="ETOILE CHELGHOUM LAID" onerror="this.style.display='none';this.parentElement.innerHTML='★'" />
             </div>
-
-            <!-- Right: Phone + CTA -->
             <div class="nav-actions">
                 <a href="tel:+213123456789" class="nav-phone">
                     <i class="fas fa-phone-alt"></i>
@@ -1175,23 +927,19 @@
                     <span>سجل الآن</span>
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <button class="nav-toggle" id="navToggle">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile / Desktop Links -->
         <div class="container" style="position:relative;">
             <div class="nav-links" id="navLinks">
-                <!-- Right side (of logo) -->
                 <div class="nav-links right" style="display:flex; gap:28px; justify-content:center; flex-wrap:wrap;">
                     <a href="#" class="active">الرئيسية</a>
                     <a href="#">الأكاديمية</a>
                     <a href="#">البرامج</a>
                     <a href="#">الفرق</a>
                 </div>
-                <!-- Left side (of logo) -->
                 <div class="nav-links left" style="display:flex; gap:28px; justify-content:center; flex-wrap:wrap;">
                     <a href="#">المنشآت</a>
                     <a href="#">الأخبار</a>
@@ -1202,67 +950,38 @@
         </div>
     </nav>
 
-    <!-- ============================================================
-    HERO SECTION
-    ============================================================ -->
+    <!-- ===== HERO ===== -->
     <section class="hero" id="home">
         <div class="hero-bg"></div>
         <div class="hero-fog"></div>
         <div class="hero-glass"></div>
-
         <div class="hero-content">
-            <h1>
-                أكثر من مجرد <span class="red">أكاديمية...</span><br />
-                نصنع <span class="red">أبطال</span> المستقبل
-            </h1>
+            <h1>أكثر من مجرد <span class="red">أكاديمية...</span><br />نصنع <span class="red">أبطال</span> المستقبل</h1>
             <div class="sub-headline">★ ETOILE CHELGHOUM LAID ★</div>
-            <p class="description">
-                نؤمن بأن كل موهبة تستحق فرصة، ونوفر بيئة احترافية لتطوير اللاعبين بدنيًا،
-                فنيًا وأخلاقيًا للوصول إلى أعلى المستويات.
-            </p>
+            <p class="description">نؤمن بأن كل موهبة تستحق فرصة، ونوفر بيئة احترافية لتطوير اللاعبين بدنيًا، فنيًا وأخلاقيًا للوصول إلى أعلى المستويات.</p>
             <div class="hero-buttons">
                 <a href="#register" class="btn-primary">سجل الآن</a>
                 <a href="#about" class="btn-secondary">اكتشف الأكاديمية</a>
             </div>
         </div>
-
-        <!-- Scroll indicator -->
         <div class="scroll-indicator">
             <div class="mouse"></div>
             <span>مرر للأسفل</span>
         </div>
     </section>
 
-    <!-- ============================================================
-    ABOUT
-    ============================================================ -->
+    <!-- ===== ABOUT ===== -->
     <section class="about" id="about">
         <div class="container">
             <div class="about-grid">
                 <div class="about-text">
                     <h2>نبذة عن <span>الأكاديمية</span></h2>
-                    <p>
-                        أكاديمية نجم شلغوم العيد هي صرح ريادي في تكوين المواهب الكروية،
-                        تجمع بين التدريب الاحترافي والتأطير التربوي في بيئة تحافظ على الانضباط،
-                        العمل الجماعي والتميز.
-                    </p>
-                    <p>
-                        نهدف إلى بناء جيل من اللاعبين القادرين على المنافسة في أعلى المستويات،
-                        مع غرس قيم الروح الرياضية والالتزام.
-                    </p>
+                    <p>أكاديمية نجم شلغوم العيد هي صرح ريادي في تكوين المواهب الكروية، تجمع بين التدريب الاحترافي والتأطير التربوي في بيئة تحافظ على الانضباط، العمل الجماعي والتميز.</p>
+                    <p>نهدف إلى بناء جيل من اللاعبين القادرين على المنافسة في أعلى المستويات، مع غرس قيم الروح الرياضية والالتزام.</p>
                     <div class="about-stats">
-                        <div class="stat-item">
-                            <div class="number">+120</div>
-                            <div class="label">لاعب</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="number">12</div>
-                            <div class="label">مدرب</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="number">7</div>
-                            <div class="label">فئات</div>
-                        </div>
+                        <div class="stat-item"><div class="number">+120</div><div class="label">لاعب</div></div>
+                        <div class="stat-item"><div class="number">12</div><div class="label">مدرب</div></div>
+                        <div class="stat-item"><div class="number">7</div><div class="label">فئات</div></div>
                     </div>
                 </div>
                 <div style="background:var(--primary-dark); border-radius:30px; overflow:hidden; min-height:300px; display:flex; align-items:center; justify-content:center; color:white; font-family:'Bebas Neue'; font-size:2rem; letter-spacing:4px; padding:20px; text-align:center; border:2px solid var(--red-accent);">
@@ -1272,15 +991,11 @@
         </div>
     </section>
 
-    <!-- ============================================================
-    GALLERY
-    ============================================================ -->
+    <!-- ===== GALLERY ===== -->
     <section class="gallery" id="gallery">
         <div class="container">
             <h2 class="section-title center">معرض الصور</h2>
-            <div class="masonry" id="masonryGrid">
-                <!-- Items will be injected by JS -->
-            </div>
+            <div class="masonry" id="masonryGrid"></div>
         </div>
     </section>
 
@@ -1290,175 +1005,90 @@
         <img src="" alt="Lightbox" id="lightboxImg" />
     </div>
 
-    <!-- ============================================================
-    PLAYERS (Featured)
-    ============================================================ -->
+    <!-- ===== PLAYERS ===== -->
     <section class="players" id="players">
         <div class="container">
             <h2 class="section-title center">اللاعبون المميزون</h2>
-            <div class="player-grid" id="playerGrid">
-                <!-- Injected by JS -->
-            </div>
+            <div class="player-grid" id="playerGrid"></div>
         </div>
     </section>
 
-    <!-- ============================================================
-    STAFF
-    ============================================================ -->
+    <!-- ===== STAFF ===== -->
     <section class="staff" id="staff">
         <div class="container">
             <h2 class="section-title center">الطاقم الفني</h2>
-            <div class="staff-grid" id="staffGrid">
-                <!-- Injected by JS -->
-            </div>
+            <div class="staff-grid" id="staffGrid"></div>
         </div>
     </section>
 
-    <!-- ============================================================
-    KITS
-    ============================================================ -->
+    <!-- ===== KITS ===== -->
     <section class="kits" id="kits">
         <div class="container">
             <h2 class="section-title center">أطقم الأكاديمية</h2>
-            <div class="kit-grid" id="kitGrid">
-                <!-- Injected by JS -->
-            </div>
+            <div class="kit-grid" id="kitGrid"></div>
         </div>
     </section>
 
-    <!-- ============================================================
-    AGE GROUPS
-    ============================================================ -->
+    <!-- ===== AGE GROUPS ===== -->
     <section class="age-groups" id="ageGroups">
         <div class="container">
             <h2 class="section-title center">الفئات العمرية</h2>
-            <div class="age-grid" id="ageGrid">
-                <!-- Injected by JS -->
-            </div>
+            <div class="age-grid" id="ageGrid"></div>
         </div>
     </section>
 
-    <!-- ============================================================
-    REGISTRATION
-    ============================================================ -->
+    <!-- ===== REGISTRATION ===== -->
     <section class="registration" id="register">
         <div class="container">
             <h2 class="section-title center">استمارة التسجيل</h2>
             <form class="reg-form" id="regForm">
-                <div>
-                    <label>اسم اللاعب</label>
-                    <input type="text" placeholder="الاسم" required />
-                </div>
-                <div>
-                    <label>اللقب</label>
-                    <input type="text" placeholder="اللقب" required />
-                </div>
-                <div>
-                    <label>تاريخ الميلاد</label>
-                    <input type="date" required />
-                </div>
-                <div>
-                    <label>مكان الميلاد</label>
-                    <input type="text" placeholder="مكان الميلاد" />
-                </div>
+                <div><label>اسم اللاعب</label><input type="text" placeholder="الاسم" required /></div>
+                <div><label>اللقب</label><input type="text" placeholder="اللقب" required /></div>
+                <div><label>تاريخ الميلاد</label><input type="date" required /></div>
+                <div><label>مكان الميلاد</label><input type="text" placeholder="مكان الميلاد" /></div>
                 <div>
                     <label>الفئة المطلوبة</label>
                     <select>
-                        <option>U7</option>
-                        <option>U9</option>
-                        <option>U11</option>
-                        <option>U13</option>
-                        <option>U15</option>
-                        <option>U17</option>
-                        <option>U19</option>
+                        <option>U7</option><option>U9</option><option>U11</option>
+                        <option>U13</option><option>U15</option><option>U17</option><option>U19</option>
                     </select>
                 </div>
-                <div>
-                    <label>ولي الأمر</label>
-                    <input type="text" placeholder="اسم ولي الأمر" />
-                </div>
-                <div>
-                    <label>رقم الهاتف</label>
-                    <input type="tel" placeholder="رقم الهاتف" required />
-                </div>
-                <div>
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" placeholder="البريد الإلكتروني" />
-                </div>
-                <div class="full">
-                    <label>العنوان</label>
-                    <input type="text" placeholder="العنوان الكامل" />
-                </div>
-                <div>
-                    <label>المستوى الدراسي</label>
-                    <input type="text" placeholder="المستوى الدراسي" />
-                </div>
+                <div><label>ولي الأمر</label><input type="text" placeholder="اسم ولي الأمر" /></div>
+                <div><label>رقم الهاتف</label><input type="tel" placeholder="رقم الهاتف" required /></div>
+                <div><label>البريد الإلكتروني</label><input type="email" placeholder="البريد الإلكتروني" /></div>
+                <div class="full"><label>العنوان</label><input type="text" placeholder="العنوان الكامل" /></div>
+                <div><label>المستوى الدراسي</label><input type="text" placeholder="المستوى الدراسي" /></div>
                 <div>
                     <label>المركز</label>
-                    <select>
-                        <option>حارس مرمى</option>
-                        <option>مدافع</option>
-                        <option>وسط</option>
-                        <option>مهاجم</option>
-                    </select>
+                    <select><option>حارس مرمى</option><option>مدافع</option><option>وسط</option><option>مهاجم</option></select>
                 </div>
                 <div>
                     <label>القدم المفضلة</label>
-                    <select>
-                        <option>يمنى</option>
-                        <option>يسرى</option>
-                        <option>كلتاهما</option>
-                    </select>
+                    <select><option>يمنى</option><option>يسرى</option><option>كلتاهما</option></select>
                 </div>
-                <div>
-                    <label>الطول (سم)</label>
-                    <input type="number" placeholder="الطول" />
-                </div>
-                <div>
-                    <label>الوزن (كغ)</label>
-                    <input type="number" placeholder="الوزن" />
-                </div>
-                <div>
-                    <label>الحالة الصحية</label>
-                    <input type="text" placeholder="أي حالة صحية" />
-                </div>
-                <div>
-                    <label>النادي السابق</label>
-                    <input type="text" placeholder="النادي السابق" />
-                </div>
-                <div>
-                    <label>صورة اللاعب</label>
-                    <input type="file" accept="image/*" />
-                </div>
-                <div>
-                    <label>وثيقة الميلاد</label>
-                    <input type="file" accept=".pdf,.jpg,.png" />
-                </div>
+                <div><label>الطول (سم)</label><input type="number" placeholder="الطول" /></div>
+                <div><label>الوزن (كغ)</label><input type="number" placeholder="الوزن" /></div>
+                <div><label>الحالة الصحية</label><input type="text" placeholder="أي حالة صحية" /></div>
+                <div><label>النادي السابق</label><input type="text" placeholder="النادي السابق" /></div>
+                <div><label>صورة اللاعب</label><input type="file" accept="image/*" /></div>
+                <div><label>وثيقة الميلاد</label><input type="file" accept=".pdf,.jpg,.png" /></div>
                 <div class="full" style="display:flex; align-items:center; gap:12px;">
                     <input type="checkbox" id="consent" style="width:auto;" />
                     <label for="consent" style="margin:0; cursor:pointer;">موافقة ولي الأمر</label>
                 </div>
-                <div class="full">
-                    <button type="submit" class="btn-primary">إرسال</button>
-                </div>
+                <div class="full"><button type="submit" class="btn-primary">إرسال</button></div>
             </form>
         </div>
     </section>
 
-    <!-- ============================================================
-    TICKER (News)
-    ============================================================ -->
+    <!-- ===== TICKER ===== -->
     <div class="ticker-wrap">
         <div class="container" style="overflow:hidden; padding:0 24px;">
-            <div class="ticker" id="ticker">
-                <!-- Injected by JS -->
-            </div>
+            <div class="ticker" id="ticker"></div>
         </div>
     </div>
 
-    <!-- ============================================================
-    FOOTER
-    ============================================================ -->
+    <!-- ===== FOOTER ===== -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
@@ -1472,23 +1102,8 @@
                         <a href="#"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
-                <div>
-                    <h4>روابط سريعة</h4>
-                    <a href="#">الرئيسية</a>
-                    <a href="#">الأكاديمية</a>
-                    <a href="#">البرامج</a>
-                    <a href="#">الفرق</a>
-                </div>
-                <div>
-                    <h4>الفئات</h4>
-                    <a href="#">U7</a>
-                    <a href="#">U9</a>
-                    <a href="#">U11</a>
-                    <a href="#">U13</a>
-                    <a href="#">U15</a>
-                    <a href="#">U17</a>
-                    <a href="#">U19</a>
-                </div>
+                <div><h4>روابط سريعة</h4><a href="#">الرئيسية</a><a href="#">الأكاديمية</a><a href="#">البرامج</a><a href="#">الفرق</a></div>
+                <div><h4>الفئات</h4><a href="#">U7</a><a href="#">U9</a><a href="#">U11</a><a href="#">U13</a><a href="#">U15</a><a href="#">U17</a><a href="#">U19</a></div>
                 <div>
                     <h4>اتصل بنا</h4>
                     <a href="tel:+213123456789"><i class="fas fa-phone-alt"></i> +213 123 456 789</a>
@@ -1503,43 +1118,42 @@
         </div>
     </footer>
 
-    <!-- ============================================================
-    JAVASCRIPT
-    ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
         // ============================================================
-        // DATA 
+        // IMAGES DATA - Using your provided image URLs
         // ============================================================
         const galleryImages = [
-            'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80',
-            'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=600&q=80',
-            'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=80',
-            'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&q=80',
-            'https://images.unsplash.com/photo-1511882150382-421056c89033?w=600&q=80',
-            'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=80'
+            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true',
+            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695816008.jpg?raw=true',
+            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696257853.jpg?raw=true',
+            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696605103.jpg?raw=true',
+            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696637178.jpg?raw=true',
+            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
         ];
 
         const players = [
-            { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80' },
-            { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', img: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&q=80' },
-            { name: 'سفيان بلقاسم', number: 4, position: 'مدافع', img: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&q=80' },
-            { name: 'محمد عمارة', number: 1, position: 'حارس مرمى', img: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&q=80' }
+            { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
+            { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' },
+            { name: 'سفيان بلقاسم', number: 4, position: 'مدافع', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
+            { name: 'محمد عمارة', number: 1, position: 'حارس مرمى', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
         ];
 
         const staff = [
-            { name: 'نبيل شلغوم', role: 'المدير الفني', img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80' },
-            { name: 'كريم عبدي', role: 'مدرب U19', img: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&q=80' },
-            { name: 'فوزي شرقي', role: 'مدرب U15', img: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&q=80' },
-            { name: 'رشيد بولحية', role: 'مدرب الحراس', img: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&q=80' }
+            { name: 'نبيل شلغوم', role: 'المدير الفني', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
+            { name: 'كريم عبدي', role: 'مدرب U19', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
+            { name: 'فوزي شرقي', role: 'مدرب U15', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' },
+            { name: 'رشيد بولحية', role: 'مدرب الحراس', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' }
         ];
 
         const kits = [
-            { name: 'طقم الأساسي', color: '#0E4832', icon: 'fa-solid fa-tshirt' },
-            { name: 'طقم الاحتياطي', color: '#F2F2F2', icon: 'fa-solid fa-tshirt', textColor: '#1A1A1A' },
-            { name: 'طقم الثالث', color: '#C8102E', icon: 'fa-solid fa-tshirt' }
+            { name: 'طقم الأساسي', color: '#0E4832', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
+            { name: 'طقم الاحتياطي', color: '#F2F2F2', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
+            { name: 'طقم الثالث', color: '#C8102E', img: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' }
         ];
 
         const ageGroups = ['U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'U19'];
+        const ageIcons = ['👶', '🧒', '👦', '🧑', '👨', '🧑‍🦰', '🧑‍🦱'];
 
         const news = [
             '✧ افتتاح التسجيلات للموسم الجديد 2026-2027',
@@ -1553,27 +1167,22 @@
         // RENDER FUNCTIONS
         // ============================================================
 
-        // Gallery
         function renderGallery() {
             const grid = document.getElementById('masonryGrid');
             grid.innerHTML = galleryImages.map(src => `
                 <div class="item" data-src="${src}">
-                    <img src="${src}" alt="معرض الأكاديمية" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'placeholder-text\\'>★ GALLERY</div>'" />
+                    <img src="${src}" alt="معرض الأكاديمية" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:white;font-size:2rem;\\'>📸</div>'" />
                     <div class="overlay"><i class="fas fa-search-plus"></i></div>
                 </div>
             `).join('');
-            // Lightbox triggers
             document.querySelectorAll('.masonry .item').forEach(item => {
                 item.addEventListener('click', function() {
                     const img = this.querySelector('img');
-                    if (img && img.src) {
-                        openLightbox(img.src);
-                    }
+                    if (img && img.src) openLightbox(img.src);
                 });
             });
         }
 
-        // Lightbox
         function openLightbox(src) {
             const lb = document.getElementById('lightbox');
             const img = document.getElementById('lightboxImg');
@@ -1592,13 +1201,12 @@
             }
         });
 
-        // Players
         function renderPlayers() {
             const grid = document.getElementById('playerGrid');
             grid.innerHTML = players.map(p => `
                 <div class="player-card">
                     <div class="img-wrap">
-                        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:2rem;\\'>⚽</div>'" />
+                        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>⚽</div>'" />
                         <span class="number">${p.number}</span>
                     </div>
                     <h4>${p.name}</h4>
@@ -1607,13 +1215,12 @@
             `).join('');
         }
 
-        // Staff
         function renderStaff() {
             const grid = document.getElementById('staffGrid');
             grid.innerHTML = staff.map(s => `
                 <div class="staff-card">
                     <div class="img-wrap">
-                        <img src="${s.img}" alt="${s.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:2rem;\\'>👨‍🏫</div>'" />
+                        <img src="${s.img}" alt="${s.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:3rem;\\'>👨‍🏫</div>'" />
                     </div>
                     <h4>${s.name}</h4>
                     <p class="role">${s.role}</p>
@@ -1621,41 +1228,50 @@
             `).join('');
         }
 
-        // Kits
         function renderKits() {
             const grid = document.getElementById('kitGrid');
             grid.innerHTML = kits.map(k => `
                 <div class="kit-card">
-                    <div class="kit-img" style="background:${k.color}; ${k.textColor ? 'color:'+k.textColor : 'color:white'}">
-                        <i class="${k.icon}" style="font-size:4rem;"></i>
-                        <span class="kit-label" style="margin-left:12px;">${k.name}</span>
+                    <div class="kit-img" style="background:${k.color}; ${k.color === '#F2F2F2' ? 'color:#1A1A1A' : 'color:white'}">
+                        <img src="${k.img}" alt="${k.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-tshirt\\' style=\\'font-size:4rem;\\'></i>'" />
                     </div>
                     <h4>${k.name}</h4>
                 </div>
             `).join('');
         }
 
-        // Age Groups
         function renderAgeGroups() {
             const grid = document.getElementById('ageGrid');
-            grid.innerHTML = ageGroups.map(age => `
+            grid.innerHTML = ageGroups.map((age, index) => `
                 <div class="age-item" data-age="${age}">
-                    <div class="icon">⚽</div>
-                    <div class="label">${age}</div>
+                    <span class="age-number">${age}</span>
+                    <span class="icon">${ageIcons[index] || '⚽'}</span>
+                    <span class="label">${age}</span>
+                    <span class="sub-label">${getAgeLabel(age)}</span>
                 </div>
             `).join('');
-            // Click to navigate (simulate)
-            document.querySelectorAll('.age-item').forEach((el) => {
+            document.querySelectorAll('.age-item').forEach(el => {
                 el.addEventListener('click', function() {
                     alert(`📋 سيتم فتح صفحة الفئة ${this.dataset.age}`);
                 });
             });
         }
 
-        // Ticker
+        function getAgeLabel(age) {
+            const labels = {
+                'U7': 'براعم',
+                'U9': 'صغار',
+                'U11': 'ناشئين',
+                'U13': 'أشبال',
+                'U15': 'فتيان',
+                'U17': 'شباب',
+                'U19': 'أولمبي'
+            };
+            return labels[age] || 'فئة';
+        }
+
         function renderTicker() {
             const ticker = document.getElementById('ticker');
-            // Duplicate for seamless loop
             const items = [...news, ...news];
             ticker.innerHTML = items.map(n => `
                 <span class="ticker-item">
@@ -1667,14 +1283,11 @@
         }
 
         // ============================================================
-        // NAVBAR TOGGLE (Mobile)
+        // NAVBAR TOGGLE
         // ============================================================
         document.getElementById('navToggle').addEventListener('click', function() {
-            const links = document.getElementById('navLinks');
-            links.classList.toggle('open');
+            document.getElementById('navLinks').classList.toggle('open');
         });
-
-        // Close nav on link click (mobile)
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => {
                 document.getElementById('navLinks').classList.remove('open');
@@ -1682,7 +1295,7 @@
         });
 
         // ============================================================
-        // FORM SUBMIT (prevent default)
+        // FORM SUBMIT
         // ============================================================
         document.getElementById('regForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1691,7 +1304,7 @@
         });
 
         // ============================================================
-        // SMOOTH SCROLL for anchor links
+        // SMOOTH SCROLL
         // ============================================================
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -1718,7 +1331,6 @@
         renderTicker();
 
         console.log('✅ ETOILE CHELGHOUM LAID ACADEMY website loaded successfully!');
-        console.log('🔥 Firebase configuration ready (see commented code in HTML)');
     </script>
 </body>
 </html>

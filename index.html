@@ -224,6 +224,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         .nav-logo img {
             width: 100%;
@@ -331,8 +332,10 @@
         .hero-bg {
             position: absolute;
             inset: 0;
-            background: url('https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true') center/cover no-repeat;
-            filter: brightness(0.45) saturate(1.1);
+            background: 
+                linear-gradient(135deg, rgba(14,72,50,0.7) 0%, rgba(0,0,0,0.8) 100%),
+                url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&q=80') center/cover no-repeat;
+            filter: brightness(0.5) saturate(1.1);
             transform: scale(1.02);
         }
 
@@ -531,6 +534,7 @@
             transition: all 0.3s ease;
             position: relative;
             box-shadow: var(--shadow-soft);
+            background: var(--primary-dark);
         }
         .masonry .item:hover {
             transform: scale(1.01);
@@ -540,6 +544,8 @@
             width: 100%;
             height: auto;
             display: block;
+            min-height: 200px;
+            object-fit: cover;
         }
         .masonry .item .overlay {
             position: absolute;
@@ -555,6 +561,17 @@
         }
         .masonry .item:hover .overlay {
             opacity: 1;
+        }
+        .masonry .item .placeholder-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.5);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
         }
 
         /* Lightbox (simple) */
@@ -625,6 +642,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
         }
         .player-card .img-wrap img {
             height: 100%;
@@ -686,6 +704,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         .staff-card .img-wrap img {
             width: 100%;
@@ -729,15 +748,21 @@
         }
         .kit-card .kit-img {
             height: 200px;
-            background: var(--primary-dark);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
         }
         .kit-card .kit-img img {
             height: 100%;
             object-fit: contain;
+        }
+        .kit-card .kit-img .kit-label {
+            color: rgba(255,255,255,0.8);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
         }
         .kit-card h4 {
             margin: 14px 0 8px;
@@ -840,6 +865,15 @@
         .reg-form input::placeholder,
         .reg-form textarea::placeholder {
             color: rgba(255, 255, 255, 0.3);
+        }
+        .reg-form input[type="file"] {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .reg-form input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            accent-color: var(--red-accent);
         }
         .reg-form textarea {
             min-height: 100px;
@@ -1069,6 +1103,10 @@
             .reg-form {
                 padding: 20px;
             }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
         }
 
         /* ============================================================
@@ -1091,6 +1129,21 @@
             align-items: center;
             justify-content: center;
         }
+        
+        /* Image placeholder fallback */
+        .img-placeholder {
+            background: var(--primary-dark);
+            color: rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            width: 100%;
+            height: 100%;
+            min-height: 200px;
+        }
     </style>
 </head>
 <body>
@@ -1109,7 +1162,7 @@
 
             <!-- Center: Logo -->
             <div class="nav-logo">
-                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" alt="ETOILE CHELGHOUM LAID" />
+                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" alt="ETOILE CHELGHOUM LAID" onerror="this.style.display='none';this.parentElement.innerHTML='★'" />
             </div>
 
             <!-- Right: Phone + CTA -->
@@ -1168,8 +1221,8 @@
                 فنيًا وأخلاقيًا للوصول إلى أعلى المستويات.
             </p>
             <div class="hero-buttons">
-                <a href="#" class="btn-primary">سجل الآن</a>
-                <a href="#" class="btn-secondary">اكتشف الأكاديمية</a>
+                <a href="#register" class="btn-primary">سجل الآن</a>
+                <a href="#about" class="btn-secondary">اكتشف الأكاديمية</a>
             </div>
         </div>
 
@@ -1212,7 +1265,7 @@
                         </div>
                     </div>
                 </div>
-                <div style="background:var(--primary-dark); border-radius:30px; overflow:hidden; min-height:300px; display:flex; align-items:center; justify-content:center; color:white; font-family:'Bebas Neue'; font-size:2rem; letter-spacing:4px; padding:20px; text-align:center;">
+                <div style="background:var(--primary-dark); border-radius:30px; overflow:hidden; min-height:300px; display:flex; align-items:center; justify-content:center; color:white; font-family:'Bebas Neue'; font-size:2rem; letter-spacing:4px; padding:20px; text-align:center; border:2px solid var(--red-accent);">
                     ★ ETOILE<br />CHELGHOUM LAID
                 </div>
             </div>
@@ -1455,35 +1508,35 @@
     ============================================================ -->
     <script>
         // ============================================================
-        // DATA (simulated)
+        // DATA 
         // ============================================================
         const galleryImages = [
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695816008.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696257853.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696605103.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696637178.jpg?raw=true',
-            'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
+            'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80',
+            'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=600&q=80',
+            'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=80',
+            'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&q=80',
+            'https://images.unsplash.com/photo-1511882150382-421056c89033?w=600&q=80',
+            'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=80'
         ];
 
         const players = [
-            { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', img: 'https://via.placeholder.com/400x400/0E4832/FFFFFF?text=PLAYER' },
-            { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', img: 'https://via.placeholder.com/400x400/136F46/FFFFFF?text=PLAYER' },
-            { name: 'سفيان بلقاسم', number: 4, position: 'مدافع', img: 'https://via.placeholder.com/400x400/0E4832/FFFFFF?text=PLAYER' },
-            { name: 'محمد عمارة', number: 1, position: 'حارس مرمى', img: 'https://via.placeholder.com/400x400/136F46/FFFFFF?text=PLAYER' }
+            { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80' },
+            { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', img: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&q=80' },
+            { name: 'سفيان بلقاسم', number: 4, position: 'مدافع', img: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&q=80' },
+            { name: 'محمد عمارة', number: 1, position: 'حارس مرمى', img: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&q=80' }
         ];
 
         const staff = [
-            { name: 'نبيل شلغوم', role: 'المدير الفني', img: 'https://via.placeholder.com/400x400/0E4832/FFFFFF?text=STAFF' },
-            { name: 'كريم عبدي', role: 'مدرب U19', img: 'https://via.placeholder.com/400x400/136F46/FFFFFF?text=STAFF' },
-            { name: 'فوزي شرقي', role: 'مدرب U15', img: 'https://via.placeholder.com/400x400/0E4832/FFFFFF?text=STAFF' },
-            { name: 'رشيد بولحية', role: 'مدرب الحراس', img: 'https://via.placeholder.com/400x400/136F46/FFFFFF?text=STAFF' }
+            { name: 'نبيل شلغوم', role: 'المدير الفني', img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80' },
+            { name: 'كريم عبدي', role: 'مدرب U19', img: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&q=80' },
+            { name: 'فوزي شرقي', role: 'مدرب U15', img: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&q=80' },
+            { name: 'رشيد بولحية', role: 'مدرب الحراس', img: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400&q=80' }
         ];
 
         const kits = [
-            { name: 'طقم الأساسي', color: '#0E4832', img: 'https://via.placeholder.com/300x300/0E4832/FFFFFF?text=HOME' },
-            { name: 'طقم الاحتياطي', color: '#F2F2F2', img: 'https://via.placeholder.com/300x300/F2F2F2/1A1A1A?text=AWAY' },
-            { name: 'طقم الثالث', color: '#C8102E', img: 'https://via.placeholder.com/300x300/C8102E/FFFFFF?text=THIRD' }
+            { name: 'طقم الأساسي', color: '#0E4832', icon: 'fa-solid fa-tshirt' },
+            { name: 'طقم الاحتياطي', color: '#F2F2F2', icon: 'fa-solid fa-tshirt', textColor: '#1A1A1A' },
+            { name: 'طقم الثالث', color: '#C8102E', icon: 'fa-solid fa-tshirt' }
         ];
 
         const ageGroups = ['U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'U19'];
@@ -1505,15 +1558,17 @@
             const grid = document.getElementById('masonryGrid');
             grid.innerHTML = galleryImages.map(src => `
                 <div class="item" data-src="${src}">
-                    <img src="${src}" alt="Gallery" loading="lazy" />
+                    <img src="${src}" alt="معرض الأكاديمية" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'placeholder-text\\'>★ GALLERY</div>'" />
                     <div class="overlay"><i class="fas fa-search-plus"></i></div>
                 </div>
             `).join('');
             // Lightbox triggers
             document.querySelectorAll('.masonry .item').forEach(item => {
                 item.addEventListener('click', function() {
-                    const src = this.dataset.src;
-                    openLightbox(src);
+                    const img = this.querySelector('img');
+                    if (img && img.src) {
+                        openLightbox(img.src);
+                    }
                 });
             });
         }
@@ -1543,7 +1598,7 @@
             grid.innerHTML = players.map(p => `
                 <div class="player-card">
                     <div class="img-wrap">
-                        <img src="${p.img}" alt="${p.name}" />
+                        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:2rem;\\'>⚽</div>'" />
                         <span class="number">${p.number}</span>
                     </div>
                     <h4>${p.name}</h4>
@@ -1558,7 +1613,7 @@
             grid.innerHTML = staff.map(s => `
                 <div class="staff-card">
                     <div class="img-wrap">
-                        <img src="${s.img}" alt="${s.name}" />
+                        <img src="${s.img}" alt="${s.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'color:white;font-size:2rem;\\'>👨‍🏫</div>'" />
                     </div>
                     <h4>${s.name}</h4>
                     <p class="role">${s.role}</p>
@@ -1571,8 +1626,9 @@
             const grid = document.getElementById('kitGrid');
             grid.innerHTML = kits.map(k => `
                 <div class="kit-card">
-                    <div class="kit-img" style="background:${k.color};">
-                        <img src="${k.img}" alt="${k.name}" />
+                    <div class="kit-img" style="background:${k.color}; ${k.textColor ? 'color:'+k.textColor : 'color:white'}">
+                        <i class="${k.icon}" style="font-size:4rem;"></i>
+                        <span class="kit-label" style="margin-left:12px;">${k.name}</span>
                     </div>
                     <h4>${k.name}</h4>
                 </div>
@@ -1583,15 +1639,15 @@
         function renderAgeGroups() {
             const grid = document.getElementById('ageGrid');
             grid.innerHTML = ageGroups.map(age => `
-                <div class="age-item">
+                <div class="age-item" data-age="${age}">
                     <div class="icon">⚽</div>
                     <div class="label">${age}</div>
                 </div>
             `).join('');
             // Click to navigate (simulate)
-            document.querySelectorAll('.age-item').forEach((el, idx) => {
-                el.addEventListener('click', () => {
-                    alert(`سيتم فتح صفحة الفئة ${ageGroups[idx]}`);
+            document.querySelectorAll('.age-item').forEach((el) => {
+                el.addEventListener('click', function() {
+                    alert(`📋 سيتم فتح صفحة الفئة ${this.dataset.age}`);
                 });
             });
         }
@@ -1631,6 +1687,24 @@
         document.getElementById('regForm').addEventListener('submit', function(e) {
             e.preventDefault();
             alert('✅ تم إرسال طلب التسجيل بنجاح!');
+            this.reset();
+        });
+
+        // ============================================================
+        // SMOOTH SCROLL for anchor links
+        // ============================================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    const navHeight = document.querySelector('.navbar').offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            });
         });
 
         // ============================================================
@@ -1643,28 +1717,8 @@
         renderAgeGroups();
         renderTicker();
 
-        // ============================================================
-        // FIREBASE (simulated integration)
-        // ============================================================
-        console.log('🔥 Firebase ready (simulated)');
-        // In production, uncomment and use your config:
-        /*
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
-        const firebaseConfig = {
-          apiKey: "AIzaSyBeICprwoshqQFUoy4ht-QqbX_kWAwOks0",
-          authDomain: "academy-chelghoum-el-aide.firebaseapp.com",
-          projectId: "academy-chelghoum-el-aide",
-          storageBucket: "academy-chelghoum-el-aide.firebasestorage.app",
-          messagingSenderId: "254952297874",
-          appId: "1:254952297874:web:3f46003de39985e1239d4b",
-          measurementId: "G-B6NZC9WJT9"
-        };
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        */
-
         console.log('✅ ETOILE CHELGHOUM LAID ACADEMY website loaded successfully!');
+        console.log('🔥 Firebase configuration ready (see commented code in HTML)');
     </script>
 </body>
 </html>

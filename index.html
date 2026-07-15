@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>ETOILE CHELGHOUM LAID ACADEMY</title>
+    <title>صفحة الفئة | ETOILE CHELGHOUM LAID ACADEMY</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <!-- مكتبات التصدير -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             --primary-dark: #0E4832;
@@ -25,1245 +29,341 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Cairo', sans-serif;
-            background: var(--white);
+            background: #f8f8f8;
             color: var(--black);
             direction: rtl;
             line-height: 1.7;
             overflow-x: hidden;
+            padding-top: calc(var(--ticker-height) + var(--navbar-height));
         }
         a { text-decoration: none; color: inherit; }
-        ul { list-style: none; }
         img { max-width: 100%; display: block; }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        h1, h2, h3, .headline, .bebas {
+        h1, h2, h3, .bebas {
             font-family: 'Bebas Neue', sans-serif;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
         .section-title {
-            font-size: 3rem;
+            font-size: 2.4rem;
             font-family: 'Bebas Neue', sans-serif;
             letter-spacing: 2px;
             position: relative;
             display: inline-block;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             color: var(--primary-dark);
         }
         .section-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -8px;
             right: 0;
-            width: 80px;
+            width: 70px;
             height: 4px;
             background: var(--red-accent);
             border-radius: 4px;
         }
-        .section-title.center { display: block; text-align: center; }
-        .section-title.center::after { right: 50%; transform: translateX(50%); }
+        .section-block { padding: 60px 0; }
+        .section-block.alt { background: var(--white); }
 
-        /* ===== SCROLL REVEAL ===== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
-        .reveal-delay-4 { transition-delay: 0.4s; }
-
-        /* Buttons */
-        .btn-primary {
-            display: inline-block;
-            background: var(--primary-mid);
-            color: var(--white);
-            padding: 14px 40px;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(19, 111, 70, 0.3);
-            letter-spacing: 0.5px;
-        }
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(19, 111, 70, 0.45);
-        }
-        .btn-secondary {
-            display: inline-block;
-            background: transparent;
-            color: var(--white);
-            padding: 14px 40px;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            border: 2px solid var(--white);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
-        }
-        .btn-secondary:hover {
-            background: var(--white);
-            color: var(--primary-dark);
-            transform: translateY(-3px);
-        }
-
-        /* ===== TOP NEWS TICKER (منقول لأعلى الصفحة + لون فاتح مميز) ===== */
+        /* ===== TICKER (نفس هوية الرئيسية) ===== */
         .ticker-wrap {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: var(--ticker-height);
-            z-index: 1001;
-            background: linear-gradient(90deg, var(--gold-light) 0%, var(--gold) 100%);
-            border-bottom: 2px solid var(--primary-dark);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--ticker-height);
+            z-index: 1001; background: linear-gradient(90deg, var(--gold-light) 0%, var(--gold) 100%);
+            border-bottom: 2px solid var(--primary-dark); overflow: hidden; display: flex; align-items: center;
         }
-        .ticker {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            animation: tickerScroll 32s linear infinite;
-            white-space: nowrap;
-            width: max-content;
-        }
-        .ticker-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            color: var(--primary-dark);
-            font-weight: 700;
-            font-size: 0.92rem;
-        }
-        .ticker-item .dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            background: var(--red-accent);
-            border-radius: 50%;
-            margin: 0 6px;
-            animation: pulseDot 1.6s ease-in-out infinite;
-        }
-        .ticker-item .separator-logo {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            object-fit: contain;
-            background: var(--white);
-            padding: 2px;
-            margin: 0 10px;
-            border: 1px solid rgba(14,72,50,0.2);
-        }
-        @keyframes tickerScroll {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        @keyframes pulseDot {
-            0%,100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-        }
+        .ticker { display: flex; align-items: center; gap: 40px; animation: tickerScroll 32s linear infinite; white-space: nowrap; width: max-content; }
+        .ticker-item { display: flex; align-items: center; gap: 14px; color: var(--primary-dark); font-weight: 700; font-size: 0.92rem; }
+        .ticker-item .dot { width: 7px; height: 7px; background: var(--red-accent); border-radius: 50%; animation: pulseDot 1.6s ease-in-out infinite; }
+        .ticker-item .separator-logo { width: 20px; height: 20px; border-radius: 50%; object-fit: contain; background: var(--white); padding: 2px; margin: 0 10px; }
+        @keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
 
-        /* ===== NAVBAR ===== */
+        /* ===== NAVBAR (مبسّطة لصفحة داخلية) ===== */
         .navbar {
-            position: fixed;
-            top: var(--ticker-height);
-            left: 0;
-            width: 100%;
-            z-index: 999;
-            background: rgba(14, 72, 50, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px 0;
-            transition: all 0.3s ease;
+            position: fixed; top: var(--ticker-height); left: 0; width: 100%; z-index: 999;
+            background: rgba(14, 72, 50, 0.95); backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.08); padding: 14px 0;
         }
-        .navbar.scrolled {
-            background: rgba(14, 72, 50, 0.95);
-            box-shadow: 0 6px 30px rgba(0,0,0,0.25);
-        }
-        .navbar .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            position: relative;
-        }
-        .nav-social {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .nav-social a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--white);
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-        .nav-social a:hover {
-            background: var(--red-accent);
-            color: var(--white);
-            transform: scale(1.1);
-            border-color: var(--white);
-        }
-        .nav-logo {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: -8px;
-            width: 85px;
-            height: 85px;
-            border-radius: 50%;
-            background: var(--white);
-            padding: 6px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-            border: 3px solid var(--primary-dark);
-            transition: all 0.3s ease;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .nav-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 50%;
-            background: var(--white);
-        }
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-        .nav-phone {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--white);
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-        .nav-phone i { font-size: 1.2rem; color: var(--gold); }
-        .nav-cta {
-            background: var(--red-accent);
-            color: var(--white);
-            padding: 8px 22px;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .nav-cta:hover { background: #a00d24; transform: scale(1.04); }
-        .nav-cta i { font-size: 0.8rem; }
-        .nav-links {
-            display: none;
-            flex: 1;
-            justify-content: center;
-            gap: 24px;
-            margin: 0 20px;
-            flex-wrap: wrap;
-        }
-        .nav-links a {
-            color: rgba(255, 255, 255, 0.85);
-            font-weight: 600;
-            font-size: 0.92rem;
-            transition: all 0.3s ease;
-            padding-bottom: 4px;
-            border-bottom: 2px solid transparent;
-            white-space: nowrap;
-        }
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--white);
-            border-bottom-color: var(--red-accent);
-        }
-        .nav-toggle {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 6px;
-        }
-        .nav-toggle span {
-            width: 28px;
-            height: 2.5px;
-            background: var(--white);
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
+        .navbar .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .navbar .logo-link { display: flex; align-items: center; gap: 10px; color: var(--white); font-family: 'Bebas Neue'; font-size: 1.3rem; letter-spacing: 2px; }
+        .navbar .logo-link img { width: 42px; height: 42px; border-radius: 50%; background: var(--white); padding: 2px; }
+        .navbar .back-link { color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .navbar .back-link:hover { color: var(--gold); }
 
-        /* ===== HERO (صورة أفتح ومميزة بصريًا) ===== */
-        .hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--primary-dark);
-            overflow: hidden;
-            padding-top: calc(var(--ticker-height) + var(--navbar-height) + 40px);
-        }
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(135deg, rgba(14,72,50,0.42) 0%, rgba(0,0,0,0.55) 100%),
-                linear-gradient(0deg, rgba(212,175,55,0.12), rgba(212,175,55,0.12)),
-                url('https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true') center/cover no-repeat;
-            filter: brightness(0.82) saturate(1.2) contrast(1.05);
-            animation: kenBurns 22s ease-in-out infinite alternate;
-        }
-        @keyframes kenBurns {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.12); }
-        }
-        .hero-fog {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 30% 50%, rgba(14,72,50,0.28) 0%, transparent 70%),
-                radial-gradient(ellipse at 70% 30%, rgba(212,175,55,0.15) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        .hero-glass {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(1.5px);
-            -webkit-backdrop-filter: blur(1.5px);
-        }
-        .hero-content {
-            position: relative;
-            z-index: 5;
-            max-width: 900px;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .hero-content h1 {
-            font-size: clamp(2.8rem, 8vw, 5.5rem);
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 4px;
-            line-height: 1.1;
-            color: var(--white);
-            text-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
-            opacity: 0;
-            transform: translateY(30px);
-            animation: heroIn 1s ease forwards 0.2s;
-        }
-        .hero-content h1 .red { color: var(--red-accent); }
-        .hero-content .sub-headline {
-            font-size: clamp(1.2rem, 2.5vw, 2rem);
-            font-weight: 300;
-            color: rgba(255, 255, 255, 0.95);
-            margin-top: 16px;
-            background: rgba(0, 0, 0, 0.35);
-            display: inline-block;
-            padding: 8px 36px;
-            border-radius: 60px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(212,175,55,0.35);
-            opacity: 0;
-            transform: translateY(30px);
-            animation: heroIn 1s ease forwards 0.5s;
-        }
-        .hero-content .description {
-            font-size: 1.1rem;
-            max-width: 700px;
-            margin: 24px auto;
-            color: rgba(255, 255, 255, 0.88);
-            font-weight: 300;
-            line-height: 1.9;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: heroIn 1s ease forwards 0.8s;
-        }
-        .hero-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: center;
-            margin-top: 28px;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: heroIn 1s ease forwards 1.1s;
-        }
-        @keyframes heroIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .scroll-indicator {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            animation: floatDown 2.4s ease-in-out infinite;
-        }
-        .scroll-indicator .mouse {
-            width: 28px;
-            height: 42px;
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
-            position: relative;
-        }
-        .scroll-indicator .mouse::after {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 10px;
-            background: var(--gold);
-            border-radius: 4px;
-            animation: scrollWheel 2s ease-in-out infinite;
-        }
-        @keyframes scrollWheel {
-            0%,100% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            50% { opacity: 0.2; transform: translateX(-50%) translateY(12px); }
-        }
-        @keyframes floatDown {
-            0%,100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(8px); }
-        }
-
-        /* ===== ABOUT ===== */
-        .about { padding: 80px 0; background: var(--white); }
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-        .about-text h2 {
-            font-size: 2.8rem;
-            font-family: 'Bebas Neue', sans-serif;
-            color: var(--primary-dark);
-        }
-        .about-text h2 span { color: var(--red-accent); }
-        .about-text p {
-            margin: 20px 0;
-            font-size: 1.05rem;
-            color: #333;
-            line-height: 1.9;
-        }
-        .about-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 30px;
-        }
-        .stat-item {
-            text-align: center;
-            background: var(--white);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid #eee;
-            transition: all 0.35s ease;
-        }
-        .stat-item:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-medium);
-            border-color: var(--red-accent);
-        }
-        .stat-item .number {
-            font-size: 2.6rem;
-            font-family: 'Bebas Neue', sans-serif;
-            color: var(--red-accent);
-        }
-        .stat-item .label { font-weight: 600; color: var(--primary-dark); }
-        .about-visual {
-            background: var(--primary-dark);
-            border-radius: 30px;
-            overflow: hidden;
-            min-height: 340px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2rem;
-            letter-spacing: 4px;
-            padding: 20px;
-            text-align: center;
-            border: 2px solid var(--red-accent);
-            position: relative;
-            box-shadow: var(--shadow-medium);
-        }
-        .about-visual::before {
-            content: '★';
-            position: absolute;
-            font-size: 14rem;
-            color: rgba(255,255,255,0.04);
-            top: -30px;
-        }
-
-        /* ===== GALLERY ===== */
-        .gallery { padding: 80px 0; background: #f8f8f8; }
-        .masonry {
-            columns: 3 260px;
-            column-gap: 20px;
-        }
-        .masonry .item {
-            break-inside: avoid;
-            margin-bottom: 20px;
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            position: relative;
-            box-shadow: var(--shadow-soft);
-            background: var(--primary-dark);
-        }
-        .masonry .item:hover {
-            transform: scale(1.015);
-            box-shadow: var(--shadow-heavy);
-        }
-        .masonry .item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            min-height: 200px;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .masonry .item:hover img { transform: scale(1.06); }
-        .masonry .item .overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 16px;
-            color: white;
-            font-size: 1.6rem;
-        }
-        .masonry .item:hover .overlay { opacity: 1; }
-
-        /* Lightbox */
-        .lightbox {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
-            padding: 40px;
-        }
-        .lightbox.active { display: flex; }
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 20px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-        }
-        .lightbox .close {
-            position: absolute;
-            top: 30px;
-            right: 40px;
-            font-size: 3rem;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .lightbox .close:hover { transform: rotate(90deg); color: var(--red-accent); }
-
-        /* ===== PLAYERS — بطاقتين فقط، صورة بدون وصف، تصميم Spotlight احترافي ===== */
-        .players { padding: 80px 0; background: var(--white); }
-        .player-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 36px;
-        }
-        .player-spotlight-card {
-            position: relative;
-            width: 280px;
-            aspect-ratio: 3 / 4;
-            border-radius: 28px;
-            overflow: hidden;
-            background: linear-gradient(160deg, var(--primary-dark), var(--black));
-            box-shadow: var(--shadow-medium);
-            border: 2px solid transparent;
-            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .player-spotlight-card:hover {
-            transform: translateY(-14px);
-            box-shadow: var(--shadow-heavy);
-            border-color: var(--gold);
-        }
-        .player-spotlight-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-        }
-        .player-spotlight-card:hover img { transform: scale(1.08); }
-        .player-spotlight-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 35%);
-            pointer-events: none;
-        }
-        .player-spotlight-card .shine {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(115deg, transparent 40%, rgba(212,175,55,0.25) 50%, transparent 60%);
-            transform: translateX(-120%);
-            transition: transform 0.7s ease;
-            pointer-events: none;
-        }
-        .player-spotlight-card:hover .shine { transform: translateX(120%); }
-
-        /* ===== STAFF — 3 بطاقات فقط، صورة بدون وصف ===== */
-        .staff { padding: 80px 0; background: #f8f8f8; }
-        .staff-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 36px;
-        }
-        .staff-spotlight-card {
-            position: relative;
-            width: 240px;
-            aspect-ratio: 1 / 1;
-            border-radius: 50%;
-            overflow: hidden;
-            background: var(--primary-dark);
-            box-shadow: var(--shadow-medium);
-            border: 3px solid var(--white);
-            outline: 2px solid rgba(212,175,55,0.4);
-            outline-offset: 4px;
-            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .staff-spotlight-card:hover {
-            transform: translateY(-10px) scale(1.03);
-            outline-color: var(--red-accent);
-            box-shadow: var(--shadow-heavy);
-        }
-        .staff-spotlight-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-        }
-        .staff-spotlight-card:hover img { transform: scale(1.1); }
-
-        /* ===== KITS ===== */
-        .kits { padding: 80px 0; background: var(--white); }
-        .kit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-        }
-        .kit-card {
-            background: var(--white);
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            text-align: center;
-            border: 1px solid #eee;
-            transition: 0.35s;
-        }
-        .kit-card:hover { transform: scale(1.03); box-shadow: var(--shadow-medium); }
-        .kit-card .kit-img {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        .kit-card .kit-img img {
-            height: 100%;
-            object-fit: contain;
-            transition: transform 0.4s ease;
-        }
-        .kit-card:hover .kit-img img { transform: scale(1.1) rotate(-2deg); }
-        .kit-card h4 { margin: 14px 0 8px; }
-
-        /* ===== AGE GROUPS ===== */
-        .age-groups {
-            padding: 80px 0;
+        /* ===== CATEGORY BANNER ===== */
+        .cat-banner {
+            position: relative; min-height: 46vh; display: flex; align-items: center; justify-content: center;
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 100%);
-            position: relative;
-            overflow: hidden;
+            overflow: hidden; text-align: center; color: var(--white);
         }
-        .age-groups::before {
-            content: '★';
-            position: absolute;
-            right: -50px;
-            top: -80px;
-            font-size: 25rem;
-            color: rgba(255,255,255,0.03);
-            font-family: 'Bebas Neue', sans-serif;
-            transform: rotate(15deg);
+        .cat-banner::before {
+            content: ''; position: absolute; right: -60px; top: -80px; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(212,175,55,0.15), transparent 70%);
         }
-        .age-groups .section-title { color: var(--white); }
-        .age-groups .section-title::after { background: var(--red-accent); }
-        .age-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 25px;
-            position: relative;
-            z-index: 2;
+        .cat-banner-content { position: relative; z-index: 2; padding: 30px 20px; }
+        .cat-banner .cat-tag {
+            display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
+            padding: 6px 24px; border-radius: 40px; font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 16px;
         }
-        .age-item {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 30px;
-            padding: 30px 15px 25px;
-            text-align: center;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            display: block;
+        .cat-banner h1 { font-size: clamp(3rem, 10vw, 6rem); text-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .cat-banner .sub { font-size: 1.2rem; font-weight: 300; color: rgba(255,255,255,0.85); margin-top: 8px; }
+        .cat-banner .stats-row { display: flex; gap: 30px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+        .cat-banner .stat-pill {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px 22px; border-radius: 40px; font-size: 0.9rem;
         }
-        .age-item::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--red-accent), var(--primary-dark));
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            border-radius: 30px;
+        .cat-banner .stat-pill b { color: var(--gold); font-family: 'Bebas Neue'; font-size: 1.1rem; margin-left: 6px; }
+
+        /* ===== PLAYERS TABLE ===== */
+        .table-toolbar {
+            display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; background: var(--white); padding: 18px; border-radius: 20px; box-shadow: var(--shadow-soft);
         }
-        .age-item:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            border-color: var(--red-accent);
+        .toolbar-left, .toolbar-right { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .table-toolbar input[type="text"], .table-toolbar select {
+            padding: 10px 16px; border-radius: 40px; border: 1px solid #ddd; font-family: 'Cairo'; font-size: 0.9rem;
+            background: #fafafa; transition: 0.3s;
         }
-        .age-item:hover::before { opacity: 0.15; }
-        .age-item .icon-badge {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 10px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
+        .table-toolbar input:focus, .table-toolbar select:focus { outline: none; border-color: var(--primary-mid); }
+        .export-btn {
+            display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 40px; border: none;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.3s; color: var(--white);
+        }
+        .export-btn.pdf { background: var(--red-accent); }
+        .export-btn.pdf:hover { background: #a00d24; transform: translateY(-2px); }
+        .export-btn.excel { background: #1D6F42; }
+        .export-btn.excel:hover { background: #14512f; transform: translateY(-2px); }
+
+        .players-table-wrap { background: var(--white); border-radius: 24px; box-shadow: var(--shadow-soft); overflow: hidden; }
+        table.players-table { width: 100%; border-collapse: collapse; }
+        table.players-table thead { background: var(--primary-dark); color: var(--white); }
+        table.players-table th {
+            padding: 16px 14px; font-family: 'Bebas Neue'; letter-spacing: 1px; font-size: 1rem;
+            text-align: center; cursor: pointer; user-select: none; white-space: nowrap;
+        }
+        table.players-table th i { margin-right: 6px; font-size: 0.75rem; opacity: 0.6; }
+        table.players-table td { padding: 12px 14px; text-align: center; border-bottom: 1px solid #eee; font-size: 0.92rem; }
+        table.players-table tbody tr { transition: 0.25s; }
+        table.players-table tbody tr:hover { background: #f4faf6; }
+        table.players-table .p-photo {
+            width: 44px; height: 44px; border-radius: 50%; object-fit: cover; margin: 0 auto;
             border: 2px solid var(--gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
         }
-        .age-item .icon-badge i {
-            font-size: 1.6rem;
-            color: var(--gold);
-        }
-        .age-item .label {
-            font-weight: 700;
-            font-size: 1.6rem;
-            font-family: 'Bebas Neue', sans-serif;
-            color: var(--white);
-            letter-spacing: 2px;
-            position: relative;
-            z-index: 2;
-            display: block;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        .age-item .sub-label {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
-            font-weight: 300;
-            position: relative;
-            z-index: 2;
-            display: block;
-            margin-top: 4px;
-            letter-spacing: 1px;
-        }
-        .age-item .age-number {
-            position: absolute;
-            bottom: -10px;
-            left: -10px;
-            font-size: 4rem;
-            font-family: 'Bebas Neue', sans-serif;
-            color: rgba(255,255,255,0.04);
-            z-index: 1;
-            letter-spacing: 2px;
-        }
+        .status-badge { padding: 4px 14px; border-radius: 30px; font-size: 0.78rem; font-weight: 700; }
+        .status-badge.active { background: #E1F6EA; color: #1D8348; }
+        .status-badge.injured { background: #FDEAEA; color: var(--red-accent); }
+        .status-badge.suspended { background: #FFF3D6; color: #B8860B; }
+        .no-results { text-align: center; padding: 40px; color: #999; }
 
-        /* ===== REGISTRATION ===== */
-        .registration {
-            padding: 80px 0;
-            background: var(--primary-dark);
-            color: var(--white);
+        .pagination { display: flex; justify-content: center; gap: 8px; padding: 20px; flex-wrap: wrap; }
+        .pagination button {
+            width: 36px; height: 36px; border-radius: 50%; border: 1px solid #ddd; background: var(--white);
+            cursor: pointer; font-weight: 700; transition: 0.25s; font-family: 'Cairo';
         }
-        .registration .section-title { color: var(--white); }
-        .registration .section-title::after { background: var(--red-accent); }
-        .reg-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            background: rgba(255, 255, 255, 0.06);
-            padding: 40px;
-            border-radius: 40px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+        .pagination button.active { background: var(--primary-mid); color: var(--white); border-color: var(--primary-mid); }
+        .pagination button:hover:not(.active) { background: #f0f0f0; }
+
+        /* ===== SESSIONS / MATCHES / TOURNAMENTS CARDS ===== */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+
+        .session-card {
+            background: var(--white); border-radius: 22px; box-shadow: var(--shadow-soft); overflow: hidden;
+            border-right: 5px solid var(--primary-mid); transition: 0.3s; padding: 20px;
         }
-        .reg-form .full { grid-column: 1 / -1; }
-        .reg-form label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            display: block;
-            margin-bottom: 4px;
+        .session-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
+        .session-card h4 { font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 10px; font-family: 'Cairo'; font-weight: 700; }
+        .session-card .row { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #555; margin-bottom: 6px; }
+        .session-card .row i { color: var(--red-accent); width: 16px; }
+        .session-card .status-line { margin-top: 12px; }
+
+        .match-card {
+            background: linear-gradient(135deg, var(--primary-dark), #0a3325); border-radius: 22px; overflow: hidden;
+            box-shadow: var(--shadow-soft); color: var(--white); transition: 0.35s; position: relative;
         }
-        .reg-form input, .reg-form select, .reg-form textarea {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--white);
-            font-family: 'Cairo', sans-serif;
+        .match-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
+        .match-card .match-top { display: flex; align-items: center; justify-content: space-between; padding: 20px; }
+        .match-card .team { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+        .match-card .team img { width: 52px; height: 52px; object-fit: contain; background: var(--white); border-radius: 50%; padding: 4px; }
+        .match-card .team span { font-size: 0.85rem; font-weight: 700; }
+        .match-card .vs { font-family: 'Bebas Neue'; font-size: 1.5rem; color: var(--gold); }
+        .match-card .score { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--white); }
+        .match-card .match-meta { background: rgba(0,0,0,0.25); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
+        .match-card .match-meta span { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); }
+        .match-card .status-tag {
+            position: absolute; top: 14px; left: 14px; padding: 4px 14px; border-radius: 30px; font-size: 0.72rem; font-weight: 700;
+        }
+        .status-tag.upcoming { background: var(--gold); color: var(--black); }
+        .status-tag.finished { background: #444; color: var(--white); }
+        .status-tag.canceled { background: var(--red-accent); color: var(--white); }
+        .match-card .details-btn {
+            display: block; text-align: center; padding: 10px; background: rgba(255,255,255,0.06);
+            font-size: 0.85rem; font-weight: 700; color: var(--gold); border-top: 1px solid rgba(255,255,255,0.1);
             transition: 0.3s;
-            font-size: 1rem;
         }
-        .reg-form input:focus, .reg-form select:focus, .reg-form textarea:focus {
-            outline: none;
-            border-color: var(--red-accent);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .reg-form input::placeholder, .reg-form textarea::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-        .reg-form input[type="file"] { padding: 10px; background: rgba(255, 255, 255, 0.04); }
-        .reg-form input[type="checkbox"] {
-            width: auto;
-            padding: 0;
-            accent-color: var(--red-accent);
-        }
-        .reg-form textarea { min-height: 100px; resize: vertical; }
-        .reg-form .btn-primary {
-            width: 100%;
-            justify-content: center;
-            font-size: 1.2rem;
-            padding: 16px;
-        }
-        .reg-form .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .form-status {
-            margin-top: 14px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-align: center;
-        }
-        .form-status.success { color: #7CD9A8; }
-        .form-status.error { color: #FF8A8A; }
+        .match-card .details-btn:hover { background: rgba(255,255,255,0.12); }
 
-        /* ===== FOOTER ===== */
-        .footer {
-            background: var(--black);
-            color: rgba(255, 255, 255, 0.7);
-            padding: 60px 0 30px;
-            border-top: 4px solid var(--red-accent);
+        .tournament-card {
+            background: var(--white); border-radius: 22px; box-shadow: var(--shadow-soft); overflow: hidden; transition: 0.3s;
         }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        .footer h4 {
-            color: var(--white);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.6rem;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-        }
-        .footer a { display: block; margin-bottom: 8px; transition: 0.3s; }
-        .footer a:hover { color: var(--red-accent); }
-        .footer-bottom {
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            padding-top: 24px;
-            font-size: 0.9rem;
-        }
-        .footer .social-footer {
-            display: flex;
-            gap: 16px;
-            margin-top: 12px;
-        }
-        .footer .social-footer a {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: 0.3s;
-            color: var(--white);
-        }
-        .footer .social-footer a:hover {
-            background: var(--red-accent);
-            transform: scale(1.1);
-        }
+        .tournament-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
+        .tournament-card .t-head { display: flex; align-items: center; gap: 14px; padding: 18px; background: var(--primary-dark); color: var(--white); }
+        .tournament-card .t-head img { width: 50px; height: 50px; object-fit: contain; background: var(--white); border-radius: 50%; padding: 4px; }
+        .tournament-card .t-head h4 { font-family: 'Bebas Neue'; font-size: 1.2rem; letter-spacing: 1px; }
+        .tournament-card .t-body { padding: 18px; font-size: 0.88rem; color: #555; }
+        .tournament-card .t-body .row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .tournament-card .t-body .row i { color: var(--red-accent); width: 16px; }
+        .tournament-card .files-link { display: inline-block; margin-top: 8px; color: var(--primary-mid); font-weight: 700; font-size: 0.85rem; }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            .nav-links { display: none; }
-            .nav-links.open {
-                display: flex;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(14, 72, 50, 0.97);
-                backdrop-filter: blur(16px);
-                padding: 20px 24px;
-                gap: 12px;
-                border-bottom: 2px solid var(--red-accent);
-            }
-            .nav-links.open a { padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
-            .nav-toggle { display: flex; }
-            .nav-phone span { display: none; }
-            .nav-logo { width: 70px; height: 70px; top: -4px; }
-            .about-grid { grid-template-columns: 1fr; gap: 30px; }
-            .reg-form { grid-template-columns: 1fr; }
-            .reg-form .full { grid-column: 1; }
-            .hero-content h1 { font-size: 2.6rem; }
+        /* ===== MESSAGES ===== */
+        .msg-card {
+            background: var(--white); border-radius: 18px; box-shadow: var(--shadow-soft); padding: 18px 22px;
+            display: flex; gap: 16px; align-items: flex-start; border-right: 4px solid var(--gold); margin-bottom: 16px;
         }
-        @media (min-width: 1025px) {
-            .nav-toggle { display: none; }
-            .nav-links { display: flex; }
-            .nav-links.left { justify-content: flex-end; }
-            .nav-links.right { justify-content: flex-start; }
+        .msg-card .msg-icon {
+            width: 42px; height: 42px; border-radius: 50%; background: var(--primary-dark); color: var(--white);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;
         }
-        @media (max-width: 600px) {
-            :root { --ticker-height: 34px; --navbar-height: 70px; }
-            .ticker-item { font-size: 0.78rem; }
-            .nav-actions .nav-cta span { display: none; }
-            .nav-actions .nav-cta { padding: 8px 14px; }
-            .nav-logo { width: 60px; height: 60px; top: 0px; }
-            .section-title { font-size: 2.2rem; }
-            .about-stats { grid-template-columns: 1fr 1fr; }
-            .masonry { columns: 2 140px; }
-            .hero-content .sub-headline { font-size: 1rem; padding: 6px 20px; }
-            .hero-buttons .btn-primary, .hero-buttons .btn-secondary {
-                padding: 12px 28px;
-                font-size: 0.95rem;
-                width: 100%;
-            }
-            .reg-form { padding: 20px; }
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .age-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
-            .age-item { padding: 20px 10px; }
-            .age-item .icon-badge { width: 50px; height: 50px; }
-            .age-item .label { font-size: 1.2rem; }
-            .player-spotlight-card { width: 220px; }
-            .staff-spotlight-card { width: 180px; }
+        .msg-card .msg-type { font-weight: 700; color: var(--primary-dark); font-size: 0.85rem; margin-bottom: 4px; }
+        .msg-card .msg-date { color: #999; font-size: 0.78rem; margin-top: 6px; }
+        .msg-card p.msg-text { color: #444; font-size: 0.92rem; }
+
+        .empty-state { text-align: center; padding: 40px; color: #999; background: var(--white); border-radius: 20px; }
+
+        @media (max-width: 768px) {
+            .cat-banner { min-height: 34vh; }
+            table.players-table { font-size: 0.8rem; }
+            table.players-table th, table.players-table td { padding: 8px 6px; }
+            .players-table-wrap { overflow-x: auto; }
+            table.players-table { min-width: 720px; }
         }
     </style>
 </head>
 <body>
-    <!-- ===== TOP NEWS TICKER ===== -->
-    <div class="ticker-wrap" id="news-section">
-        <div class="ticker" id="ticker"></div>
-    </div>
+    <!-- ===== TICKER (يقرأ نفس أخبار الرئيسية) ===== -->
+    <div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar" id="navbar">
+    <!-- ===== NAVBAR مبسّطة ===== -->
+    <nav class="navbar">
         <div class="container">
-            <div class="nav-social">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
-                <a href="#"><i class="fab fa-tiktok"></i></a>
-            </div>
-            <div class="nav-logo">
-                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" alt="ETOILE CHELGHOUM LAID" onerror="this.style.display='none';this.parentElement.innerHTML='★'" />
-            </div>
-            <div class="nav-actions">
-                <a href="tel:+213123456789" class="nav-phone">
-                    <i class="fas fa-phone-alt"></i>
-                    <span>+213 123 456 789</span>
-                </a>
-                <button class="nav-cta" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">
-                    <span>سجل الآن</span>
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <button class="nav-toggle" id="navToggle">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </div>
-        <div class="container" style="position:relative;">
-            <div class="nav-links" id="navLinks">
-                <div class="nav-links right" style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">
-                    <a href="#home" class="active">الرئيسية</a>
-                    <a href="#about">الأكاديمية</a>
-                    <a href="#gallery">المعرض</a>
-                    <a href="#players">اللاعبون</a>
-                </div>
-                <div class="nav-links left" style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">
-                    <a href="#staff">الطاقم الفني</a>
-                    <a href="#kits">الأطقم</a>
-                    <a href="#ageGroups">الفئات العمرية</a>
-                    <a href="#register">التسجيل</a>
-                </div>
-            </div>
+            <a href="index.html" class="logo-link">
+                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" alt="logo" onerror="this.style.display='none'" />
+                <span>ETOILE CHELGHOUM LAID</span>
+            </a>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
         </div>
     </nav>
 
-    <!-- ===== HERO ===== -->
-    <section class="hero" id="home">
-        <div class="hero-bg"></div>
-        <div class="hero-fog"></div>
-        <div class="hero-glass"></div>
-        <div class="hero-content">
-            <h1>أكثر من مجرد <span class="red">أكاديمية...</span><br />نصنع <span class="red">أبطال</span> المستقبل</h1>
-            <div class="sub-headline">★ ETOILE CHELGHOUM LAID ★</div>
-            <p class="description">نؤمن بأن كل موهبة تستحق فرصة، ونوفر بيئة احترافية لتطوير اللاعبين بدنيًا، فنيًا وأخلاقيًا للوصول إلى أعلى المستويات.</p>
-            <div class="hero-buttons">
-                <a href="#register" class="btn-primary">سجل الآن</a>
-                <a href="#about" class="btn-secondary">اكتشف الأكاديمية</a>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <div class="mouse"></div>
-            <span>مرر للأسفل</span>
-        </div>
-    </section>
-
-    <!-- ===== ABOUT ===== -->
-    <section class="about" id="about">
-        <div class="container">
-            <div class="about-grid">
-                <div class="about-text reveal">
-                    <h2>نبذة عن <span>الأكاديمية</span></h2>
-                    <p>أكاديمية نجم شلغوم العيد هي صرح ريادي في تكوين المواهب الكروية، تجمع بين التدريب الاحترافي والتأطير التربوي في بيئة تحافظ على الانضباط، العمل الجماعي والتميز.</p>
-                    <p>نهدف إلى بناء جيل من اللاعبين القادرين على المنافسة في أعلى المستويات، مع غرس قيم الروح الرياضية والالتزام.</p>
-                    <div class="about-stats">
-                        <div class="stat-item"><div class="number" data-target="120">0</div><div class="label">لاعب</div></div>
-                        <div class="stat-item"><div class="number" data-target="12">0</div><div class="label">مدرب</div></div>
-                        <div class="stat-item"><div class="number" data-target="7">0</div><div class="label">فئات</div></div>
-                    </div>
-                </div>
-                <div class="about-visual reveal reveal-delay-2">
-                    ★ ETOILE<br />CHELGHOUM LAID
-                </div>
+    <!-- ===== CATEGORY BANNER ===== -->
+    <section class="cat-banner">
+        <div class="cat-banner-content">
+            <span class="cat-tag" id="catTag">فئة</span>
+            <h1 id="catTitle">U--</h1>
+            <p class="sub" id="catSubLabel">فئة عمرية</p>
+            <div class="stats-row">
+                <div class="stat-pill"><b id="statPlayers">0</b> لاعب</div>
+                <div class="stat-pill"><b id="statSessions">0</b> حصة قادمة</div>
+                <div class="stat-pill"><b id="statMatches">0</b> مباراة</div>
             </div>
         </div>
     </section>
 
-    <!-- ===== GALLERY ===== -->
-    <section class="gallery" id="gallery">
-        <div class="container">
-            <h2 class="section-title center reveal">معرض الصور</h2>
-            <div class="masonry" id="masonryGrid"></div>
-        </div>
-    </section>
-
-    <!-- Lightbox -->
-    <div class="lightbox" id="lightbox">
-        <span class="close" id="lightboxClose">&times;</span>
-        <img src="" alt="Lightbox" id="lightboxImg" />
-    </div>
-
-    <!-- ===== PLAYERS (بطاقتين فقط، صورة بدون وصف) ===== -->
-    <section class="players" id="players">
-        <div class="container">
-            <h2 class="section-title center reveal">اللاعبون المميزون</h2>
-            <div class="player-grid" id="playerGrid"></div>
-        </div>
-    </section>
-
-    <!-- ===== STAFF (3 بطاقات فقط، صورة بدون وصف) ===== -->
-    <section class="staff" id="staff">
-        <div class="container">
-            <h2 class="section-title center reveal">الطاقم الفني</h2>
-            <div class="staff-grid" id="staffGrid"></div>
-        </div>
-    </section>
-
-    <!-- ===== KITS ===== -->
-    <section class="kits" id="kits">
-        <div class="container">
-            <h2 class="section-title center reveal">أطقم الأكاديمية</h2>
-            <div class="kit-grid" id="kitGrid"></div>
-        </div>
-    </section>
-
-    <!-- ===== AGE GROUPS ===== -->
-    <section class="age-groups" id="ageGroups">
-        <div class="container">
-            <h2 class="section-title center reveal">الفئات العمرية</h2>
-            <div class="age-grid" id="ageGrid"></div>
-        </div>
-    </section>
-
-    <!-- ===== REGISTRATION ===== -->
-    <section class="registration" id="register">
-        <div class="container">
-            <h2 class="section-title center reveal">استمارة التسجيل</h2>
-            <form class="reg-form reveal" id="regForm">
-                <div><label>اسم اللاعب</label><input type="text" name="firstName" placeholder="الاسم" required /></div>
-                <div><label>اللقب</label><input type="text" name="lastName" placeholder="اللقب" required /></div>
-                <div><label>تاريخ الميلاد</label><input type="date" name="birthDate" required /></div>
-                <div><label>مكان الميلاد</label><input type="text" name="birthPlace" placeholder="مكان الميلاد" /></div>
-                <div>
-                    <label>الفئة المطلوبة</label>
-                    <select name="category">
-                        <option>U7</option><option>U9</option><option>U11</option>
-                        <option>U13</option><option>U15</option><option>U17</option><option>U19</option>
+    <div class="container">
+        <!-- ===== PLAYERS TABLE ===== -->
+        <section class="section-block">
+            <h2 class="section-title">جدول اللاعبين</h2>
+            <div class="table-toolbar">
+                <div class="toolbar-left">
+                    <input type="text" id="searchInput" placeholder="🔍 بحث بالاسم..." />
+                    <select id="positionFilter">
+                        <option value="">كل المراكز</option>
+                        <option value="حارس مرمى">حارس مرمى</option>
+                        <option value="مدافع">مدافع</option>
+                        <option value="وسط">وسط</option>
+                        <option value="مهاجم">مهاجم</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="">كل الحالات</option>
+                        <option value="active">نشيط</option>
+                        <option value="injured">مصاب</option>
+                        <option value="suspended">موقوف</option>
                     </select>
                 </div>
-                <div><label>ولي الأمر</label><input type="text" name="guardianName" placeholder="اسم ولي الأمر" /></div>
-                <div><label>رقم الهاتف</label><input type="tel" name="phone" placeholder="رقم الهاتف" required /></div>
-                <div><label>البريد الإلكتروني</label><input type="email" name="email" placeholder="البريد الإلكتروني" /></div>
-                <div class="full"><label>العنوان</label><input type="text" name="address" placeholder="العنوان الكامل" /></div>
-                <div><label>المستوى الدراسي</label><input type="text" name="educationLevel" placeholder="المستوى الدراسي" /></div>
-                <div>
-                    <label>المركز</label>
-                    <select name="position"><option>حارس مرمى</option><option>مدافع</option><option>وسط</option><option>مهاجم</option></select>
-                </div>
-                <div>
-                    <label>القدم المفضلة</label>
-                    <select name="preferredFoot"><option>يمنى</option><option>يسرى</option><option>كلتاهما</option></select>
-                </div>
-                <div><label>الطول (سم)</label><input type="number" name="height" placeholder="الطول" /></div>
-                <div><label>الوزن (كغ)</label><input type="number" name="weight" placeholder="الوزن" /></div>
-                <div><label>الحالة الصحية</label><input type="text" name="healthStatus" placeholder="أي حالة صحية" /></div>
-                <div><label>النادي السابق</label><input type="text" name="previousClub" placeholder="النادي السابق" /></div>
-                <div><label>صورة اللاعب</label><input type="file" name="playerPhoto" accept="image/*" /></div>
-                <div><label>وثيقة الميلاد</label><input type="file" name="birthDoc" accept=".pdf,.jpg,.png" /></div>
-                <div class="full" style="display:flex; align-items:center; gap:12px;">
-                    <input type="checkbox" id="consent" required style="width:auto;" />
-                    <label for="consent" style="margin:0; cursor:pointer;">موافقة ولي الأمر</label>
-                </div>
-                <div class="full">
-                    <button type="submit" class="btn-primary" id="regSubmitBtn">إرسال</button>
-                    <div class="form-status" id="regStatus"></div>
-                </div>
-            </form>
-        </div>
-    </section>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer" id="contact">
-        <div class="container">
-            <div class="footer-grid">
-                <div>
-                    <h4>★ ETOILE</h4>
-                    <p style="max-width:260px;">أكاديمية نجم شلغوم العيد – حيث يصنع الأبطال.</p>
-                    <div class="social-footer">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-tiktok"></i></a>
-                    </div>
-                </div>
-                <div><h4>روابط سريعة</h4><a href="#home">الرئيسية</a><a href="#about">الأكاديمية</a><a href="#ageGroups">البرامج</a><a href="#players">الفرق</a></div>
-                <div><h4>الفئات</h4>
-                    <a href="category.html?cat=U7">U7</a><a href="category.html?cat=U9">U9</a><a href="category.html?cat=U11">U11</a>
-                    <a href="category.html?cat=U13">U13</a><a href="category.html?cat=U15">U15</a><a href="category.html?cat=U17">U17</a><a href="category.html?cat=U19">U19</a>
-                </div>
-                <div>
-                    <h4>اتصل بنا</h4>
-                    <a href="tel:+213123456789"><i class="fas fa-phone-alt"></i> +213 123 456 789</a>
-                    <a href="mailto:info@academy.dz"><i class="fas fa-envelope"></i> info@academy.dz</a>
-                    <a href="#"><i class="fas fa-map-marker-alt"></i> الجزائر - شلغوم العيد</a>
+                <div class="toolbar-right">
+                    <button class="export-btn pdf" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button class="export-btn excel" id="exportExcelBtn"><i class="fas fa-file-excel"></i> Excel</button>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>© 2026 ETOILE CHELGHOUM LAID ACADEMY. جميع الحقوق محفوظة.</p>
-                <p style="font-size:0.8rem; color:rgba(255,255,255,0.3);">ONE TEAM • ONE DREAM • ONE STAR</p>
+            <div class="players-table-wrap">
+                <table class="players-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="photo">الصورة</th>
+                            <th data-sort="name">الاسم <i class="fas fa-sort"></i></th>
+                            <th data-sort="birthYear">سنة الميلاد <i class="fas fa-sort"></i></th>
+                            <th data-sort="position">المركز <i class="fas fa-sort"></i></th>
+                            <th data-sort="number">الرقم <i class="fas fa-sort"></i></th>
+                            <th data-sort="status">الحالة <i class="fas fa-sort"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="playersTableBody"></tbody>
+                </table>
+                <div id="noResults" class="no-results" style="display:none;">لا توجد نتائج مطابقة للبحث.</div>
             </div>
-        </div>
-    </footer>
+            <div class="pagination" id="pagination"></div>
+        </section>
 
-    <!-- ===== JAVASCRIPT ===== -->
+        <!-- ===== TRAINING SESSIONS ===== -->
+        <section class="section-block alt">
+            <h2 class="section-title">الحصص التدريبية</h2>
+            <div class="cards-grid" id="sessionsGrid"></div>
+        </section>
+
+        <!-- ===== MATCHES ===== -->
+        <section class="section-block">
+            <h2 class="section-title">المباريات</h2>
+            <div class="cards-grid" id="matchesGrid"></div>
+        </section>
+
+        <!-- ===== TOURNAMENTS ===== -->
+        <section class="section-block alt">
+            <h2 class="section-title">البطولات</h2>
+            <div class="cards-grid" id="tournamentsGrid"></div>
+        </section>
+
+        <!-- ===== ACADEMY MESSAGES ===== -->
+        <section class="section-block" style="padding-bottom:100px;">
+            <h2 class="section-title">رسائل الأكاديمية</h2>
+            <div id="messagesList"></div>
+        </section>
+    </div>
+
     <script>
         // ============================================================
-        // FIREBASE CONFIG
+        // CONFIG
         // ============================================================
         const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
         const LOGO_URL = 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true';
+        const params = new URLSearchParams(window.location.search);
+        const CATEGORY = params.get('cat') || 'U7';
 
-        const FALLBACK = {
-            gallery: [
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695816008.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696257853.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696605103.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696637178.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
-            ].map(url => ({ url })),
-            players: [
-                { name: 'أحمد زروقي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
-                { name: 'ياسين بن عمر', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
-            ],
-            staff: [
-                { name: 'نبيل شلغوم', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
-                { name: 'كريم عبدي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
-                { name: 'فوزي شرقي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' }
-            ],
-            kits: [
-                { name: 'طقم الأساسي', color: '#0E4832', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
-                { name: 'طقم الاحتياطي', color: '#F2F2F2', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
-                { name: 'طقم الثالث', color: '#C8102E', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' }
-            ],
-            news: [
-                { text: '✧ افتتاح التسجيلات للموسم الجديد 2026-2027' },
-                { text: '✧ تأهل فريق U15 إلى نهائي البطولة الجهوية' },
-                { text: '✧ تكريم اللاعبين المميزين في حفل سنوي' },
-                { text: '✧ تنظيم دورة تدريبية للمدربين بالمعهد الوطني' },
-                { text: '✧ مشاركة أكاديمية نجم شلغوم العيد في بطولة المغرب العربي' }
-            ]
-        };
-
-        const ageGroups = ['U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'U19'];
-        const ageIcons = ['fa-shoe-prints','fa-child-reaching','fa-child','fa-person-running','fa-person','fa-futbol','fa-trophy'];
         const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U19:'أولمبي' };
+        const statusLabels = { active: 'نشيط', injured: 'مصاب', suspended: 'موقوف' };
+        const msgTypeIcons = { 'إعلان':'fa-bullhorn','تنبيه':'fa-triangle-exclamation','اجتماع':'fa-people-group','إشعار':'fa-bell','تهنئة':'fa-award','تعليق':'fa-comment' };
+
+        // بيانات احتياطية بسيطة لو النود فاضي أو فشل الاتصال
+        const FALLBACK = {
+            players: [
+                { name: 'أحمد زروقي', number: 10, position: 'وسط', birthYear: 2011, status: 'active', photoUrl: '', category: CATEGORY },
+                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', birthYear: 2011, status: 'injured', photoUrl: '', category: CATEGORY }
+            ],
+            sessions: [
+                { name: 'حصة تقنية', day: 'الأحد', date: '2026-07-20', time: '17:00', field: 'الملعب الرئيسي', coach: 'كريم عبدي', status: 'scheduled', category: CATEGORY }
+            ],
+            matches: [],
+            tournaments: [],
+            messages: []
+        };
 
         // ============================================================
         // FIREBASE REST HELPER
@@ -1276,244 +376,260 @@
                 if (!data) return fallback;
                 return Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
             } catch (err) {
-                console.warn(`تعذّرت قراءة "${node}" من Firebase، تم استخدام بيانات احتياطية.`, err);
+                console.warn(`تعذّرت قراءة "${node}"، استخدام بيانات احتياطية.`, err);
                 return fallback;
             }
         }
+        function byCategory(list) {
+            return list.filter(item => item.category === CATEGORY);
+        }
 
         // ============================================================
-        // RENDER FUNCTIONS
+        // TICKER
         // ============================================================
-        function renderGallery(images) {
-            const grid = document.getElementById('masonryGrid');
-            grid.innerHTML = images.map(g => `
-                <div class="item" data-src="${g.url}">
-                    <img src="${g.url}" alt="معرض الأكاديمية" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:white;font-size:2rem;\\'>📸</div>'" />
-                    <div class="overlay"><i class="fas fa-search-plus"></i></div>
-                </div>
-            `).join('');
-            document.querySelectorAll('.masonry .item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const img = this.querySelector('img');
-                    if (img && img.src) openLightbox(img.src);
-                });
-            });
-        }
-
-        function openLightbox(src) {
-            const lb = document.getElementById('lightbox');
-            const img = document.getElementById('lightboxImg');
-            img.src = src;
-            lb.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        document.getElementById('lightboxClose').addEventListener('click', () => {
-            document.getElementById('lightbox').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        });
-        document.getElementById('lightbox').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        });
-
-        // بطاقتين فقط، صورة بدون أي وصف
-        function renderPlayers(players) {
-            const grid = document.getElementById('playerGrid');
-            const featured = players.slice(0, 2);
-            grid.innerHTML = featured.map(p => `
-                <div class="player-spotlight-card">
-                    <img src="${p.photoUrl}" alt="لاعب مميز" loading="lazy" onerror="this.style.display='none'" />
-                    <div class="shine"></div>
-                </div>
-            `).join('');
-        }
-
-        // 3 بطاقات فقط، صورة بدون أي وصف
-        function renderStaff(staff) {
-            const grid = document.getElementById('staffGrid');
-            const featured = staff.slice(0, 3);
-            grid.innerHTML = featured.map(s => `
-                <div class="staff-spotlight-card">
-                    <img src="${s.photoUrl}" alt="عضو الطاقم الفني" loading="lazy" onerror="this.style.display='none'" />
-                </div>
-            `).join('');
-        }
-
-        function renderKits(kits) {
-            const grid = document.getElementById('kitGrid');
-            grid.innerHTML = kits.map(k => `
-                <div class="kit-card">
-                    <div class="kit-img" style="background:${k.color}; ${k.color === '#F2F2F2' ? 'color:#1A1A1A' : 'color:white'}">
-                        <img src="${k.photoUrl}" alt="${k.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-tshirt\\' style=\\'font-size:4rem;\\'></i>'" />
-                    </div>
-                    <h4>${k.name}</h4>
-                </div>
-            `).join('');
-        }
-
-        function renderAgeGroups() {
-            const grid = document.getElementById('ageGrid');
-            grid.innerHTML = ageGroups.map((age, index) => `
-                <a class="age-item" href="category.html?cat=${age}" data-age="${age}">
-                    <span class="age-number">${age}</span>
-                    <span class="icon-badge"><i class="fas ${ageIcons[index] || 'fa-futbol'}"></i></span>
-                    <span class="label">${age}</span>
-                    <span class="sub-label">${ageLabels[age] || 'فئة'}</span>
-                </a>
-            `).join('');
-        }
-
         function renderTicker(news) {
             const ticker = document.getElementById('ticker');
             const items = [...news, ...news];
             ticker.innerHTML = items.map(n => `
                 <span class="ticker-item">
-                    <span class="dot"></span>
-                    ${n.text}
-                    <img class="separator-logo" src="${LOGO_URL}" alt="★" onerror="this.style.display='none'" />
-                </span>
+                    <span class="dot"></span>${n.text}
+                    <img class="separator-logo" src="${LOGO_URL}" onerror="this.style.display='none'" />
+                </span>`).join('');
+        }
+
+        // ============================================================
+        // PLAYERS TABLE STATE
+        // ============================================================
+        let allPlayers = [];
+        let filteredPlayers = [];
+        let sortKey = null, sortAsc = true;
+        let currentPage = 1;
+        const PAGE_SIZE = 8;
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const pos = document.getElementById('positionFilter').value;
+            const stat = document.getElementById('statusFilter').value;
+            filteredPlayers = allPlayers.filter(p => {
+                const matchSearch = !search || (p.name || '').toLowerCase().includes(search);
+                const matchPos = !pos || p.position === pos;
+                const matchStat = !stat || p.status === stat;
+                return matchSearch && matchPos && matchStat;
+            });
+            if (sortKey) {
+                filteredPlayers.sort((a, b) => {
+                    let va = a[sortKey] ?? '', vb = b[sortKey] ?? '';
+                    if (typeof va === 'string') va = va.toLowerCase();
+                    if (typeof vb === 'string') vb = vb.toLowerCase();
+                    if (va < vb) return sortAsc ? -1 : 1;
+                    if (va > vb) return sortAsc ? 1 : -1;
+                    return 0;
+                });
+            }
+            currentPage = 1;
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('playersTableBody');
+            const noResults = document.getElementById('noResults');
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const pageItems = filteredPlayers.slice(start, start + PAGE_SIZE);
+
+            if (filteredPlayers.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                tbody.innerHTML = pageItems.map(p => `
+                    <tr>
+                        <td><img class="p-photo" src="${p.photoUrl || ''}" onerror="this.style.visibility='hidden'" /></td>
+                        <td>${p.name || '-'}</td>
+                        <td>${p.birthYear || '-'}</td>
+                        <td>${p.position || '-'}</td>
+                        <td>${p.number ?? '-'}</td>
+                        <td><span class="status-badge ${p.status || 'active'}">${statusLabels[p.status] || 'نشيط'}</span></td>
+                    </tr>
+                `).join('');
+            }
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const wrap = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredPlayers.length / PAGE_SIZE);
+            if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+            wrap.innerHTML = html;
+            wrap.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentPage = parseInt(btn.dataset.page, 10);
+                    renderTable();
+                });
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('positionFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+        document.querySelectorAll('table.players-table th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sort;
+                if (key === 'photo') return;
+                if (sortKey === key) { sortAsc = !sortAsc; } else { sortKey = key; sortAsc = true; }
+                applyFilters();
+            });
+        });
+
+        // ===== EXPORT =====
+        document.getElementById('exportExcelBtn').addEventListener('click', () => {
+            const rows = filteredPlayers.map(p => ({
+                'الاسم': p.name || '', 'سنة الميلاد': p.birthYear || '', 'المركز': p.position || '',
+                'الرقم': p.number ?? '', 'الحالة': statusLabels[p.status] || 'نشيط'
+            }));
+            const ws = XLSX.utils.json_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, CATEGORY);
+            XLSX.writeFile(wb, `لاعبين_${CATEGORY}.xlsx`);
+        });
+
+        document.getElementById('exportPdfBtn').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.autoTable({
+                head: [['الحالة', 'الرقم', 'المركز', 'سنة الميلاد', 'الاسم']],
+                body: filteredPlayers.map(p => [
+                    statusLabels[p.status] || 'نشيط', p.number ?? '', p.position || '', p.birthYear || '', p.name || ''
+                ]),
+                styles: { font: 'helvetica', halign: 'center' },
+                headStyles: { fillColor: [14, 72, 50] }
+            });
+            doc.save(`لاعبين_${CATEGORY}.pdf`);
+        });
+
+        // ============================================================
+        // SESSIONS / MATCHES / TOURNAMENTS / MESSAGES
+        // ============================================================
+        const sessionStatusLabels = { scheduled: 'مجدولة', finished: 'منتهية', canceled: 'ملغاة' };
+        function renderSessions(sessions) {
+            const grid = document.getElementById('sessionsGrid');
+            if (!sessions.length) { grid.innerHTML = '<div class="empty-state">لا توجد حصص مجدولة حاليًا لهذه الفئة.</div>'; return; }
+            grid.innerHTML = sessions.map(s => `
+                <div class="session-card">
+                    <h4>${s.name || 'حصة تدريبية'}</h4>
+                    <div class="row"><i class="fas fa-calendar-day"></i> ${s.day || ''} - ${s.date || ''}</div>
+                    <div class="row"><i class="fas fa-clock"></i> ${s.time || ''}</div>
+                    <div class="row"><i class="fas fa-map-marker-alt"></i> ${s.field || ''}</div>
+                    <div class="row"><i class="fas fa-user-tie"></i> ${s.coach || ''}</div>
+                    <div class="status-line"><span class="status-badge active">${sessionStatusLabels[s.status] || 'مجدولة'}</span></div>
+                </div>
+            `).join('');
+        }
+
+        function renderMatches(matches) {
+            const grid = document.getElementById('matchesGrid');
+            if (!matches.length) { grid.innerHTML = '<div class="empty-state">لا توجد مباريات مسجلة حاليًا لهذه الفئة.</div>'; return; }
+            grid.innerHTML = matches.map(m => `
+                <div class="match-card">
+                    <span class="status-tag ${m.status || 'upcoming'}">${{upcoming:'قادمة',finished:'انتهت',canceled:'ملغاة'}[m.status] || 'قادمة'}</span>
+                    <div class="match-top">
+                        <div class="team"><img src="${m.homeLogo || LOGO_URL}" onerror="this.style.visibility='hidden'" /><span>الأكاديمية</span></div>
+                        <div class="vs">${m.status === 'finished' && m.result ? `<span class="score">${m.result}</span>` : 'VS'}</div>
+                        <div class="team"><img src="${m.opponentLogo || ''}" onerror="this.style.visibility='hidden'" /><span>${m.opponent || 'الفريق المنافس'}</span></div>
+                    </div>
+                    <div class="match-meta">
+                        <span><i class="fas fa-calendar-day"></i> ${m.date || ''}</span>
+                        <span><i class="fas fa-clock"></i> ${m.time || ''}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${m.field || ''}</span>
+                        <span><i class="fas fa-tag"></i> ${m.type || ''}</span>
+                    </div>
+                    ${m.details ? `<a class="details-btn" href="${m.details}">عرض التفاصيل ←</a>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderTournaments(tournaments) {
+            const grid = document.getElementById('tournamentsGrid');
+            if (!tournaments.length) { grid.innerHTML = '<div class="empty-state">الفئة غير مشاركة في أي بطولة حاليًا.</div>'; return; }
+            grid.innerHTML = tournaments.map(t => `
+                <div class="tournament-card">
+                    <div class="t-head">
+                        <img src="${t.logo || LOGO_URL}" onerror="this.style.visibility='hidden'" />
+                        <h4>${t.name || 'بطولة'}</h4>
+                    </div>
+                    <div class="t-body">
+                        <div class="row"><i class="fas fa-user-tie"></i> المنظم: ${t.organizer || '-'}</div>
+                        <div class="row"><i class="fas fa-map-marker-alt"></i> ${t.place || '-'}</div>
+                        <div class="row"><i class="fas fa-calendar"></i> ${t.date || ''} ${t.period ? `(${t.period})` : ''}</div>
+                        <div class="row"><i class="fas fa-users"></i> عدد الفرق: ${t.teamsCount || '-'}</div>
+                        ${t.standings ? `<div class="row"><i class="fas fa-list-ol"></i> ${t.standings}</div>` : ''}
+                        ${t.files ? `<a class="files-link" href="${t.files}" target="_blank"><i class="fas fa-paperclip"></i> الملفات المرفقة</a>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMessages(messages) {
+            const list = document.getElementById('messagesList');
+            if (!messages.length) { list.innerHTML = '<div class="empty-state">لا توجد رسائل جديدة من إدارة الأكاديمية.</div>'; return; }
+            const sorted = [...messages].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            list.innerHTML = sorted.map(m => `
+                <div class="msg-card">
+                    <div class="msg-icon"><i class="fas ${msgTypeIcons[m.type] || 'fa-comment-dots'}"></i></div>
+                    <div>
+                        <div class="msg-type">${m.type || 'رسالة'}</div>
+                        <p class="msg-text">${m.text || ''}</p>
+                        ${m.date ? `<div class="msg-date">${m.date}</div>` : ''}
+                    </div>
+                </div>
             `).join('');
         }
 
         // ============================================================
-        // SCROLL REVEAL
+        // BANNER + STATS
         // ============================================================
-        function initScrollReveal() {
-            const targets = document.querySelectorAll(
-                '.player-spotlight-card, .staff-spotlight-card, .kit-card, .age-item, .masonry .item, .reveal'
-            );
-            targets.forEach(el => el.classList.add('reveal'));
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.12 });
-            targets.forEach(el => observer.observe(el));
+        function renderBanner(playersCount, sessionsCount, matchesCount) {
+            document.getElementById('catTag').textContent = 'فئة عمرية';
+            document.getElementById('catTitle').textContent = CATEGORY;
+            document.getElementById('catSubLabel').textContent = ageLabels[CATEGORY] || 'فئة';
+            document.getElementById('statPlayers').textContent = playersCount;
+            document.getElementById('statSessions').textContent = sessionsCount;
+            document.getElementById('statMatches').textContent = matchesCount;
+            document.title = `فئة ${CATEGORY} | ETOILE CHELGHOUM LAID ACADEMY`;
         }
-
-        // ============================================================
-        // ANIMATED STAT COUNTERS
-        // ============================================================
-        function initCounters() {
-            const counters = document.querySelectorAll('.stat-item .number');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting) return;
-                    const el = entry.target;
-                    const target = parseInt(el.dataset.target, 10) || 0;
-                    let current = 0;
-                    const step = Math.max(1, Math.ceil(target / 60));
-                    const timer = setInterval(() => {
-                        current += step;
-                        if (current >= target) { current = target; clearInterval(timer); }
-                        el.textContent = (target >= 100 ? '+' : '') + current;
-                    }, 25);
-                    observer.unobserve(el);
-                });
-            }, { threshold: 0.4 });
-            counters.forEach(c => observer.observe(c));
-        }
-
-        // ============================================================
-        // NAVBAR TOGGLE + SCROLL STYLE
-        // ============================================================
-        document.getElementById('navToggle').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('open');
-        });
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.getElementById('navLinks').classList.remove('open');
-            });
-        });
-        window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
-        });
-
-        // ============================================================
-        // FORM SUBMIT — إرسال فعلي إلى Firebase
-        // ============================================================
-        document.getElementById('regForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('regSubmitBtn');
-            const status = document.getElementById('regStatus');
-            const formData = new FormData(this);
-            const payload = {};
-            formData.forEach((value, key) => { payload[key] = value; });
-            payload.consent = document.getElementById('consent').checked;
-            payload.status = 'pending';
-            payload.submittedAt = new Date().toISOString();
-
-            btn.disabled = true;
-            btn.textContent = 'جارِ الإرسال...';
-            status.className = 'form-status';
-            status.textContent = '';
-
-            try {
-                const res = await fetch(`${DB_URL}registrationRequests.json`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!res.ok) throw new Error('فشل الإرسال');
-                status.classList.add('success');
-                status.textContent = '✅ تم إرسال طلب التسجيل بنجاح! سنتواصل معك قريبًا.';
-                this.reset();
-            } catch (err) {
-                console.error(err);
-                status.classList.add('error');
-                status.textContent = '⚠️ تعذّر إرسال الطلب، حاول مرة أخرى أو تواصل معنا هاتفيًا.';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'إرسال';
-            }
-        });
-
-        // ============================================================
-        // SMOOTH SCROLL
-        // ============================================================
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href === '#') return;
-                e.preventDefault();
-                const target = document.querySelector(href);
-                if (target) {
-                    const offset = document.querySelector('.navbar').offsetHeight + document.querySelector('.ticker-wrap').offsetHeight;
-                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset - 20;
-                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-                }
-            });
-        });
 
         // ============================================================
         // INIT
         // ============================================================
         (async function init() {
-            renderAgeGroups();
-
-            const [gallery, players, staff, kits, news] = await Promise.all([
-                fetchNode('gallery', FALLBACK.gallery),
+            const [players, sessions, matches, tournaments, messages, news] = await Promise.all([
                 fetchNode('players', FALLBACK.players),
-                fetchNode('staff', FALLBACK.staff),
-                fetchNode('kits', FALLBACK.kits),
-                fetchNode('news', FALLBACK.news)
+                fetchNode('sessions', FALLBACK.sessions),
+                fetchNode('matches', FALLBACK.matches),
+                fetchNode('tournaments', FALLBACK.tournaments),
+                fetchNode('messages', FALLBACK.messages),
+                fetchNode('news', [{ text: '✧ افتتاح التسجيلات للموسم الجديد 2026-2027' }])
             ]);
 
-            renderGallery(gallery);
-            renderPlayers(players);
-            renderStaff(staff);
-            renderKits(kits);
+            allPlayers = byCategory(players);
+            const catSessions = byCategory(sessions);
+            const catMatches = byCategory(matches);
+            const catTournaments = byCategory(tournaments);
+            const catMessages = byCategory(messages);
+
+            renderBanner(allPlayers.length, catSessions.filter(s => s.status !== 'finished').length, catMatches.length);
+            applyFilters();
+            renderSessions(catSessions);
+            renderMatches(catMatches);
+            renderTournaments(catTournaments);
+            renderMessages(catMessages);
             renderTicker(news);
 
-            initScrollReveal();
-            initCounters();
-
-            console.log('✅ ETOILE CHELGHOUM LAID ACADEMY — الصفحة الرئيسية جاهزة.');
+            console.log(`✅ صفحة الفئة ${CATEGORY} جاهزة.`);
         })();
     </script>
 </body>

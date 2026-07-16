@@ -115,6 +115,16 @@
     .att-btn.present.active { background:#1D8348; border-color:#1D8348; color:var(--white); }
     .att-btn.absent.active { background:var(--red-accent); border-color:var(--red-accent); color:var(--white); }
 
+    /* ===== PAYMENTS ===== */
+    .months-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; }
+    .month-toggle {
+        padding:12px; border-radius:14px; border:1.5px solid #ddd; background:#f7f7f7;
+        text-align:center; font-size:0.85rem; font-weight:700; color:#888; transition:0.25s;
+    }
+    .month-toggle.paid { background:#E1F6EA; border-color:#1D8348; color:#1D8348; }
+    .pay-open-btn { background:#EAF7EE; color:#1D8348; }
+    .pay-open-btn:hover { background:#1D8348; color:var(--white); }
+
     /* Registration requests */
     .req-card {
         background:var(--white); border-radius:18px; box-shadow:var(--shadow-soft); padding:18px 20px; margin-bottom:14px;
@@ -209,6 +219,7 @@
                 <button class="nav-btn" data-panel="matches"><i class="fas fa-futbol"></i> المباريات</button>
                 <button class="nav-btn" data-panel="tournaments"><i class="fas fa-trophy"></i> البطولات</button>
                 <button class="nav-btn" data-panel="messages"><i class="fas fa-comment-dots"></i> رسائل الأكاديمية</button>
+                <button class="nav-btn" data-panel="payments"><i class="fas fa-money-check-dollar"></i> سجل المدفوعات</button>
             </div>
 
             <div class="nav-group">
@@ -264,6 +275,9 @@
             <section class="panel" id="panel-messages">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="messages"><i class="fas fa-plus"></i> رسالة جديدة</button></div>
                 <div class="data-table-wrap"><table class="data-table" id="table-messages"></table></div>
+            </section>
+            <section class="panel" id="panel-payments">
+                <div class="data-table-wrap"><table class="data-table" id="table-payments"></table></div>
             </section>
             <section class="panel" id="panel-news">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="news"><i class="fas fa-plus"></i> خبر جديد</button></div>
@@ -470,8 +484,13 @@
             overview:'نظرة عامة', requests:'طلبات التسجيل', categories:'إدارة الفئات',
             players:'اللاعبون', sessions:'الحصص التدريبية', matches:'المباريات',
             tournaments:'البطولات', messages:'رسائل الأكاديمية', news:'شريط الأخبار',
-            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية'
+            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية',
+            payments:'سجل المدفوعات'
         };
+        const MONTHS = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+        const MONTH_LABELS = { '01':'جانفي','02':'فيفري','03':'مارس','04':'أفريل','05':'ماي','06':'جوان',
+            '07':'جويلية','08':'أوت','09':'سبتمبر','10':'أكتوبر','11':'نوفمبر','12':'ديسمبر' };
+
         document.querySelectorAll('.nav-btn[data-panel]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const key = btn.dataset.panel;
@@ -492,6 +511,7 @@
             if (key === 'overview') return loadOverview();
             if (key === 'requests') return loadRequests();
             if (key === 'categories') return loadCategories();
+            if (key === 'payments') return loadPayments();
             if (RESOURCES[key]) return loadResourceTable(key);
         }
 
@@ -676,6 +696,75 @@
                 });
                 closeModal();
                 showToast('تم حفظ سجل الحضور بنجاح، وأصبحت الحصة مؤرشفة');
+            };
+        }
+
+        // ============================================================
+        // PAYMENTS — إدارة سجل الدفع الشهري لكل لاعب (12 شهر)
+        // ============================================================
+        async function loadPayments() {
+            const [players, payments] = await Promise.all([dbGet('players'), dbGet('payments')]);
+            cache.players = players;
+            cache.payments = payments;
+            renderPaymentsTable();
+        }
+
+        function renderPaymentsTable() {
+            const table = document.getElementById('table-payments');
+            const entries = Object.entries(cache.players || {});
+            if (entries.length === 0) {
+                table.innerHTML = `<thead><tr><th>الاسم</th><th>الفئة</th><th>الأشهر المدفوعة</th><th>إجراءات</th></tr></thead>
+                    <tbody><tr class="empty-row"><td colspan="4">لا يوجد لاعبون مسجلون بعد.</td></tr></tbody>`;
+                return;
+            }
+            const rows = entries.map(([id, p]) => {
+                const playerPayments = (cache.payments && cache.payments[id]) || {};
+                const paidCount = MONTHS.filter(m => playerPayments[m]).length;
+                return `<tr>
+                    <td>${p.name || '-'}</td>
+                    <td>${p.category || '-'}</td>
+                    <td>${paidCount} / 12</td>
+                    <td class="row-actions"><button class="pay-open-btn" data-id="${id}" title="إدارة الدفع"><i class="fas fa-money-bill-wave"></i></button></td>
+                </tr>`;
+            }).join('');
+            table.innerHTML = `<thead><tr><th>الاسم</th><th>الفئة</th><th>الأشهر المدفوعة</th><th>إجراءات</th></tr></thead><tbody>${rows}</tbody>`;
+            table.querySelectorAll('.pay-open-btn').forEach(btn => {
+                btn.addEventListener('click', () => openPaymentModal(btn.dataset.id));
+            });
+        }
+
+        function openPaymentModal(playerId) {
+            const player = cache.players[playerId];
+            const playerPayments = (cache.payments && cache.payments[playerId]) || {};
+            document.getElementById('modalTitle').textContent = `سجل الدفع - ${player.name || ''}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="months-grid">
+                    ${MONTHS.map(m => `
+                        <div class="month-toggle ${playerPayments[m] ? 'paid' : ''}" data-month="${m}">
+                            ${MONTH_LABELS[m]}<br><span style="font-size:0.72rem;">${playerPayments[m] ? 'مدفوع' : 'غير مدفوع'}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.querySelectorAll('.month-toggle').forEach(el => {
+                el.addEventListener('click', () => {
+                    el.classList.toggle('paid');
+                    const isPaid = el.classList.contains('paid');
+                    el.querySelector('span').textContent = isPaid ? 'مدفوع' : 'غير مدفوع';
+                });
+            });
+            document.getElementById('modalOverlay').classList.add('active');
+
+            document.getElementById('saveBtn').onclick = async () => {
+                const updated = {};
+                document.querySelectorAll('.month-toggle').forEach(el => {
+                    updated[el.dataset.month] = el.classList.contains('paid');
+                });
+                await dbPut('payments', playerId, updated);
+                cache.payments[playerId] = updated;
+                renderPaymentsTable();
+                closeModal();
+                showToast('تم حفظ سجل الدفع بنجاح');
             };
         }
 

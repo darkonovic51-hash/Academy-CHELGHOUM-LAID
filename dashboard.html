@@ -308,16 +308,20 @@
             players: {
                 node: 'players', title: 'اللاعبون',
                 fields: [
-                    { key:'name', label:'الاسم', type:'text', required:true },
-                    { key:'photoUrl', label:'رابط الصورة', type:'text' },
+                    { key:'name', label:'الاسم الكامل', type:'text', required:true },
+                    { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
                     { key:'number', label:'رقم القميص', type:'number' },
                     { key:'position', label:'المركز', type:'select', options:[
                         {value:'حارس مرمى',label:'حارس مرمى'},{value:'مدافع',label:'مدافع'},
                         {value:'وسط',label:'وسط'},{value:'مهاجم',label:'مهاجم'}] },
                     { key:'birthYear', label:'سنة الميلاد', type:'number' },
-                    { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
                     { key:'status', label:'الحالة', type:'select', options:[
-                        {value:'active',label:'نشيط'},{value:'injured',label:'مصاب'},{value:'suspended',label:'موقوف'}] }
+                        {value:'active',label:'نشيط'},{value:'injured',label:'مصاب'},{value:'suspended',label:'موقوف'}] },
+                    { key:'guardianName', label:'اسم ولي الأمر', type:'text' },
+                    { key:'phone', label:'رقم هاتف ولي الأمر', type:'text' },
+                    { key:'altPhone', label:'رقم هاتف احتياطي', type:'text' },
+                    { key:'address', label:'العنوان', type:'text' },
+                    { key:'notes', label:'ملاحظات', type:'textarea' }
                 ]
             },
             sessions: {
@@ -654,17 +658,21 @@
             const playerPayload = {
                 name: `${r.firstName || ''} ${r.lastName || ''}`.trim(),
                 category: r.category || 'U7',
-                position: r.position || '',
                 birthYear: r.birthDate ? new Date(r.birthDate).getFullYear() : '',
-                photoUrl: '', // يُرفع لاحقًا يدويًا من قسم اللاعبين (رفع الملفات يحتاج Firebase Storage)
                 status: 'active',
-                number: ''
+                number: '',
+                position: '',
+                guardianName: r.guardianName || '',
+                phone: r.phone || '',
+                altPhone: r.altPhone || '',
+                address: r.address || '',
+                notes: r.notes || ''
             };
             await dbPost('players', playerPayload);
             await dbPatch('registrationRequests', id, { status:'accepted' });
             cache.requests[id].status = 'accepted';
             renderRequests();
-            showToast('تم قبول الطلب وإنشاء ملف اللاعب تلقائيًا');
+            showToast('تم قبول الطلب وإنشاء ملف اللاعب تلقائيًا مع بياناته الكاملة');
         }
 
         // ============================================================

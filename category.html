@@ -67,7 +67,7 @@
         .section-block { padding: 60px 0; }
         .section-block.alt { background: var(--white); }
 
-        /* ===== TICKER (نفس هوية الرئيسية) ===== */
+        /* ===== TICKER ===== */
         .ticker-wrap {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--ticker-height);
             z-index: 1001; background: linear-gradient(90deg, var(--gold-light) 0%, var(--gold) 100%);
@@ -80,7 +80,7 @@
         @keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
 
-        /* ===== NAVBAR مبسّطة ===== */
+        /* ===== NAVBAR ===== */
         .navbar {
             position: fixed; top: var(--ticker-height); left: 0; width: 100%; z-index: 999;
             background: rgba(14, 72, 50, 0.95); backdrop-filter: blur(16px);
@@ -166,7 +166,17 @@
         .pagination button.active { background: var(--primary-mid); color: var(--white); border-color: var(--primary-mid); }
         .pagination button:hover:not(.active) { background: #f0f0f0; }
 
-        /* ===== SESSIONS CARDS (معدلة) ===== */
+        /* ===== TIMELINE DIVIDERS ===== */
+        .timeline-divider { display:flex; align-items:center; gap:16px; margin: 34px 0 20px; }
+        .timeline-divider:first-child { margin-top: 0; }
+        .timeline-divider::before, .timeline-divider::after {
+            content:''; flex:1; height:2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        .timeline-divider span {
+            font-family:'Bebas Neue'; font-size:1.3rem; letter-spacing:2px; color:var(--primary-dark); white-space:nowrap;
+        }
+
+        /* ===== SESSION CARD (محدث) ===== */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
 
         .session-card {
@@ -176,10 +186,14 @@
         .session-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-medium); }
         .session-card .sc-head {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary-mid));
-            color: var(--white); padding: 16px 20px; position: relative; overflow: hidden;
+            color: var(--white); padding: 16px 20px 16px 60px; position: relative; overflow: hidden;
         }
         .session-card .sc-head::before {
             content: '★'; position: absolute; font-size: 5rem; color: rgba(255,255,255,0.06); left: -10px; top: -20px;
+        }
+        .session-card .sc-logo {
+            position: absolute; top: 12px; left: 14px; width: 34px; height: 34px; border-radius: 50%;
+            background: var(--white); padding: 3px; object-fit: contain; z-index: 3; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .session-card .sc-cat { font-size: 0.75rem; background: rgba(255,255,255,0.15); display: inline-block; padding: 3px 12px; border-radius: 20px; margin-bottom: 6px; }
         .session-card .sc-title { font-family: 'Bebas Neue'; font-size: 1.4rem; letter-spacing: 1px; position: relative; z-index: 2; }
@@ -187,15 +201,39 @@
         .session-card .sc-body { padding: 18px 20px; }
         .session-card .row { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #555; margin-bottom: 8px; }
         .session-card .row i { color: var(--red-accent); width: 16px; text-align: center; }
-        .session-card .sc-desc { font-size: 0.84rem; color: #777; margin: 10px 0; line-height: 1.6; border-top: 1px dashed #eee; padding-top: 10px; }
+        .session-card .sc-duration {
+            display: inline-flex; align-items: center; gap: 6px; background: #f0f7f3; color: var(--primary-mid);
+            font-size: 0.78rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;
+        }
+        .session-card .sc-goals {
+            font-size: 0.84rem; color: #555; margin: 10px 0; line-height: 1.7; border-top: 1px dashed #eee; padding-top: 10px;
+        }
+        .session-card .sc-goals b { color: var(--primary-dark); display:block; margin-bottom: 4px; }
+        .session-card .sc-notes {
+            font-size: 0.8rem; color: #888; background: #fafafa; padding: 8px 12px; border-radius: 10px; margin-top: 8px;
+        }
         .session-status-badge { display: inline-block; padding: 5px 16px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
         .session-status-badge.scheduled { background: #FFF3D6; color: #B8860B; }
         .session-status-badge.ongoing { background: #E6F6FF; color: #1E7BB8; }
         .session-status-badge.ongoing::before { content:'● '; animation: pulseDot 1.4s infinite; }
         .session-status-badge.finished { background: #E1F6EA; color: #1D8348; }
         .session-status-badge.canceled { background: #FDEAEA; color: var(--red-accent); }
+        .sc-footer { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+        .sc-details-btn {
+            background: var(--primary-dark); color: var(--white); border:none; padding: 7px 16px; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700; cursor:pointer; transition:0.3s;
+        }
+        .sc-details-btn:hover { background: var(--red-accent); }
 
-        /* ===== MATCHES CARDS (معدلة) ===== */
+        /* بطاقة "القادمة" المميزة */
+        .featured-card-wrap { margin-bottom: 10px; }
+        .featured-card-wrap .session-card,
+        .featured-card-wrap .match-card {
+            border: 2px solid var(--gold);
+            box-shadow: 0 12px 40px rgba(212,175,55,0.2);
+        }
+
+        /* ===== MATCHES CARDS (محدث) ===== */
         .match-card {
             background: linear-gradient(160deg, var(--primary-dark) 0%, #08281c 100%); border-radius: 24px; overflow: hidden;
             box-shadow: var(--shadow-soft); color: var(--white); transition: 0.35s; position: relative;
@@ -256,6 +294,27 @@
 
         .empty-state { text-align: center; padding: 40px; color: #999; background: var(--white); border-radius: 20px; }
 
+        /* ===== DETAILS MODAL ===== */
+        .details-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 5000; display: none;
+            align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+        }
+        .details-modal-overlay.active { display: flex; }
+        .details-modal-box {
+            background: var(--white); border-radius: 24px; width: 100%; max-width: 480px; max-height: 85vh;
+            overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        }
+        .details-modal-head {
+            display: flex; justify-content: space-between; align-items: center; padding: 18px 22px;
+            background: var(--primary-dark); color: var(--white);
+        }
+        .details-modal-head h3 { font-family: 'Bebas Neue'; font-size: 1.3rem; letter-spacing: 1px; }
+        .details-modal-head button { background: none; border: none; color: var(--white); font-size: 1.3rem; cursor: pointer; }
+        .details-modal-body { padding: 20px 22px; }
+        .details-modal-body .d-row { margin-bottom: 14px; }
+        .details-modal-body .d-row b { color: var(--primary-dark); display: block; margin-bottom: 4px; font-size: 0.9rem; }
+        .details-modal-body .d-row span { color: #555; font-size: 0.9rem; line-height: 1.7; }
+
         @media (max-width: 768px) {
             .cat-banner { min-height: 34vh; }
             table.players-table { font-size: 0.8rem; }
@@ -266,10 +325,10 @@
     </style>
 </head>
 <body>
-    <!-- ===== TICKER (يقرأ نفس أخبار الرئيسية) ===== -->
+    <!-- ===== TICKER ===== -->
     <div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
 
-    <!-- ===== NAVBAR مبسّطة ===== -->
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="logo-link">
@@ -339,16 +398,24 @@
             <div class="pagination" id="pagination"></div>
         </section>
 
-        <!-- ===== TRAINING SESSIONS ===== -->
+        <!-- ===== TRAINING SESSIONS (Timeline) ===== -->
         <section class="section-block alt">
             <h2 class="section-title">الحصص التدريبية</h2>
-            <div class="cards-grid" id="sessionsGrid"></div>
+            <div id="nextSessionWrap"></div>
+            <div class="timeline-divider"><span>الحصص القادمة</span></div>
+            <div class="cards-grid" id="upcomingSessionsGrid"></div>
+            <div class="timeline-divider"><span>أرشيف الحصص</span></div>
+            <div class="cards-grid" id="archiveSessionsGrid"></div>
         </section>
 
-        <!-- ===== MATCHES ===== -->
+        <!-- ===== MATCHES (Timeline) ===== -->
         <section class="section-block">
             <h2 class="section-title">المباريات</h2>
-            <div class="cards-grid" id="matchesGrid"></div>
+            <div id="nextMatchWrap"></div>
+            <div class="timeline-divider"><span>المباريات القادمة</span></div>
+            <div class="cards-grid" id="upcomingMatchesGrid"></div>
+            <div class="timeline-divider"><span>أرشيف المباريات</span></div>
+            <div class="cards-grid" id="archiveMatchesGrid"></div>
         </section>
 
         <!-- ===== TOURNAMENTS ===== -->
@@ -364,6 +431,17 @@
         </section>
     </div>
 
+    <!-- ===== DETAILS MODAL ===== -->
+    <div class="details-modal-overlay" id="detailsModal">
+        <div class="details-modal-box">
+            <div class="details-modal-head">
+                <h3 id="detailsModalTitle">التفاصيل</h3>
+                <button id="closeDetailsModal">&times;</button>
+            </div>
+            <div class="details-modal-body" id="detailsModalBody"></div>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         // CONFIG
@@ -377,14 +455,13 @@
         const statusLabels = { active: 'نشيط', injured: 'مصاب', suspended: 'موقوف' };
         const msgTypeIcons = { 'إعلان':'fa-bullhorn','تنبيه':'fa-triangle-exclamation','اجتماع':'fa-people-group','إشعار':'fa-bell','تهنئة':'fa-award','تعليق':'fa-comment' };
 
-        // بيانات احتياطية بسيطة لو النود فاضي أو فشل الاتصال
         const FALLBACK = {
             players: [
                 { name: 'أحمد زروقي', number: 10, position: 'وسط', birthYear: 2011, status: 'active', photoUrl: '', category: CATEGORY },
                 { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', birthYear: 2011, status: 'injured', photoUrl: '', category: CATEGORY }
             ],
             sessions: [
-                { name: 'حصة تقنية', day: 'الأحد', date: '2026-07-20', time: '17:00', field: 'الملعب الرئيسي', coach: 'كريم عبدي', status: 'scheduled', category: CATEGORY }
+                { name: 'حصة تقنية', day: 'الأحد', date: '2026-07-20', time: '17:00', endTime: '18:30', field: 'الملعب الرئيسي', coach: 'كريم عبدي', status: 'scheduled', category: CATEGORY }
             ],
             matches: [],
             tournaments: [],
@@ -529,7 +606,6 @@
             const originalText = exportBtn.innerHTML;
             exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارِ التجهيز...';
 
-            // نبني جدول مؤقت مخفي يحتوي كل النتائج المفلترة (بدون Pagination) بنفس تنسيق الموقع
             const tempWrap = document.createElement('div');
             tempWrap.style.cssText = 'position:fixed; top:-9999px; left:-9999px; width:900px; background:#fff; padding:20px; direction:rtl;';
             tempWrap.innerHTML = `
@@ -582,15 +658,28 @@
         });
 
         // ============================================================
-        // SESSIONS / MATCHES / TOURNAMENTS / MESSAGES
+        // SESSIONS (Timeline)
         // ============================================================
         const sessionStatusLabels = { scheduled: 'مجدولة', ongoing: 'جارية', finished: 'منتهية', canceled: 'ملغاة' };
-        function renderSessions(sessions) {
-            const grid = document.getElementById('sessionsGrid');
-            if (!sessions.length) { grid.innerHTML = '<div class="empty-state">لا توجد حصص مجدولة حاليًا لهذه الفئة.</div>'; return; }
-            grid.innerHTML = sessions.map(s => `
+
+        function calcDuration(start, end) {
+            if (!start || !end) return '';
+            const [sh, sm] = start.split(':').map(Number);
+            const [eh, em] = end.split(':').map(Number);
+            if ([sh, sm, eh, em].some(isNaN)) return '';
+            let mins = (eh * 60 + em) - (sh * 60 + sm);
+            if (mins < 0) mins += 24 * 60;
+            const h = Math.floor(mins / 60), m = mins % 60;
+            if (h > 0) return `${h} س${m > 0 ? ' ' + m + ' د' : ''}`;
+            return `${m} د`;
+        }
+
+        function sessionCardHTML(s) {
+            const duration = calcDuration(s.time, s.endTime);
+            return `
                 <div class="session-card">
                     <div class="sc-head">
+                        <img class="sc-logo" src="${LOGO_URL}" onerror="this.style.display='none'" />
                         <span class="sc-cat">${s.category || CATEGORY}</span>
                         <div class="sc-title">${s.name || 'حصة تدريبية'}</div>
                         ${s.sessionType ? `<div class="sc-type">${s.sessionType}</div>` : ''}
@@ -598,20 +687,73 @@
                     <div class="sc-body">
                         <div class="row"><i class="fas fa-calendar-day"></i> ${s.day || ''} ${s.date ? '- ' + s.date : ''}</div>
                         <div class="row"><i class="fas fa-clock"></i> ${s.time || '-'} ${s.endTime ? '← ' + s.endTime : ''}</div>
-                        <div class="row"><i class="fas fa-map-marker-alt"></i> ${s.field || '-'}</div>
+                        ${duration ? `<div class="sc-duration"><i class="fas fa-hourglass-half"></i> ${duration}</div>` : ''}
                         <div class="row"><i class="fas fa-user-tie"></i> ${s.coach || '-'}</div>
-                        ${s.description ? `<div class="sc-desc">${s.description}</div>` : ''}
-                        <span class="session-status-badge ${s.status || 'scheduled'}">${sessionStatusLabels[s.status] || 'مجدولة'}</span>
+                        <div class="row"><i class="fas fa-map-marker-alt"></i> ${s.field || '-'}</div>
+                        <div class="sc-footer">
+                            <span class="session-status-badge ${s.status || 'scheduled'}">${sessionStatusLabels[s.status] || 'مجدولة'}</span>
+                            <button class="sc-details-btn" data-session-details='${JSON.stringify(s).replace(/'/g, "&apos;")}'>عرض التفاصيل</button>
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `;
         }
 
+        function openSessionDetails(s) {
+            document.getElementById('detailsModalTitle').textContent = s.name || 'تفاصيل الحصة';
+            document.getElementById('detailsModalBody').innerHTML = `
+                <div class="d-row"><b>الفئة</b><span>${s.category || CATEGORY}</span></div>
+                <div class="d-row"><b>التاريخ</b><span>${s.day || ''} ${s.date ? '- ' + s.date : ''}</span></div>
+                <div class="d-row"><b>التوقيت</b><span>${s.time || '-'} ${s.endTime ? '← ' + s.endTime : ''} (${calcDuration(s.time, s.endTime) || '-'})</span></div>
+                <div class="d-row"><b>المدرب</b><span>${s.coach || '-'}</span></div>
+                <div class="d-row"><b>الملعب</b><span>${s.field || '-'}</span></div>
+                ${s.description ? `<div class="d-row"><b>وصف الحصة</b><span>${s.description}</span></div>` : ''}
+                ${s.goals ? `<div class="d-row"><b>أهداف الحصة</b><span>${s.goals}</span></div>` : ''}
+                ${s.coachNotes ? `<div class="d-row"><b>ملاحظات المدرب</b><span>${s.coachNotes}</span></div>` : ''}
+            `;
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function renderSessions(sessions) {
+            const nextWrap = document.getElementById('nextSessionWrap');
+            const upcomingGrid = document.getElementById('upcomingSessionsGrid');
+            const archiveGrid = document.getElementById('archiveSessionsGrid');
+
+            const activeOnes = sessions.filter(s => s.status === 'scheduled' || s.status === 'ongoing')
+                .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+            const archived = sessions.filter(s => s.status === 'finished' || s.status === 'canceled')
+                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+            const featured = activeOnes.find(s => s.status === 'ongoing') || activeOnes[0];
+            const remainingUpcoming = activeOnes.filter(s => s !== featured);
+
+            nextWrap.innerHTML = featured
+                ? `<div class="featured-card-wrap">${sessionCardHTML(featured)}</div>`
+                : `<div class="empty-state">لا توجد حصة قادمة حاليًا لهذه الفئة.</div>`;
+
+            upcomingGrid.innerHTML = remainingUpcoming.length
+                ? remainingUpcoming.map(sessionCardHTML).join('')
+                : `<div class="empty-state">لا توجد حصص أخرى قادمة.</div>`;
+
+            archiveGrid.innerHTML = archived.length
+                ? archived.map(sessionCardHTML).join('')
+                : `<div class="empty-state">لا يوجد أرشيف حصص بعد.</div>`;
+
+            document.querySelectorAll('[data-session-details]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const s = JSON.parse(btn.dataset.sessionDetails.replace(/&apos;/g, "'"));
+                    openSessionDetails(s);
+                });
+            });
+        }
+
+        // ============================================================
+        // MATCHES (Timeline)
+        // ============================================================
         const matchStatusLabels = { upcoming:'قادمة', live:'جارية الآن', finished:'انتهت', canceled:'ملغاة' };
-        function renderMatches(matches) {
-            const grid = document.getElementById('matchesGrid');
-            if (!matches.length) { grid.innerHTML = '<div class="empty-state">لا توجد مباريات مسجلة حاليًا لهذه الفئة.</div>'; return; }
-            grid.innerHTML = matches.map(m => `
+
+        function matchCardHTML(m) {
+            return `
                 <div class="match-card">
                     <div class="mc-header">
                         <span class="mc-tournament">${m.tournament || 'مباراة ودية'}${m.round ? ' - ' + m.round : ''}</span>
@@ -628,11 +770,63 @@
                         <span><i class="fas fa-map-marker-alt"></i> ${m.field || ''}</span>
                         <span><i class="fas fa-tag"></i> ${m.type || ''}</span>
                     </div>
-                    ${m.details ? `<div class="mc-details"><i class="fas fa-circle-info"></i> ${m.details}</div>` : ''}
+                    <div class="sc-footer" style="padding:0 18px 14px;">
+                        <span></span>
+                        <button class="sc-details-btn" data-match-details='${JSON.stringify(m).replace(/'/g, "&apos;")}'>عرض التفاصيل</button>
+                    </div>
                 </div>
-            `).join('');
+            `;
         }
 
+        function openMatchDetails(m) {
+            document.getElementById('detailsModalTitle').textContent = `${m.opponent || 'مباراة'}`;
+            document.getElementById('detailsModalBody').innerHTML = `
+                <div class="d-row"><b>البطولة</b><span>${m.tournament || 'مباراة ودية'} ${m.round ? '- ' + m.round : ''}</span></div>
+                <div class="d-row"><b>التاريخ والتوقيت</b><span>${m.date || ''} - ${m.time || ''}</span></div>
+                <div class="d-row"><b>الملعب</b><span>${m.field || '-'}</span></div>
+                <div class="d-row"><b>نوع المباراة</b><span>${m.type || '-'}</span></div>
+                ${m.result ? `<div class="d-row"><b>النتيجة</b><span>${m.result}</span></div>` : ''}
+                ${m.details ? `<div class="d-row"><b>تفاصيل إضافية</b><span>${m.details}</span></div>` : ''}
+            `;
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function renderMatches(matches) {
+            const nextWrap = document.getElementById('nextMatchWrap');
+            const upcomingGrid = document.getElementById('upcomingMatchesGrid');
+            const archiveGrid = document.getElementById('archiveMatchesGrid');
+
+            const activeOnes = matches.filter(m => m.status === 'upcoming' || m.status === 'live')
+                .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+            const archived = matches.filter(m => m.status === 'finished' || m.status === 'canceled')
+                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+            const featured = activeOnes.find(m => m.status === 'live') || activeOnes[0];
+            const remainingUpcoming = activeOnes.filter(m => m !== featured);
+
+            nextWrap.innerHTML = featured
+                ? `<div class="featured-card-wrap">${matchCardHTML(featured)}</div>`
+                : `<div class="empty-state">لا توجد مباراة قادمة حاليًا لهذه الفئة.</div>`;
+
+            upcomingGrid.innerHTML = remainingUpcoming.length
+                ? remainingUpcoming.map(matchCardHTML).join('')
+                : `<div class="empty-state">لا توجد مباريات أخرى قادمة.</div>`;
+
+            archiveGrid.innerHTML = archived.length
+                ? archived.map(matchCardHTML).join('')
+                : `<div class="empty-state">لا يوجد أرشيف مباريات بعد.</div>`;
+
+            document.querySelectorAll('[data-match-details]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const m = JSON.parse(btn.dataset.matchDetails.replace(/&apos;/g, "'"));
+                    openMatchDetails(m);
+                });
+            });
+        }
+
+        // ============================================================
+        // TOURNAMENTS / MESSAGES
+        // ============================================================
         function renderTournaments(tournaments) {
             const grid = document.getElementById('tournamentsGrid');
             if (!tournaments.length) { grid.innerHTML = '<div class="empty-state">الفئة غير مشاركة في أي بطولة حاليًا.</div>'; return; }
@@ -682,6 +876,16 @@
             document.getElementById('statMatches').textContent = matchesCount;
             document.title = `فئة ${CATEGORY} | ETOILE CHELGHOUM LAID ACADEMY`;
         }
+
+        // ============================================================
+        // MODAL CONTROLS
+        // ============================================================
+        document.getElementById('closeDetailsModal').addEventListener('click', () => {
+            document.getElementById('detailsModal').classList.remove('active');
+        });
+        document.getElementById('detailsModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
 
         // ============================================================
         // INIT

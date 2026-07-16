@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ملف اللاعب | ETOILE CHELGHOUM LAID ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+<style>
+    :root {
+        --primary-dark:#0E4832; --primary-mid:#136F46; --red-accent:#C8102E;
+        --gold:#D4AF37; --gold-light:#F3DFA0; --white:#F2F2F2; --black:#1A1A1A;
+        --shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
+        --shadow-medium: 0 12px 40px rgba(0,0,0,0.15);
+        --ticker-height: 42px; --navbar-height: 70px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Cairo',sans-serif; direction:rtl; background:#f4f6f5; color:var(--black); padding-top:calc(var(--ticker-height) + var(--navbar-height)); }
+    a { text-decoration:none; color:inherit; }
+    .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+    .ticker-wrap { position:fixed; top:0; left:0; width:100%; height:var(--ticker-height); z-index:1001; background:linear-gradient(90deg, var(--gold-light), var(--gold)); border-bottom:2px solid var(--primary-dark); overflow:hidden; display:flex; align-items:center; }
+    .ticker { display:flex; gap:40px; animation: tickerScroll 32s linear infinite; white-space:nowrap; width:max-content; }
+    .ticker-item { display:flex; align-items:center; gap:14px; color:var(--primary-dark); font-weight:700; font-size:0.9rem; }
+    @keyframes tickerScroll { 0% { transform:translateX(100%); } 100% { transform:translateX(-100%); } }
+
+    .navbar { position:fixed; top:var(--ticker-height); left:0; width:100%; z-index:999; background:rgba(14,72,50,0.95); backdrop-filter:blur(16px); padding:14px 0; }
+    .navbar .container { display:flex; align-items:center; justify-content:space-between; }
+    .navbar .logo-link { display:flex; align-items:center; gap:10px; color:var(--white); font-family:'Bebas Neue'; font-size:1.2rem; letter-spacing:2px; }
+    .navbar .logo-link img { width:38px; height:38px; border-radius:50%; background:var(--white); padding:2px; }
+    .navbar .back-link { color:rgba(255,255,255,0.85); font-weight:600; font-size:0.88rem; display:flex; align-items:center; gap:8px; }
+    .navbar .back-link:hover { color:var(--gold); }
+
+    .profile-hero {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-mid));
+        padding: 50px 0 70px; position:relative; overflow:hidden; color:var(--white);
+    }
+    .profile-hero::before { content:'★'; position:absolute; font-size:20rem; color:rgba(255,255,255,0.04); top:-60px; left:-40px; font-family:'Bebas Neue'; }
+    .profile-head { display:flex; gap:30px; align-items:center; position:relative; z-index:2; flex-wrap:wrap; }
+    .profile-photo {
+        width:150px; height:150px; border-radius:50%; object-fit:cover; border:4px solid var(--gold);
+        box-shadow:var(--shadow-medium); background:var(--primary-dark); flex-shrink:0;
+    }
+    .profile-info h1 { font-family:'Bebas Neue'; font-size:2.6rem; letter-spacing:2px; }
+    .profile-info .pos { color: var(--gold-light); font-weight:700; font-size:1rem; margin-top:4px; }
+    .profile-badges { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+    .profile-badges span { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); padding:6px 16px; border-radius:30px; font-size:0.82rem; }
+    .profile-number {
+        position:absolute; left:24px; top:24px; background:var(--red-accent); color:var(--white);
+        font-family:'Bebas Neue'; font-size:2rem; width:56px; height:56px; border-radius:50%;
+        display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-medium);
+    }
+
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin:-40px 0 40px; position:relative; z-index:3; }
+    .info-card { background:var(--white); border-radius:18px; padding:18px; box-shadow:var(--shadow-medium); text-align:center; }
+    .info-card i { color:var(--red-accent); font-size:1.3rem; margin-bottom:8px; }
+    .info-card .val { font-family:'Bebas Neue'; font-size:1.3rem; color:var(--primary-dark); }
+    .info-card .lbl { font-size:0.78rem; color:#888; font-weight:600; }
+
+    .section { padding: 30px 0; }
+    .section h2 { font-family:'Bebas Neue'; font-size:1.6rem; color:var(--primary-dark); margin-bottom:16px; position:relative; display:inline-block; }
+    .section h2::after { content:''; position:absolute; bottom:-6px; right:0; width:50px; height:3px; background:var(--red-accent); border-radius:4px; }
+    .health-card { background:var(--white); border-radius:18px; padding:20px; box-shadow:var(--shadow-soft); }
+    .health-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0; font-size:0.92rem; }
+    .health-row:last-child { border-bottom:none; }
+    .health-row b { color:var(--primary-dark); }
+
+    .not-found { text-align:center; padding:100px 20px; }
+    .not-found i { font-size:3rem; color:var(--red-accent); margin-bottom:16px; }
+    .not-found a { color:var(--primary-mid); font-weight:700; display:inline-block; margin-top:14px; }
+
+    @media (max-width:600px) {
+        .profile-head { flex-direction:column; text-align:center; }
+        .profile-photo { width:120px; height:120px; }
+        .profile-number { position:static; margin-bottom:10px; }
+    }
+</style>
+</head>
+<body>
+    <div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo-link">
+                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" onerror="this.style.display='none'" />
+                <span>ETOILE CHELGHOUM LAID</span>
+            </a>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> الرئيسية</a>
+        </div>
+    </nav>
+
+    <div id="content">
+        <!-- يُملأ ديناميكيًا -->
+    </div>
+
+    <script>
+        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        const LOGO_URL = 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true';
+        const params = new URLSearchParams(window.location.search);
+        const playerId = params.get('id');
+        const statusLabels = { active:'نشيط', injured:'مصاب', suspended:'موقوف' };
+
+        async function fetchNode(node, fallback) {
+            try {
+                const res = await fetch(`${DB_URL}${node}.json`);
+                const data = await res.json();
+                return data || fallback;
+            } catch { return fallback; }
+        }
+
+        function renderTicker(news) {
+            const ticker = document.getElementById('ticker');
+            const items = [...news, ...news];
+            ticker.innerHTML = items.map(n => `<span class="ticker-item"><i class="fas fa-star" style="color:var(--red-accent);font-size:0.6rem;"></i> ${n.text}</span>`).join('');
+        }
+
+        function renderNotFound() {
+            document.getElementById('content').innerHTML = `
+                <div class="container not-found">
+                    <i class="fas fa-user-slash"></i>
+                    <h2 style="font-family:'Bebas Neue';font-size:1.8rem;color:var(--primary-dark);">لم يتم العثور على اللاعب</h2>
+                    <p style="color:#888;margin-top:8px;">قد يكون الرابط غير صحيح أو تم حذف الملف.</p>
+                    <a href="index.html">← العودة للصفحة الرئيسية</a>
+                </div>`;
+        }
+
+        function renderProfile(p) {
+            document.title = `${p.name} | ETOILE CHELGHOUM LAID ACADEMY`;
+            document.getElementById('content').innerHTML = `
+                <section class="profile-hero">
+                    <div class="container">
+                        <div class="profile-number">${p.number ?? '-'}</div>
+                        <div class="profile-head">
+                            <img class="profile-photo" src="${p.photoUrl || ''}" onerror="this.style.visibility='hidden'" />
+                            <div class="profile-info">
+                                <h1>${p.name || 'لاعب'}</h1>
+                                <div class="pos">${p.position || ''}</div>
+                                <div class="profile-badges">
+                                    <span><i class="fas fa-layer-group"></i> ${p.category || '-'}</span>
+                                    <span><i class="fas fa-circle" style="font-size:0.6rem;"></i> ${statusLabels[p.status] || 'نشيط'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="container">
+                    <div class="info-grid">
+                        <div class="info-card"><i class="fas fa-cake-candles"></i><div class="val">${p.birthYear || '-'}</div><div class="lbl">سنة الميلاد</div></div>
+                        <div class="info-card"><i class="fas fa-ruler-vertical"></i><div class="val">${p.height || '-'}</div><div class="lbl">الطول (سم)</div></div>
+                        <div class="info-card"><i class="fas fa-weight-scale"></i><div class="val">${p.weight || '-'}</div><div class="lbl">الوزن (كغ)</div></div>
+                        <div class="info-card"><i class="fas fa-shoe-prints"></i><div class="val">${p.preferredFoot || '-'}</div><div class="lbl">القدم المفضلة</div></div>
+                    </div>
+
+                    <div class="section">
+                        <h2>معلومات إضافية</h2>
+                        <div class="health-card">
+                            <div class="health-row"><span>النادي السابق</span><b>${p.previousClub || 'لا يوجد'}</b></div>
+                            <div class="health-row"><span>الحالة الصحية</span><b>${p.healthStatus || 'سليم'}</b></div>
+                            <div class="health-row"><span>ولي الأمر</span><b>${p.guardianName || '-'}</b></div>
+                            <div class="health-row"><span>رقم الهاتف</span><b>${p.phone || '-'}</b></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        (async function init() {
+            const [players, news] = await Promise.all([
+                fetchNode('players', {}),
+                fetchNode('news', [{ text:'✧ افتتاح التسجيلات للموسم الجديد 2026-2027' }])
+            ]);
+            renderTicker(news);
+
+            if (!playerId) return renderNotFound();
+            // البحث بالـ id الحقيقي في Firebase، أو بالاسم كخطة بديلة (للتوافق مع بيانات قديمة)
+            let player = players[playerId];
+            if (!player) {
+                player = Object.values(players).find(p => p.name === decodeURIComponent(playerId));
+            }
+            if (!player) return renderNotFound();
+            renderProfile(player);
+        })();
+    </script>
+</body>
+</html>

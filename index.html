@@ -604,7 +604,7 @@
         }
         .lightbox .close:hover { transform: rotate(90deg); color: var(--red-accent); }
 
-        /* ===== PLAYERS — بطاقتين فقط، صورة بدون وصف، تصميم Spotlight احترافي ===== */
+        /* ===== PLAYERS — بطاقتين فقط، تصميم نصي احترافي (رقم القميص) ===== */
         .players { padding: 80px 0; background: var(--white); }
         .player-grid {
             display: flex;
@@ -615,37 +615,67 @@
         .player-spotlight-card {
             position: relative;
             width: 280px;
-            aspect-ratio: 3 / 4;
+            min-height: 320px;
             border-radius: 28px;
             overflow: hidden;
             background: linear-gradient(160deg, var(--primary-dark), var(--black));
             box-shadow: var(--shadow-medium);
             border: 2px solid transparent;
             transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
         }
         .player-spotlight-card:hover {
             transform: translateY(-14px);
             box-shadow: var(--shadow-heavy);
             border-color: var(--gold);
         }
-        .player-spotlight-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s ease;
+        .player-spotlight-card .big-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 6rem;
+            color: rgba(212,175,55,0.9);
+            line-height: 1;
+            text-shadow: 0 8px 30px rgba(0,0,0,0.4);
         }
-        .player-spotlight-card:hover img { transform: scale(1.08); }
+        .player-spotlight-card h4 {
+            color: var(--white);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-top: 12px;
+        }
+        .player-spotlight-card .position {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        .player-spotlight-card .cat-tag {
+            margin-top: 14px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 0.8rem;
+            padding: 4px 16px;
+            border-radius: 30px;
+            letter-spacing: 1px;
+        }
         .player-spotlight-card::after {
-            content: '';
+            content: '★';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 35%);
-            pointer-events: none;
+            font-size: 10rem;
+            color: rgba(255,255,255,0.03);
+            top: -20px;
+            left: -20px;
+            font-family: 'Bebas Neue';
         }
         .player-spotlight-card .shine {
             position: absolute;
             inset: 0;
-            background: linear-gradient(115deg, transparent 40%, rgba(212,175,55,0.25) 50%, transparent 60%);
+            background: linear-gradient(115deg, transparent 40%, rgba(212,175,55,0.15) 50%, transparent 60%);
             transform: translateX(-120%);
             transition: transform 0.7s ease;
             pointer-events: none;
@@ -999,7 +1029,7 @@
             .age-item { padding: 20px 10px; }
             .age-item .icon-badge { width: 50px; height: 50px; }
             .age-item .label { font-size: 1.2rem; }
-            .player-spotlight-card { width: 220px; }
+            .player-spotlight-card { width: 220px; min-height: 280px; }
             .staff-spotlight-card { width: 180px; }
         }
     </style>
@@ -1109,7 +1139,7 @@
         <img src="" alt="Lightbox" id="lightboxImg" />
     </div>
 
-    <!-- ===== PLAYERS (بطاقتين فقط، صورة بدون وصف) ===== -->
+    <!-- ===== PLAYERS (بطاقتين فقط، تصميم نصي احترافي) ===== -->
     <section class="players" id="players">
         <div class="container">
             <h2 class="section-title center reveal">اللاعبون المميزون</h2>
@@ -1146,10 +1176,9 @@
         <div class="container">
             <h2 class="section-title center reveal">استمارة التسجيل</h2>
             <form class="reg-form reveal" id="regForm">
-                <div><label>اسم اللاعب</label><input type="text" name="firstName" placeholder="الاسم" required /></div>
+                <div><label>الاسم</label><input type="text" name="firstName" placeholder="الاسم" required /></div>
                 <div><label>اللقب</label><input type="text" name="lastName" placeholder="اللقب" required /></div>
                 <div><label>تاريخ الميلاد</label><input type="date" name="birthDate" required /></div>
-                <div><label>مكان الميلاد</label><input type="text" name="birthPlace" placeholder="مكان الميلاد" /></div>
                 <div>
                     <label>الفئة المطلوبة</label>
                     <select name="category">
@@ -1157,25 +1186,11 @@
                         <option>U13</option><option>U15</option><option>U17</option><option>U19</option>
                     </select>
                 </div>
-                <div><label>ولي الأمر</label><input type="text" name="guardianName" placeholder="اسم ولي الأمر" /></div>
-                <div><label>رقم الهاتف</label><input type="tel" name="phone" placeholder="رقم الهاتف" required /></div>
-                <div><label>البريد الإلكتروني</label><input type="email" name="email" placeholder="البريد الإلكتروني" /></div>
+                <div><label>اسم ولي الأمر</label><input type="text" name="guardianName" placeholder="اسم ولي الأمر" required /></div>
+                <div><label>رقم هاتف ولي الأمر</label><input type="tel" name="phone" placeholder="رقم الهاتف" required /></div>
+                <div><label>رقم هاتف احتياطي</label><input type="tel" name="altPhone" placeholder="رقم هاتف إضافي" /></div>
                 <div class="full"><label>العنوان</label><input type="text" name="address" placeholder="العنوان الكامل" /></div>
-                <div><label>المستوى الدراسي</label><input type="text" name="educationLevel" placeholder="المستوى الدراسي" /></div>
-                <div>
-                    <label>المركز</label>
-                    <select name="position"><option>حارس مرمى</option><option>مدافع</option><option>وسط</option><option>مهاجم</option></select>
-                </div>
-                <div>
-                    <label>القدم المفضلة</label>
-                    <select name="preferredFoot"><option>يمنى</option><option>يسرى</option><option>كلتاهما</option></select>
-                </div>
-                <div><label>الطول (سم)</label><input type="number" name="height" placeholder="الطول" /></div>
-                <div><label>الوزن (كغ)</label><input type="number" name="weight" placeholder="الوزن" /></div>
-                <div><label>الحالة الصحية</label><input type="text" name="healthStatus" placeholder="أي حالة صحية" /></div>
-                <div><label>النادي السابق</label><input type="text" name="previousClub" placeholder="النادي السابق" /></div>
-                <div><label>صورة اللاعب</label><input type="file" name="playerPhoto" accept="image/*" /></div>
-                <div><label>وثيقة الميلاد</label><input type="file" name="birthDoc" accept=".pdf,.jpg,.png" /></div>
+                <div class="full"><label>ملاحظات</label><textarea name="notes" placeholder="أي ملاحظات إضافية"></textarea></div>
                 <div class="full" style="display:flex; align-items:center; gap:12px;">
                     <input type="checkbox" id="consent" required style="width:auto;" />
                     <label for="consent" style="margin:0; cursor:pointer;">موافقة ولي الأمر</label>
@@ -1242,8 +1257,8 @@
                 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
             ].map(url => ({ url })),
             players: [
-                { name: 'أحمد زروقي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
-                { name: 'ياسين بن عمر', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
+                { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15' },
+                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17' }
             ],
             staff: [
                 { name: 'نبيل شلغوم', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
@@ -1321,14 +1336,17 @@
             }
         });
 
-        // بطاقتين فقط، صورة بدون أي وصف
+        // بطاقتين فقط، تصميم نصي احترافي (رقم القميص) بدون صور
         function renderPlayers(players) {
             const grid = document.getElementById('playerGrid');
             const featured = players.slice(0, 2);
             grid.innerHTML = featured.map(p => `
                 <div class="player-spotlight-card">
-                    <img src="${p.photoUrl}" alt="لاعب مميز" loading="lazy" onerror="this.style.display='none'" />
                     <div class="shine"></div>
+                    <div class="big-number">${p.number ?? '-'}</div>
+                    <h4>${p.name || ''}</h4>
+                    <p class="position">${p.position || ''}</p>
+                    ${p.category ? `<span class="cat-tag">${p.category}</span>` : ''}
                 </div>
             `).join('');
         }

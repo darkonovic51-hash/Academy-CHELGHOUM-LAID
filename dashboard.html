@@ -236,8 +236,14 @@
         <!-- ===== MAIN ===== -->
         <main class="main">
             <div class="topbar">
-                <h2 id="panelTitle">نظرة عامة</h2>
-                <a href="../index.html" class="view-site" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i> عرض الموقع</a>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button class="view-site" id="backBtn" style="background:var(--black);"><i class="fas fa-arrow-right"></i> رجوع</button>
+                    <h2 id="panelTitle">نظرة عامة</h2>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button class="view-site" id="refreshBtn" style="background:var(--gold); color:var(--black);"><i class="fas fa-rotate"></i> تحديث</button>
+                    <a href="../index.html" class="view-site" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i> عرض الموقع</a>
+                </div>
             </div>
 
             <!-- Overview -->
@@ -358,32 +364,41 @@
             sessions: {
                 node: 'sessions', title: 'الحصص التدريبية',
                 fields: [
-                    { key:'name', label:'اسم الحصة', type:'text', required:true },
+                    { key:'name', label:'عنوان الحصة', type:'text', required:true },
                     { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
-                    { key:'day', label:'اليوم', type:'text' },
-                    { key:'date', label:'التاريخ', type:'date' },
-                    { key:'time', label:'الساعة', type:'text' },
+                    { key:'day', label:'يوم التدريب', type:'text' },
+                    { key:'date', label:'تاريخ الحصة', type:'date' },
+                    { key:'time', label:'وقت البداية', type:'text' },
+                    { key:'endTime', label:'وقت النهاية', type:'text' },
                     { key:'field', label:'الملعب', type:'text' },
-                    { key:'coach', label:'المدرب', type:'text' },
-                    { key:'status', label:'الحالة', type:'select', options:[
-                        {value:'scheduled',label:'مجدولة'},{value:'finished',label:'منتهية'},{value:'canceled',label:'ملغاة'}] }
+                    { key:'coach', label:'المدرب المسؤول', type:'text' },
+                    { key:'sessionType', label:'نوع الحصة', type:'select', options:[
+                        {value:'تقنية',label:'تقنية'},{value:'بدنية',label:'بدنية'},
+                        {value:'تكتيكية',label:'تكتيكية'},{value:'مباراة تدريبية',label:'مباراة تدريبية'}] },
+                    { key:'description', label:'وصف مختصر', type:'textarea' },
+                    { key:'status', label:'حالة الحصة', type:'select', options:[
+                        {value:'scheduled',label:'مجدولة'},{value:'ongoing',label:'جارية'},
+                        {value:'finished',label:'منتهية'},{value:'canceled',label:'ملغاة'}] }
                 ]
             },
             matches: {
                 node: 'matches', title: 'المباريات',
                 fields: [
                     { key:'category', label:'الفئة', type:'select', options:catOptions, required:true },
-                    { key:'opponent', label:'الفريق المنافس', type:'text', required:true },
+                    { key:'opponent', label:'اسم الفريق المنافس', type:'text', required:true },
                     { key:'opponentLogo', label:'رابط شعار المنافس', type:'text' },
                     { key:'homeLogo', label:'رابط شعار الأكاديمية', type:'text' },
+                    { key:'tournament', label:'البطولة', type:'text' },
+                    { key:'round', label:'الجولة', type:'text' },
                     { key:'date', label:'التاريخ', type:'date' },
-                    { key:'time', label:'الساعة', type:'text' },
+                    { key:'time', label:'التوقيت', type:'text' },
                     { key:'field', label:'الملعب', type:'text' },
                     { key:'type', label:'نوع المباراة', type:'text' },
-                    { key:'status', label:'الحالة', type:'select', options:[
-                        {value:'upcoming',label:'قادمة'},{value:'finished',label:'انتهت'},{value:'canceled',label:'ملغاة'}] },
+                    { key:'status', label:'حالة المباراة', type:'select', options:[
+                        {value:'upcoming',label:'قادمة'},{value:'live',label:'جارية الآن'},
+                        {value:'finished',label:'انتهت'},{value:'canceled',label:'ملغاة'}] },
                     { key:'result', label:'النتيجة (بعد الانتهاء)', type:'text' },
-                    { key:'details', label:'رابط تفاصيل إضافي', type:'text' }
+                    { key:'details', label:'تفاصيل إضافية عن المباراة', type:'textarea' }
                 ]
             },
             tournaments: {
@@ -439,7 +454,25 @@
             }
         };
 
-        // كاش محلي للبيانات بعد كل تحميل، لتفادي الطلبات الزائدة
+        // ============================================================
+        // رفع ملف إلى Firebase Storage عبر REST API
+        // ============================================================
+        const STORAGE_BUCKET = 'academy-chelghoum-el-aide.firebasestorage.app';
+        async function uploadToStorage(file, pathPrefix) {
+            const path = `${pathPrefix}/${Date.now()}_${file.name}`;
+            const encodedPath = encodeURIComponent(path);
+            const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o?uploadType=media&name=${encodedPath}`;
+            const res = await fetch(uploadUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': file.type || 'application/octet-stream' },
+                body: file
+            });
+            if (!res.ok) throw new Error('فشل رفع الملف');
+            const data = await res.json();
+            return `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/${encodedPath}?alt=media&token=${data.downloadTokens || ''}`;
+        }
+
+        // كاش محلي للبيانات بعد كل تحميل
         const cache = {};
 
         // ============================================================
@@ -505,6 +538,27 @@
         });
         document.getElementById('mobileToggle').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // زر الرجوع: يرجع للوحة الرئيسية (نظرة عامة) إذا كنت في قسم آخر، أو للصفحة الرئيسية للموقع لو كنت أصلًا في نظرة عامة
+        document.getElementById('backBtn').addEventListener('click', () => {
+            const activePanel = document.querySelector('.nav-btn.active').dataset.panel;
+            if (activePanel !== 'overview') {
+                document.querySelector('.nav-btn[data-panel="overview"]').click();
+            } else {
+                window.location.href = '../index.html';
+            }
+        });
+
+        // زر التحديث: يعيد تحميل بيانات القسم الحالي فقط دون تحديث الصفحة كاملة
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('refreshBtn');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
+            const activePanel = document.querySelector('.nav-btn.active').dataset.panel;
+            await loadPanel(activePanel);
+            setTimeout(() => icon.classList.remove('fa-spin'), 400);
+            showToast('تم تحديث البيانات');
         });
 
         function loadPanel(key) {
@@ -598,6 +652,17 @@
             if (field.type === 'color') {
                 return `<input type="color" data-field="${field.key}" value="${val || '#0E4832'}" style="height:44px;padding:4px;" />`;
             }
+            // أي حقل اسمه فيه "url" أو "logo" أو "photo" بياخد زرار رفع صورة اختياري بجانب الخانة النصية
+            const isImageField = /url|logo|photo/i.test(field.key);
+            if (isImageField) {
+                return `
+                    <input type="text" data-field="${field.key}" value="${val}" placeholder="الصق رابط أو ارفع صورة" />
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                        <input type="file" accept="image/*" data-upload-for="${field.key}" style="font-size:0.8rem;" />
+                        <span class="upload-status" data-status-for="${field.key}" style="font-size:0.78rem; color:#999;"></span>
+                    </div>
+                `;
+            }
             return `<input type="${field.type}" data-field="${field.key}" value="${val}" ${field.required ? 'required' : ''} />`;
         }
 
@@ -609,6 +674,22 @@
                 <div><label>${f.label}</label>${fieldToHTML(f, item[f.key])}</div>
             `).join('');
             document.getElementById('modalOverlay').classList.add('active');
+
+            document.querySelectorAll('[data-upload-for]').forEach(input => {
+                input.addEventListener('change', async () => {
+                    const file = input.files[0];
+                    if (!file) return;
+                    const statusEl = document.querySelector(`[data-status-for="${input.dataset.uploadFor}"]`);
+                    statusEl.textContent = 'جارِ الرفع...';
+                    try {
+                        const url = await uploadToStorage(file, `admin-uploads/${key}/${input.dataset.uploadFor}`);
+                        document.querySelector(`[data-field="${input.dataset.uploadFor}"]`).value = url;
+                        statusEl.textContent = '✅ تم الرفع بنجاح';
+                    } catch (err) {
+                        statusEl.textContent = '⚠️ فشل الرفع، حاول مجددًا';
+                    }
+                });
+            });
 
             document.getElementById('saveBtn').onclick = async () => {
                 const payload = {};

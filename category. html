@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>صفحة الفئة | ETOILE CHELGHOUM LAID ACADEMY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <!-- مكتبات التصدير -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-dark: #0E4832;
+            --primary-mid: #136F46;
+            --red-accent: #C8102E;
+            --black: #1A1A1A;
+            --white: #F2F2F2;
+            --gold: #D4AF37;
+            --gold-light: #F3DFA0;
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.4);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --ticker-height: 42px;
+            --navbar-height: 78px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f8f8f8;
+            color: var(--black);
+            direction: rtl;
+            line-height: 1.7;
+            overflow-x: hidden;
+            padding-top: calc(var(--ticker-height) + var(--navbar-height));
+        }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        h1, h2, h3, .bebas {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .section-title {
+            font-size: 2.4rem;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 0;
+            width: 70px;
+            height: 4px;
+            background: var(--red-accent);
+            border-radius: 4px;
+        }
+        .section-block { padding: 60px 0; }
+        .section-block.alt { background: var(--white); }
+
+        /* ===== TICKER (نفس هوية الرئيسية) ===== */
+        .ticker-wrap {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--ticker-height);
+            z-index: 1001; background: linear-gradient(90deg, var(--gold-light) 0%, var(--gold) 100%);
+            border-bottom: 2px solid var(--primary-dark); overflow: hidden; display: flex; align-items: center;
+        }
+        .ticker { display: flex; align-items: center; gap: 40px; animation: tickerScroll 32s linear infinite; white-space: nowrap; width: max-content; }
+        .ticker-item { display: flex; align-items: center; gap: 14px; color: var(--primary-dark); font-weight: 700; font-size: 0.92rem; }
+        .ticker-item .dot { width: 7px; height: 7px; background: var(--red-accent); border-radius: 50%; animation: pulseDot 1.6s ease-in-out infinite; }
+        .ticker-item .separator-logo { width: 20px; height: 20px; border-radius: 50%; object-fit: contain; background: var(--white); padding: 2px; margin: 0 10px; }
+        @keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+        /* ===== NAVBAR (مبسّطة لصفحة داخلية) ===== */
+        .navbar {
+            position: fixed; top: var(--ticker-height); left: 0; width: 100%; z-index: 999;
+            background: rgba(14, 72, 50, 0.95); backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.08); padding: 14px 0;
+        }
+        .navbar .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .navbar .logo-link { display: flex; align-items: center; gap: 10px; color: var(--white); font-family: 'Bebas Neue'; font-size: 1.3rem; letter-spacing: 2px; }
+        .navbar .logo-link img { width: 42px; height: 42px; border-radius: 50%; background: var(--white); padding: 2px; }
+        .navbar .back-link { color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .navbar .back-link:hover { color: var(--gold); }
+
+        /* ===== CATEGORY BANNER ===== */
+        .cat-banner {
+            position: relative; min-height: 46vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 100%);
+            overflow: hidden; text-align: center; color: var(--white);
+        }
+        .cat-banner::before {
+            content: ''; position: absolute; right: -60px; top: -80px; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(212,175,55,0.15), transparent 70%);
+        }
+        .cat-banner-content { position: relative; z-index: 2; padding: 30px 20px; }
+        .cat-banner .cat-tag {
+            display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
+            padding: 6px 24px; border-radius: 40px; font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 16px;
+        }
+        .cat-banner h1 { font-size: clamp(3rem, 10vw, 6rem); text-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .cat-banner .sub { font-size: 1.2rem; font-weight: 300; color: rgba(255,255,255,0.85); margin-top: 8px; }
+        .cat-banner .stats-row { display: flex; gap: 30px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+        .cat-banner .stat-pill {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px 22px; border-radius: 40px; font-size: 0.9rem;
+        }
+        .cat-banner .stat-pill b { color: var(--gold); font-family: 'Bebas Neue'; font-size: 1.1rem; margin-left: 6px; }
+
+        /* ===== PLAYERS TABLE ===== */
+        .table-toolbar {
+            display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; background: var(--white); padding: 18px; border-radius: 20px; box-shadow: var(--shadow-soft);
+        }
+        .toolbar-left, .toolbar-right { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .table-toolbar input[type="text"], .table-toolbar select {
+            padding: 10px 16px; border-radius: 40px; border: 1px solid #ddd; font-family: 'Cairo'; font-size: 0.9rem;
+            background: #fafafa; transition: 0.3s;
+        }
+        .table-toolbar input:focus, .table-toolbar select:focus { outline: none; border-color: var(--primary-mid); }
+        .export-btn {
+            display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 40px; border: none;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.3s; color: var(--white);
+        }
+        .export-btn.pdf { background: var(--red-accent); }
+        .export-btn.pdf:hover { background: #a00d24; transform: translateY(-2px); }
+        .export-btn.excel { background: #1D6F42; }
+        .export-btn.excel:hover { background: #14512f; transform: translateY(-2px); }
+
+        .players-table-wrap { background: var(--white); border-radius: 24px; box-shadow: var(--shadow-soft); overflow: hidden; }
+        table.players-table { width: 100%; border-collapse: collapse; }
+        table.players-table thead { background: var(--primary-dark); color: var(--white); }
+        table.players-table th {
+            padding: 16px 14px; font-family: 'Bebas Neue'; letter-spacing: 1px; font-size: 1rem;
+            text-align: center; cursor: pointer; user-select: none; white-space: nowrap;
+        }
+        table.players-table th i { margin-right: 6px; font-size: 0.75rem; opacity: 0.6; }
+        table.players-table td { padding: 12px 14px; text-align: center; border-bottom: 1px solid #eee; font-size: 0.92rem; }
+        table.players-table tbody tr { transition: 0.25s; }
+        table.players-table tbody tr:hover { background: #f4faf6; }
+        table.players-table .p-photo {
+            width: 44px; height: 44px; border-radius: 50%; object-fit: cover; margin: 0 auto;
+            border: 2px solid var(--gold);
+        }
+        .status-badge { padding: 4px 14px; border-radius: 30px; font-size: 0.78rem; font-weight: 700; }
+        .status-badge.active { background: #E1F6EA; color: #1D8348; }
+        .status-badge.injured { background: #FDEAEA; color: var(--red-accent); }
+        .status-badge.suspended { background: #FFF3D6; color: #B8860B; }
+        .no-results { text-align: center; padding: 40px; color: #999; }
+
+        .pagination { display: flex; justify-content: center; gap: 8px; padding: 20px; flex-wrap: wrap; }
+        .pagination button {
+            width: 36px; height: 36px; border-radius: 50%; border: 1px solid #ddd; background: var(--white);
+            cursor: pointer; font-weight: 700; transition: 0.25s; font-family: 'Cairo';
+        }
+        .pagination button.active { background: var(--primary-mid); color: var(--white); border-color: var(--primary-mid); }
+        .pagination button:hover:not(.active) { background: #f0f0f0; }
+
+        /* ===== SESSIONS / MATCHES / TOURNAMENTS CARDS ===== */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+
+        .session-card {
+            background: var(--white); border-radius: 22px; box-shadow: var(--shadow-soft); overflow: hidden;
+            border-right: 5px solid var(--primary-mid); transition: 0.3s; padding: 20px;
+        }
+        .session-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
+        .session-card h4 { font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 10px; font-family: 'Cairo'; font-weight: 700; }
+        .session-card .row { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #555; margin-bottom: 6px; }
+        .session-card .row i { color: var(--red-accent); width: 16px; }
+        .session-card .status-line { margin-top: 12px; }
+
+        .match-card {
+            background: linear-gradient(135deg, var(--primary-dark), #0a3325); border-radius: 22px; overflow: hidden;
+            box-shadow: var(--shadow-soft); color: var(--white); transition: 0.35s; position: relative;
+        }
+        .match-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
+        .match-card .match-top { display: flex; align-items: center; justify-content: space-between; padding: 20px; }
+        .match-card .team { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+        .match-card .team img { width: 52px; height: 52px; object-fit: contain; background: var(--white); border-radius: 50%; padding: 4px; }
+        .match-card .team span { font-size: 0.85rem; font-weight: 700; }
+        .match-card .vs { font-family: 'Bebas Neue'; font-size: 1.5rem; color: var(--gold); }
+        .match-card .score { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--white); }
+        .match-card .match-meta { background: rgba(0,0,0,0.25); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
+        .match-card .match-meta span { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); }
+        .match-card .status-tag {
+            position: absolute; top: 14px; left: 14px; padding: 4px 14px; border-radius: 30px; font-size: 0.72rem; font-weight: 700;
+        }
+        .status-tag.upcoming { background: var(--gold); color: var(--black); }
+        .status-tag.finished { background: #444; color: var(--white); }
+        .status-tag.canceled { background: var(--red-accent); color: var(--white); }
+        .match-card .details-btn {
+            display: block; text-align: center; padding: 10px; background: rgba(255,255,255,0.06);
+            font-size: 0.85rem; font-weight: 700; color: var(--gold); border-top: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+        .match-card .details-btn:hover { background: rgba(255,255,255,0.12); }
+
+        .tournament-card {
+            background: var(--white); border-radius: 22px; box-shadow: var(--shadow-soft); overflow: hidden; transition: 0.3s;
+        }
+        .tournament-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
+        .tournament-card .t-head { display: flex; align-items: center; gap: 14px; padding: 18px; background: var(--primary-dark); color: var(--white); }
+        .tournament-card .t-head img { width: 50px; height: 50px; object-fit: contain; background: var(--white); border-radius: 50%; padding: 4px; }
+        .tournament-card .t-head h4 { font-family: 'Bebas Neue'; font-size: 1.2rem; letter-spacing: 1px; }
+        .tournament-card .t-body { padding: 18px; font-size: 0.88rem; color: #555; }
+        .tournament-card .t-body .row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .tournament-card .t-body .row i { color: var(--red-accent); width: 16px; }
+        .tournament-card .files-link { display: inline-block; margin-top: 8px; color: var(--primary-mid); font-weight: 700; font-size: 0.85rem; }
+
+        /* ===== MESSAGES ===== */
+        .msg-card {
+            background: var(--white); border-radius: 18px; box-shadow: var(--shadow-soft); padding: 18px 22px;
+            display: flex; gap: 16px; align-items: flex-start; border-right: 4px solid var(--gold); margin-bottom: 16px;
+        }
+        .msg-card .msg-icon {
+            width: 42px; height: 42px; border-radius: 50%; background: var(--primary-dark); color: var(--white);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;
+        }
+        .msg-card .msg-type { font-weight: 700; color: var(--primary-dark); font-size: 0.85rem; margin-bottom: 4px; }
+        .msg-card .msg-date { color: #999; font-size: 0.78rem; margin-top: 6px; }
+        .msg-card p.msg-text { color: #444; font-size: 0.92rem; }
+
+        .empty-state { text-align: center; padding: 40px; color: #999; background: var(--white); border-radius: 20px; }
+
+        @media (max-width: 768px) {
+            .cat-banner { min-height: 34vh; }
+            table.players-table { font-size: 0.8rem; }
+            table.players-table th, table.players-table td { padding: 8px 6px; }
+            .players-table-wrap { overflow-x: auto; }
+            table.players-table { min-width: 720px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== TICKER (يقرأ نفس أخبار الرئيسية) ===== -->
+    <div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
+
+    <!-- ===== NAVBAR مبسّطة ===== -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo-link">
+                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" alt="logo" onerror="this.style.display='none'" />
+                <span>ETOILE CHELGHOUM LAID</span>
+            </a>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
+        </div>
+    </nav>
+
+    <!-- ===== CATEGORY BANNER ===== -->
+    <section class="cat-banner">
+        <div class="cat-banner-content">
+            <span class="cat-tag" id="catTag">فئة</span>
+            <h1 id="catTitle">U--</h1>
+            <p class="sub" id="catSubLabel">فئة عمرية</p>
+            <div class="stats-row">
+                <div class="stat-pill"><b id="statPlayers">0</b> لاعب</div>
+                <div class="stat-pill"><b id="statSessions">0</b> حصة قادمة</div>
+                <div class="stat-pill"><b id="statMatches">0</b> مباراة</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- ===== PLAYERS TABLE ===== -->
+        <section class="section-block">
+            <h2 class="section-title">جدول اللاعبين</h2>
+            <div class="table-toolbar">
+                <div class="toolbar-left">
+                    <input type="text" id="searchInput" placeholder="🔍 بحث بالاسم..." />
+                    <select id="positionFilter">
+                        <option value="">كل المراكز</option>
+                        <option value="حارس مرمى">حارس مرمى</option>
+                        <option value="مدافع">مدافع</option>
+                        <option value="وسط">وسط</option>
+                        <option value="مهاجم">مهاجم</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="">كل الحالات</option>
+                        <option value="active">نشيط</option>
+                        <option value="injured">مصاب</option>
+                        <option value="suspended">موقوف</option>
+                    </select>
+                </div>
+                <div class="toolbar-right">
+                    <button class="export-btn pdf" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button class="export-btn excel" id="exportExcelBtn"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+            </div>
+            <div class="players-table-wrap">
+                <table class="players-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="photo">الصورة</th>
+                            <th data-sort="name">الاسم <i class="fas fa-sort"></i></th>
+                            <th data-sort="birthYear">سنة الميلاد <i class="fas fa-sort"></i></th>
+                            <th data-sort="position">المركز <i class="fas fa-sort"></i></th>
+                            <th data-sort="number">الرقم <i class="fas fa-sort"></i></th>
+                            <th data-sort="status">الحالة <i class="fas fa-sort"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="playersTableBody"></tbody>
+                </table>
+                <div id="noResults" class="no-results" style="display:none;">لا توجد نتائج مطابقة للبحث.</div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- ===== TRAINING SESSIONS ===== -->
+        <section class="section-block alt">
+            <h2 class="section-title">الحصص التدريبية</h2>
+            <div class="cards-grid" id="sessionsGrid"></div>
+        </section>
+
+        <!-- ===== MATCHES ===== -->
+        <section class="section-block">
+            <h2 class="section-title">المباريات</h2>
+            <div class="cards-grid" id="matchesGrid"></div>
+        </section>
+
+        <!-- ===== TOURNAMENTS ===== -->
+        <section class="section-block alt">
+            <h2 class="section-title">البطولات</h2>
+            <div class="cards-grid" id="tournamentsGrid"></div>
+        </section>
+
+        <!-- ===== ACADEMY MESSAGES ===== -->
+        <section class="section-block" style="padding-bottom:100px;">
+            <h2 class="section-title">رسائل الأكاديمية</h2>
+            <div id="messagesList"></div>
+        </section>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIG
+        // ============================================================
+        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        const LOGO_URL = 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true';
+        const params = new URLSearchParams(window.location.search);
+        const CATEGORY = params.get('cat') || 'U7';
+
+        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U19:'أولمبي' };
+        const statusLabels = { active: 'نشيط', injured: 'مصاب', suspended: 'موقوف' };
+        const msgTypeIcons = { 'إعلان':'fa-bullhorn','تنبيه':'fa-triangle-exclamation','اجتماع':'fa-people-group','إشعار':'fa-bell','تهنئة':'fa-award','تعليق':'fa-comment' };
+
+        // بيانات احتياطية بسيطة لو النود فاضي أو فشل الاتصال
+        const FALLBACK = {
+            players: [
+                { name: 'أحمد زروقي', number: 10, position: 'وسط', birthYear: 2011, status: 'active', photoUrl: '', category: CATEGORY },
+                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', birthYear: 2011, status: 'injured', photoUrl: '', category: CATEGORY }
+            ],
+            sessions: [
+                { name: 'حصة تقنية', day: 'الأحد', date: '2026-07-20', time: '17:00', field: 'الملعب الرئيسي', coach: 'كريم عبدي', status: 'scheduled', category: CATEGORY }
+            ],
+            matches: [],
+            tournaments: [],
+            messages: []
+        };
+
+        // ============================================================
+        // FIREBASE REST HELPER
+        // ============================================================
+        async function fetchNode(node, fallback) {
+            try {
+                const res = await fetch(`${DB_URL}${node}.json`);
+                if (!res.ok) throw new Error('bad response');
+                const data = await res.json();
+                if (!data) return fallback;
+                return Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+            } catch (err) {
+                console.warn(`تعذّرت قراءة "${node}"، استخدام بيانات احتياطية.`, err);
+                return fallback;
+            }
+        }
+        function byCategory(list) {
+            return list.filter(item => item.category === CATEGORY);
+        }
+
+        // ============================================================
+        // TICKER
+        // ============================================================
+        function renderTicker(news) {
+            const ticker = document.getElementById('ticker');
+            const items = [...news, ...news];
+            ticker.innerHTML = items.map(n => `
+                <span class="ticker-item">
+                    <span class="dot"></span>${n.text}
+                    <img class="separator-logo" src="${LOGO_URL}" onerror="this.style.display='none'" />
+                </span>`).join('');
+        }
+
+        // ============================================================
+        // PLAYERS TABLE STATE
+        // ============================================================
+        let allPlayers = [];
+        let filteredPlayers = [];
+        let sortKey = null, sortAsc = true;
+        let currentPage = 1;
+        const PAGE_SIZE = 8;
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const pos = document.getElementById('positionFilter').value;
+            const stat = document.getElementById('statusFilter').value;
+            filteredPlayers = allPlayers.filter(p => {
+                const matchSearch = !search || (p.name || '').toLowerCase().includes(search);
+                const matchPos = !pos || p.position === pos;
+                const matchStat = !stat || p.status === stat;
+                return matchSearch && matchPos && matchStat;
+            });
+            if (sortKey) {
+                filteredPlayers.sort((a, b) => {
+                    let va = a[sortKey] ?? '', vb = b[sortKey] ?? '';
+                    if (typeof va === 'string') va = va.toLowerCase();
+                    if (typeof vb === 'string') vb = vb.toLowerCase();
+                    if (va < vb) return sortAsc ? -1 : 1;
+                    if (va > vb) return sortAsc ? 1 : -1;
+                    return 0;
+                });
+            }
+            currentPage = 1;
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('playersTableBody');
+            const noResults = document.getElementById('noResults');
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const pageItems = filteredPlayers.slice(start, start + PAGE_SIZE);
+
+            if (filteredPlayers.length === 0) {
+                tbody.innerHTML = '';
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                tbody.innerHTML = pageItems.map(p => `
+                    <tr>
+                        <td><img class="p-photo" src="${p.photoUrl || ''}" onerror="this.style.visibility='hidden'" /></td>
+                        <td>${p.name || '-'}</td>
+                        <td>${p.birthYear || '-'}</td>
+                        <td>${p.position || '-'}</td>
+                        <td>${p.number ?? '-'}</td>
+                        <td><span class="status-badge ${p.status || 'active'}">${statusLabels[p.status] || 'نشيط'}</span></td>
+                    </tr>
+                `).join('');
+            }
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const wrap = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredPlayers.length / PAGE_SIZE);
+            if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+            wrap.innerHTML = html;
+            wrap.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentPage = parseInt(btn.dataset.page, 10);
+                    renderTable();
+                });
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('positionFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+        document.querySelectorAll('table.players-table th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sort;
+                if (key === 'photo') return;
+                if (sortKey === key) { sortAsc = !sortAsc; } else { sortKey = key; sortAsc = true; }
+                applyFilters();
+            });
+        });
+
+        // ===== EXPORT =====
+        document.getElementById('exportExcelBtn').addEventListener('click', () => {
+            const rows = filteredPlayers.map(p => ({
+                'الاسم': p.name || '', 'سنة الميلاد': p.birthYear || '', 'المركز': p.position || '',
+                'الرقم': p.number ?? '', 'الحالة': statusLabels[p.status] || 'نشيط'
+            }));
+            const ws = XLSX.utils.json_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, CATEGORY);
+            XLSX.writeFile(wb, `لاعبين_${CATEGORY}.xlsx`);
+        });
+
+        document.getElementById('exportPdfBtn').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.autoTable({
+                head: [['الحالة', 'الرقم', 'المركز', 'سنة الميلاد', 'الاسم']],
+                body: filteredPlayers.map(p => [
+                    statusLabels[p.status] || 'نشيط', p.number ?? '', p.position || '', p.birthYear || '', p.name || ''
+                ]),
+                styles: { font: 'helvetica', halign: 'center' },
+                headStyles: { fillColor: [14, 72, 50] }
+            });
+            doc.save(`لاعبين_${CATEGORY}.pdf`);
+        });
+
+        // ============================================================
+        // SESSIONS / MATCHES / TOURNAMENTS / MESSAGES
+        // ============================================================
+        const sessionStatusLabels = { scheduled: 'مجدولة', finished: 'منتهية', canceled: 'ملغاة' };
+        function renderSessions(sessions) {
+            const grid = document.getElementById('sessionsGrid');
+            if (!sessions.length) { grid.innerHTML = '<div class="empty-state">لا توجد حصص مجدولة حاليًا لهذه الفئة.</div>'; return; }
+            grid.innerHTML = sessions.map(s => `
+                <div class="session-card">
+                    <h4>${s.name || 'حصة تدريبية'}</h4>
+                    <div class="row"><i class="fas fa-calendar-day"></i> ${s.day || ''} - ${s.date || ''}</div>
+                    <div class="row"><i class="fas fa-clock"></i> ${s.time || ''}</div>
+                    <div class="row"><i class="fas fa-map-marker-alt"></i> ${s.field || ''}</div>
+                    <div class="row"><i class="fas fa-user-tie"></i> ${s.coach || ''}</div>
+                    <div class="status-line"><span class="status-badge active">${sessionStatusLabels[s.status] || 'مجدولة'}</span></div>
+                </div>
+            `).join('');
+        }
+
+        function renderMatches(matches) {
+            const grid = document.getElementById('matchesGrid');
+            if (!matches.length) { grid.innerHTML = '<div class="empty-state">لا توجد مباريات مسجلة حاليًا لهذه الفئة.</div>'; return; }
+            grid.innerHTML = matches.map(m => `
+                <div class="match-card">
+                    <span class="status-tag ${m.status || 'upcoming'}">${{upcoming:'قادمة',finished:'انتهت',canceled:'ملغاة'}[m.status] || 'قادمة'}</span>
+                    <div class="match-top">
+                        <div class="team"><img src="${m.homeLogo || LOGO_URL}" onerror="this.style.visibility='hidden'" /><span>الأكاديمية</span></div>
+                        <div class="vs">${m.status === 'finished' && m.result ? `<span class="score">${m.result}</span>` : 'VS'}</div>
+                        <div class="team"><img src="${m.opponentLogo || ''}" onerror="this.style.visibility='hidden'" /><span>${m.opponent || 'الفريق المنافس'}</span></div>
+                    </div>
+                    <div class="match-meta">
+                        <span><i class="fas fa-calendar-day"></i> ${m.date || ''}</span>
+                        <span><i class="fas fa-clock"></i> ${m.time || ''}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${m.field || ''}</span>
+                        <span><i class="fas fa-tag"></i> ${m.type || ''}</span>
+                    </div>
+                    ${m.details ? `<a class="details-btn" href="${m.details}">عرض التفاصيل ←</a>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderTournaments(tournaments) {
+            const grid = document.getElementById('tournamentsGrid');
+            if (!tournaments.length) { grid.innerHTML = '<div class="empty-state">الفئة غير مشاركة في أي بطولة حاليًا.</div>'; return; }
+            grid.innerHTML = tournaments.map(t => `
+                <div class="tournament-card">
+                    <div class="t-head">
+                        <img src="${t.logo || LOGO_URL}" onerror="this.style.visibility='hidden'" />
+                        <h4>${t.name || 'بطولة'}</h4>
+                    </div>
+                    <div class="t-body">
+                        <div class="row"><i class="fas fa-user-tie"></i> المنظم: ${t.organizer || '-'}</div>
+                        <div class="row"><i class="fas fa-map-marker-alt"></i> ${t.place || '-'}</div>
+                        <div class="row"><i class="fas fa-calendar"></i> ${t.date || ''} ${t.period ? `(${t.period})` : ''}</div>
+                        <div class="row"><i class="fas fa-users"></i> عدد الفرق: ${t.teamsCount || '-'}</div>
+                        ${t.standings ? `<div class="row"><i class="fas fa-list-ol"></i> ${t.standings}</div>` : ''}
+                        ${t.files ? `<a class="files-link" href="${t.files}" target="_blank"><i class="fas fa-paperclip"></i> الملفات المرفقة</a>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMessages(messages) {
+            const list = document.getElementById('messagesList');
+            if (!messages.length) { list.innerHTML = '<div class="empty-state">لا توجد رسائل جديدة من إدارة الأكاديمية.</div>'; return; }
+            const sorted = [...messages].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            list.innerHTML = sorted.map(m => `
+                <div class="msg-card">
+                    <div class="msg-icon"><i class="fas ${msgTypeIcons[m.type] || 'fa-comment-dots'}"></i></div>
+                    <div>
+                        <div class="msg-type">${m.type || 'رسالة'}</div>
+                        <p class="msg-text">${m.text || ''}</p>
+                        ${m.date ? `<div class="msg-date">${m.date}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // BANNER + STATS
+        // ============================================================
+        function renderBanner(playersCount, sessionsCount, matchesCount) {
+            document.getElementById('catTag').textContent = 'فئة عمرية';
+            document.getElementById('catTitle').textContent = CATEGORY;
+            document.getElementById('catSubLabel').textContent = ageLabels[CATEGORY] || 'فئة';
+            document.getElementById('statPlayers').textContent = playersCount;
+            document.getElementById('statSessions').textContent = sessionsCount;
+            document.getElementById('statMatches').textContent = matchesCount;
+            document.title = `فئة ${CATEGORY} | ETOILE CHELGHOUM LAID ACADEMY`;
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        (async function init() {
+            const [players, sessions, matches, tournaments, messages, news] = await Promise.all([
+                fetchNode('players', FALLBACK.players),
+                fetchNode('sessions', FALLBACK.sessions),
+                fetchNode('matches', FALLBACK.matches),
+                fetchNode('tournaments', FALLBACK.tournaments),
+                fetchNode('messages', FALLBACK.messages),
+                fetchNode('news', [{ text: '✧ افتتاح التسجيلات للموسم الجديد 2026-2027' }])
+            ]);
+
+            allPlayers = byCategory(players);
+            const catSessions = byCategory(sessions);
+            const catMatches = byCategory(matches);
+            const catTournaments = byCategory(tournaments);
+            const catMessages = byCategory(messages);
+
+            renderBanner(allPlayers.length, catSessions.filter(s => s.status !== 'finished').length, catMatches.length);
+            applyFilters();
+            renderSessions(catSessions);
+            renderMatches(catMatches);
+            renderTournaments(catTournaments);
+            renderMessages(catMessages);
+            renderTicker(news);
+
+            console.log(`✅ صفحة الفئة ${CATEGORY} جاهزة.`);
+        })();
+    </script>
+</body>
+</html>

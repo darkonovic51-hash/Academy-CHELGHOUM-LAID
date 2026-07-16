@@ -68,6 +68,23 @@
     .health-row:last-child { border-bottom:none; }
     .health-row b { color:var(--primary-dark); }
 
+    .stats-mini-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:10px; }
+    .stats-mini-card { background:var(--white); border-radius:16px; padding:16px; text-align:center; box-shadow:var(--shadow-soft); border-top:4px solid var(--gold); }
+    .stats-mini-card .val { font-family:'Bebas Neue'; font-size:1.8rem; color:var(--primary-dark); }
+    .stats-mini-card .lbl { font-size:0.78rem; color:#888; font-weight:600; }
+
+    .att-history-table { width:100%; border-collapse:collapse; background:var(--white); border-radius:18px; overflow:hidden; box-shadow:var(--shadow-soft); }
+    .att-history-table th { background:var(--primary-dark); color:var(--white); padding:12px; font-size:0.85rem; }
+    .att-history-table td { padding:11px 12px; text-align:center; border-bottom:1px solid #f0f0f0; font-size:0.88rem; }
+    .att-pill { padding:4px 14px; border-radius:20px; font-size:0.78rem; font-weight:700; }
+    .att-pill.present { background:#E1F6EA; color:#1D8348; }
+    .att-pill.absent { background:#FDEAEA; color:var(--red-accent); }
+
+    .payment-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; }
+    .payment-cell { background:var(--white); border-radius:14px; padding:14px; text-align:center; box-shadow:var(--shadow-soft); font-size:0.85rem; font-weight:700; }
+    .payment-cell.paid { background:#E1F6EA; color:#1D8348; }
+    .payment-cell.unpaid { background:#FDEAEA; color:var(--red-accent); }
+
     .not-found { text-align:center; padding:100px 20px; }
     .not-found i { font-size:3rem; color:var(--red-accent); margin-bottom:16px; }
     .not-found a { color:var(--primary-mid); font-weight:700; display:inline-block; margin-top:14px; }
@@ -76,6 +93,8 @@
         .profile-head { flex-direction:column; text-align:center; }
         .profile-number-circle { width:120px; height:120px; font-size:3.2rem; }
         .profile-number { position:static; margin-bottom:10px; }
+        .stats-mini-grid { grid-template-columns:repeat(2,1fr); }
+        .payment-grid { grid-template-columns:repeat(2,1fr); }
     }
 </style>
 </head>
@@ -102,6 +121,10 @@
         const playerId = params.get('id');
         const statusLabels = { active:'نشيط', injured:'مصاب', suspended:'موقوف' };
 
+        const MONTH_LABELS_VIEW = { '01':'جانفي','02':'فيفري','03':'مارس','04':'أفريل','05':'ماي','06':'جوان',
+            '07':'جويلية','08':'أوت','09':'سبتمبر','10':'أكتوبر','11':'نوفمبر','12':'ديسمبر' };
+        const MONTHS_VIEW = Object.keys(MONTH_LABELS_VIEW);
+
         async function fetchNode(node, fallback) {
             try {
                 const res = await fetch(`${DB_URL}${node}.json`);
@@ -126,7 +149,19 @@
                 </div>`;
         }
 
-        function renderProfile(p) {
+        function renderProfile(p, attendanceList, paymentsMap) {
+            attendanceList = attendanceList || [];
+            paymentsMap = paymentsMap || {};
+
+            const presentCount = attendanceList.filter(a => a.records[playerId] === 'present').length;
+            const absentCount = attendanceList.filter(a => a.records[playerId] === 'absent').length;
+            const totalSessions = attendanceList.length;
+            const attendancePercent = totalSessions > 0 ? Math.round((presentCount / totalSessions) * 100) : 0;
+            const paidCount = MONTHS_VIEW.filter(m => paymentsMap[m]).length;
+            const unpaidCount = 12 - paidCount;
+
+            const sortedAttendance = [...attendanceList].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
             document.title = `${p.name} | ETOILE CHELGHOUM LAID ACADEMY`;
             document.getElementById('content').innerHTML = `
                 <section class="profile-hero">
@@ -161,28 +196,83 @@
                             <div class="health-row"><span>رقم هاتف ولي الأمر</span><b>${p.phone || '-'}</b></div>
                             <div class="health-row"><span>رقم هاتف احتياطي</span><b>${p.altPhone || '-'}</b></div>
                             <div class="health-row"><span>العنوان</span><b>${p.address || '-'}</b></div>
-                            <div class="health-row"><span>ملاحظات</span><b>${p.notes || 'لا يوجد'}</b></div>
                         </div>
                     </div>
+
+                    <div class="section">
+                        <h2>الإحصائيات</h2>
+                        <div class="stats-mini-grid">
+                            <div class="stats-mini-card"><div class="val">${totalSessions}</div><div class="lbl">عدد الحصص</div></div>
+                            <div class="stats-mini-card"><div class="val">${presentCount}</div><div class="lbl">مرات الحضور</div></div>
+                            <div class="stats-mini-card"><div class="val">${absentCount}</div><div class="lbl">مرات الغياب</div></div>
+                            <div class="stats-mini-card"><div class="val">${attendancePercent}%</div><div class="lbl">نسبة الحضور</div></div>
+                            <div class="stats-mini-card"><div class="val">${paidCount}</div><div class="lbl">أشهر مدفوعة</div></div>
+                            <div class="stats-mini-card"><div class="val">${unpaidCount}</div><div class="lbl">أشهر غير مدفوعة</div></div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>سجل الحضور</h2>
+                        ${sortedAttendance.length === 0 ? `
+                            <div class="health-card" style="text-align:center;color:#999;">لا يوجد سجل حضور بعد.</div>
+                        ` : `
+                            <table class="att-history-table">
+                                <thead><tr><th>التاريخ</th><th>الحصة</th><th>المدرب</th><th>الحالة</th></tr></thead>
+                                <tbody>
+                                    ${sortedAttendance.map(a => `
+                                        <tr>
+                                            <td>${a.date || '-'}</td>
+                                            <td>${a.sessionName || '-'}</td>
+                                            <td>${a.coach || '-'}</td>
+                                            <td><span class="att-pill ${a.records[playerId]}">${a.records[playerId] === 'present' ? 'حاضر' : 'غائب'}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `}
+                    </div>
+
+                    <div class="section">
+                        <h2>سجل الدفع</h2>
+                        <div class="payment-grid">
+                            ${MONTHS_VIEW.map(m => `
+                                <div class="payment-cell ${paymentsMap[m] ? 'paid' : 'unpaid'}">
+                                    ${MONTH_LABELS_VIEW[m]}<br>${paymentsMap[m] ? '✅ مدفوع' : '❌ غير مدفوع'}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    ${p.notes ? `
+                    <div class="section">
+                        <h2>ملاحظات المدير</h2>
+                        <div class="health-card">${p.notes}</div>
+                    </div>` : ''}
                 </div>
             `;
         }
 
         (async function init() {
-            const [players, news] = await Promise.all([
+            const [players, news, attendance, payments] = await Promise.all([
                 fetchNode('players', {}),
-                fetchNode('news', [{ text:'✧ افتتاح التسجيلات للموسم الجديد 2026-2027' }])
+                fetchNode('news', [{ text:'✧ افتتاح التسجيلات للموسم الجديد 2026-2027' }]),
+                fetchNode('attendance', {}),
+                fetchNode('payments', {})
             ]);
             renderTicker(news);
 
             if (!playerId) return renderNotFound();
-            // البحث بالـ id الحقيقي في Firebase، أو بالاسم كخطة بديلة (للتوافق مع بيانات قديمة)
             let player = players[playerId];
             if (!player) {
                 player = Object.values(players).find(p => p.name === decodeURIComponent(playerId));
             }
             if (!player) return renderNotFound();
-            renderProfile(player);
+
+            // سجل الحضور الخاص باللاعب: كل حصة فيها سجل لمعرّفه
+            const myAttendance = Object.values(attendance).filter(a => a.records && a.records[playerId] !== undefined);
+            const myPayments = payments[playerId] || {};
+
+            renderProfile(player, myAttendance, myPayments);
         })();
     </script>
 </body>

@@ -98,6 +98,23 @@
     .row-actions .del-btn:hover { background:var(--red-accent); color:var(--white); }
     .empty-row td { padding:30px; color:#999; }
 
+    /* ===== ATTENDANCE ===== */
+    .row-actions .att-open-btn { background:#FFF3D6; color:#B8860B; }
+    .row-actions .att-open-btn:hover { background:#B8860B; color:var(--white); }
+    .attendance-list { display:flex; flex-direction:column; gap:10px; max-height:50vh; overflow-y:auto; }
+    .attendance-row {
+        display:flex; justify-content:space-between; align-items:center; padding:12px 16px;
+        background:#f7f7f7; border-radius:14px; gap:10px; flex-wrap:wrap;
+    }
+    .attendance-row .att-name { font-weight:700; font-size:0.92rem; }
+    .att-toggle { display:flex; gap:8px; }
+    .att-btn {
+        padding:8px 16px; border-radius:20px; border:1.5px solid #ddd; background:var(--white);
+        font-size:0.82rem; font-weight:700; color:#888; transition:0.25s;
+    }
+    .att-btn.present.active { background:#1D8348; border-color:#1D8348; color:var(--white); }
+    .att-btn.absent.active { background:var(--red-accent); border-color:var(--red-accent); color:var(--white); }
+
     /* Registration requests */
     .req-card {
         background:var(--white); border-radius:18px; box-shadow:var(--shadow-soft); padding:18px 20px; margin-bottom:14px;
@@ -433,6 +450,11 @@
         async function dbDelete(node, id) {
             await fetch(`${DB_URL}${node}/${id}.json`, { method:'DELETE' });
         }
+        async function dbPut(node, id, payload) {
+            await fetch(`${DB_URL}${node}/${id}.json`, {
+                method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+            });
+        }
 
         function showToast(text) {
             const toast = document.getElementById('toast');
@@ -506,9 +528,13 @@
                         if (f.type === 'textarea' && typeof val === 'string' && val.length > 40) val = val.slice(0,40) + '...';
                         return `<td>${val}</td>`;
                     }).join('');
+                    const attendanceBtn = key === 'sessions'
+                        ? `<button class="att-open-btn" data-id="${id}" title="تسجيل الحضور"><i class="fas fa-clipboard-check"></i></button>`
+                        : '';
                     return `<tr>
                         ${cells}
                         <td class="row-actions">
+                            ${attendanceBtn}
                             <button class="edit-btn" data-key="${key}" data-id="${id}"><i class="fas fa-pen"></i></button>
                             <button class="del-btn" data-key="${key}" data-id="${id}"><i class="fas fa-trash"></i></button>
                         </td>
@@ -528,6 +554,9 @@
                     renderResourceTable(btn.dataset.key);
                     showToast('تم الحذف بنجاح');
                 });
+            });
+            table.querySelectorAll('.att-open-btn').forEach(btn => {
+                btn.addEventListener('click', () => openAttendanceModal(btn.dataset.id));
             });
         }
 
@@ -577,6 +606,76 @@
                 renderResourceTable(key);
                 closeModal();
                 showToast('تم الحفظ بنجاح');
+            };
+        }
+
+        // ============================================================
+        // ATTENDANCE — تسجيل حضور/غياب لاعبي فئة الحصة، وربطه بتاريخ الحصة
+        // ============================================================
+        async function openAttendanceModal(sessionId) {
+            const session = cache.sessions[sessionId];
+            if (!session) return;
+
+            if (session.status !== 'finished') {
+                alert('يجب تغيير حالة الحصة إلى "منتهية" أولاً من زر التعديل، قبل تسجيل الحضور.');
+                return;
+            }
+
+            const [players, existingAttendance] = await Promise.all([
+                dbGet('players'),
+                dbGet('attendance')
+            ]);
+            const categoryPlayers = Object.entries(players).filter(([, p]) => p.category === session.category);
+            const existing = (existingAttendance[sessionId] && existingAttendance[sessionId].records) || {};
+
+            document.getElementById('modalTitle').textContent = `تسجيل الحضور - ${session.name || ''} (${session.category || ''})`;
+
+            if (categoryPlayers.length === 0) {
+                document.getElementById('modalBody').innerHTML =
+                    `<p style="text-align:center;color:#999;">لا يوجد لاعبون مسجلون في فئة ${session.category || '-'}.</p>`;
+            } else {
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="attendance-list">
+                        ${categoryPlayers.map(([pid, p]) => `
+                            <div class="attendance-row" data-player-id="${pid}">
+                                <span class="att-name">${p.name || ''}</span>
+                                <div class="att-toggle">
+                                    <button type="button" class="att-btn present ${existing[pid] === 'present' ? 'active' : ''}" data-value="present"><i class="fas fa-check"></i> حاضر</button>
+                                    <button type="button" class="att-btn absent ${existing[pid] === 'absent' ? 'active' : ''}" data-value="absent"><i class="fas fa-times"></i> غائب</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                document.querySelectorAll('.attendance-row .att-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const row = btn.closest('.attendance-row');
+                        row.querySelectorAll('.att-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+            }
+
+            document.getElementById('modalOverlay').classList.add('active');
+
+            document.getElementById('saveBtn').onclick = async () => {
+                const records = {};
+                document.querySelectorAll('.attendance-row').forEach(row => {
+                    const pid = row.dataset.playerId;
+                    const activeBtn = row.querySelector('.att-btn.active');
+                    records[pid] = activeBtn ? activeBtn.dataset.value : 'absent';
+                });
+                await dbPut('attendance', sessionId, {
+                    sessionId,
+                    sessionName: session.name || '',
+                    category: session.category || '',
+                    date: session.date || '',
+                    coach: session.coach || '',
+                    records,
+                    savedAt: new Date().toISOString()
+                });
+                closeModal();
+                showToast('تم حفظ سجل الحضور بنجاح، وأصبحت الحصة مؤرشفة');
             };
         }
 

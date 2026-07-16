@@ -282,7 +282,7 @@
 
     <script>
         // ============================================================
-        // AUTH GUARD — أول سطر ينفّذ: التأكد إن المدير مسجل دخول فعلاً
+        // AUTH GUARD — التأكد إن المدير مسجل دخول فعلاً
         // ============================================================
         if (sessionStorage.getItem('adminAuthed') !== 'true') {
             window.location.href = 'login.html';
@@ -301,8 +301,6 @@
 
         // ============================================================
         // RESOURCE DEFINITIONS — إعدادات كل قسم CRUD
-        // كل مورد: node (اسم العقدة في Firebase) + fields (أعمدة الجدول والفورم)
-        // ده قلب المحرك العام: عايز تضيف حقل جديد؟ زوّد سطر هنا بس.
         // ============================================================
         const RESOURCES = {
             players: {
@@ -404,7 +402,7 @@
             }
         };
 
-        // كاش محلي للبيانات بعد كل تحميل، لتفادي الطلبات الزائدة
+        // كاش محلي للبيانات بعد كل تحميل
         const cache = {};
 
         // ============================================================
@@ -419,7 +417,7 @@
             const res = await fetch(`${DB_URL}${node}.json`, {
                 method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
             });
-            return res.json(); // { name: "-Nxxxxx" } الـ id الجديد
+            return res.json();
         }
         async function dbPatch(node, id, payload) {
             await fetch(`${DB_URL}${node}/${id}.json`, {
@@ -475,7 +473,7 @@
         async function loadResourceTable(key) {
             const config = RESOURCES[key];
             const raw = await dbGet(config.node);
-            cache[key] = raw; // نحتفظ بالـ id الحقيقي لكل عنصر (raw هو {id: {...}})
+            cache[key] = raw;
             renderResourceTable(key);
         }
 
@@ -581,7 +579,7 @@
         document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
 
         // ============================================================
-        // REGISTRATION REQUESTS — قبول ينشئ لاعب تلقائيًا في /players
+        // REGISTRATION REQUESTS
         // ============================================================
         async function loadRequests() {
             const raw = await dbGet('registrationRequests');
@@ -648,7 +646,6 @@
             });
         }
 
-        // عند القبول: يتم إنشاء ملف اللاعب تلقائيًا في /players بنفس بيانات الطلب
         async function acceptRequest(id) {
             const r = cache.requests[id];
             const playerPayload = {
@@ -656,7 +653,7 @@
                 category: r.category || 'U7',
                 position: r.position || '',
                 birthYear: r.birthDate ? new Date(r.birthDate).getFullYear() : '',
-                photoUrl: '', // يُرفع لاحقًا يدويًا من قسم اللاعبين (رفع الملفات يحتاج Firebase Storage)
+                photoUrl: '',
                 status: 'active',
                 number: ''
             };
@@ -668,7 +665,7 @@
         }
 
         // ============================================================
-        // CATEGORIES — تعيين مدرب لكل فئة
+        // CATEGORIES
         // ============================================================
         async function loadCategories() {
             const raw = await dbGet('categoryCoaches');
@@ -694,7 +691,7 @@
         }
 
         // ============================================================
-        // OVERVIEW (Dashboard) — إحصائيات سريعة
+        // OVERVIEW (Dashboard)
         // ============================================================
         async function loadOverview() {
             const [players, requests, matches, news] = await Promise.all([

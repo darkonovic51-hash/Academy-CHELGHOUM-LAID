@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary-dark: #0E4832;
@@ -79,7 +80,7 @@
         @keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
 
-        /* ===== NAVBAR (مبسّطة لصفحة داخلية) ===== */
+        /* ===== NAVBAR مبسّطة ===== */
         .navbar {
             position: fixed; top: var(--ticker-height); left: 0; width: 100%; z-index: 999;
             background: rgba(14, 72, 50, 0.95); backdrop-filter: blur(16px);
@@ -132,6 +133,7 @@
         }
         .export-btn.pdf { background: var(--red-accent); }
         .export-btn.pdf:hover { background: #a00d24; transform: translateY(-2px); }
+        .export-btn.pdf:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .export-btn.excel { background: #1D6F42; }
         .export-btn.excel:hover { background: #14512f; transform: translateY(-2px); }
 
@@ -164,45 +166,69 @@
         .pagination button.active { background: var(--primary-mid); color: var(--white); border-color: var(--primary-mid); }
         .pagination button:hover:not(.active) { background: #f0f0f0; }
 
-        /* ===== SESSIONS / MATCHES / TOURNAMENTS CARDS ===== */
+        /* ===== SESSIONS CARDS (معدلة) ===== */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
 
         .session-card {
             background: var(--white); border-radius: 22px; box-shadow: var(--shadow-soft); overflow: hidden;
-            border-right: 5px solid var(--primary-mid); transition: 0.3s; padding: 20px;
+            transition: 0.35s; position: relative; border: 1px solid #eee;
         }
-        .session-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
-        .session-card h4 { font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 10px; font-family: 'Cairo'; font-weight: 700; }
-        .session-card .row { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #555; margin-bottom: 6px; }
-        .session-card .row i { color: var(--red-accent); width: 16px; }
-        .session-card .status-line { margin-top: 12px; }
+        .session-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-medium); }
+        .session-card .sc-head {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-mid));
+            color: var(--white); padding: 16px 20px; position: relative; overflow: hidden;
+        }
+        .session-card .sc-head::before {
+            content: '★'; position: absolute; font-size: 5rem; color: rgba(255,255,255,0.06); left: -10px; top: -20px;
+        }
+        .session-card .sc-cat { font-size: 0.75rem; background: rgba(255,255,255,0.15); display: inline-block; padding: 3px 12px; border-radius: 20px; margin-bottom: 6px; }
+        .session-card .sc-title { font-family: 'Bebas Neue'; font-size: 1.4rem; letter-spacing: 1px; position: relative; z-index: 2; }
+        .session-card .sc-type { font-size: 0.78rem; color: var(--gold-light); margin-top: 2px; position: relative; z-index: 2; }
+        .session-card .sc-body { padding: 18px 20px; }
+        .session-card .row { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #555; margin-bottom: 8px; }
+        .session-card .row i { color: var(--red-accent); width: 16px; text-align: center; }
+        .session-card .sc-desc { font-size: 0.84rem; color: #777; margin: 10px 0; line-height: 1.6; border-top: 1px dashed #eee; padding-top: 10px; }
+        .session-status-badge { display: inline-block; padding: 5px 16px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+        .session-status-badge.scheduled { background: #FFF3D6; color: #B8860B; }
+        .session-status-badge.ongoing { background: #E6F6FF; color: #1E7BB8; }
+        .session-status-badge.ongoing::before { content:'● '; animation: pulseDot 1.4s infinite; }
+        .session-status-badge.finished { background: #E1F6EA; color: #1D8348; }
+        .session-status-badge.canceled { background: #FDEAEA; color: var(--red-accent); }
 
+        /* ===== MATCHES CARDS (معدلة) ===== */
         .match-card {
-            background: linear-gradient(135deg, var(--primary-dark), #0a3325); border-radius: 22px; overflow: hidden;
+            background: linear-gradient(160deg, var(--primary-dark) 0%, #08281c 100%); border-radius: 24px; overflow: hidden;
             box-shadow: var(--shadow-soft); color: var(--white); transition: 0.35s; position: relative;
+            border: 1px solid rgba(212,175,55,0.15);
         }
-        .match-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
-        .match-card .match-top { display: flex; align-items: center; justify-content: space-between; padding: 20px; }
+        .match-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); border-color: var(--gold); }
+        .match-card .mc-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background: rgba(0,0,0,0.2); font-size: 0.75rem; color: rgba(255,255,255,0.7);
+        }
+        .match-card .mc-tournament { font-weight: 700; color: var(--gold-light); }
+        .match-card .match-top { display: flex; align-items: center; justify-content: space-between; padding: 22px 16px; }
         .match-card .team { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
-        .match-card .team img { width: 52px; height: 52px; object-fit: contain; background: var(--white); border-radius: 50%; padding: 4px; }
-        .match-card .team span { font-size: 0.85rem; font-weight: 700; }
-        .match-card .vs { font-family: 'Bebas Neue'; font-size: 1.5rem; color: var(--gold); }
-        .match-card .score { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--white); }
-        .match-card .match-meta { background: rgba(0,0,0,0.25); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
+        .match-card .team img { width: 54px; height: 54px; object-fit: contain; background: var(--white); border-radius: 50%; padding: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
+        .match-card .team span { font-size: 0.85rem; font-weight: 700; text-align: center; }
+        .match-card .vs { font-family: 'Bebas Neue'; font-size: 1.4rem; color: var(--gold); padding: 0 8px; }
+        .match-card .score { font-family: 'Bebas Neue'; font-size: 2.2rem; color: var(--white); letter-spacing: 2px; }
+        .match-card .match-meta { background: rgba(0,0,0,0.25); padding: 12px 18px; display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
         .match-card .match-meta span { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); }
         .match-card .status-tag {
-            position: absolute; top: 14px; left: 14px; padding: 4px 14px; border-radius: 30px; font-size: 0.72rem; font-weight: 700;
+            padding: 4px 14px; border-radius: 30px; font-size: 0.72rem; font-weight: 700;
         }
         .status-tag.upcoming { background: var(--gold); color: var(--black); }
+        .status-tag.live { background: var(--red-accent); color: var(--white); }
+        .status-tag.live::before { content:'● '; animation: pulseDot 1.2s infinite; }
         .status-tag.finished { background: #444; color: var(--white); }
-        .status-tag.canceled { background: var(--red-accent); color: var(--white); }
-        .match-card .details-btn {
-            display: block; text-align: center; padding: 10px; background: rgba(255,255,255,0.06);
-            font-size: 0.85rem; font-weight: 700; color: var(--gold); border-top: 1px solid rgba(255,255,255,0.1);
-            transition: 0.3s;
+        .status-tag.canceled { background: rgba(200,16,46,0.6); color: var(--white); }
+        .match-card .mc-details {
+            padding: 12px 18px; font-size: 0.8rem; color: rgba(255,255,255,0.65);
+            border-top: 1px solid rgba(255,255,255,0.08); line-height: 1.6;
         }
-        .match-card .details-btn:hover { background: rgba(255,255,255,0.12); }
 
+        /* ===== TOURNAMENTS CARDS ===== */
         .tournament-card {
             background: var(--white); border-radius: 22px; box-shadow: var(--shadow-soft); overflow: hidden; transition: 0.3s;
         }
@@ -497,45 +523,100 @@
             XLSX.writeFile(wb, `لاعبين_${CATEGORY}.xlsx`);
         });
 
-        document.getElementById('exportPdfBtn').addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.autoTable({
-                head: [['الحالة', 'الرقم', 'المركز', 'سنة الميلاد', 'الاسم']],
-                body: filteredPlayers.map(p => [
-                    statusLabels[p.status] || 'نشيط', p.number ?? '', p.position || '', p.birthYear || '', p.name || ''
-                ]),
-                styles: { font: 'helvetica', halign: 'center' },
-                headStyles: { fillColor: [14, 72, 50] }
-            });
-            doc.save(`لاعبين_${CATEGORY}.pdf`);
+        document.getElementById('exportPdfBtn').addEventListener('click', async () => {
+            const exportBtn = document.getElementById('exportPdfBtn');
+            exportBtn.disabled = true;
+            const originalText = exportBtn.innerHTML;
+            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارِ التجهيز...';
+
+            // نبني جدول مؤقت مخفي يحتوي كل النتائج المفلترة (بدون Pagination) بنفس تنسيق الموقع
+            const tempWrap = document.createElement('div');
+            tempWrap.style.cssText = 'position:fixed; top:-9999px; left:-9999px; width:900px; background:#fff; padding:20px; direction:rtl;';
+            tempWrap.innerHTML = `
+                <h2 style="font-family:'Bebas Neue',sans-serif; color:#0E4832; margin-bottom:14px; text-align:center;">
+                    قائمة لاعبي فئة ${CATEGORY}
+                </h2>
+                <table style="width:100%; border-collapse:collapse; font-family:'Cairo',sans-serif; font-size:14px;">
+                    <thead>
+                        <tr style="background:#0E4832; color:#fff;">
+                            <th style="padding:10px;">الاسم</th>
+                            <th style="padding:10px;">سنة الميلاد</th>
+                            <th style="padding:10px;">المركز</th>
+                            <th style="padding:10px;">الرقم</th>
+                            <th style="padding:10px;">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredPlayers.map((p, i) => `
+                            <tr style="background:${i % 2 === 0 ? '#f7faf8' : '#ffffff'};">
+                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.name || '-'}</td>
+                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.birthYear || '-'}</td>
+                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.position || '-'}</td>
+                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.number ?? '-'}</td>
+                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${statusLabels[p.status] || 'نشيط'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            document.body.appendChild(tempWrap);
+
+            try {
+                const canvas = await html2canvas(tempWrap, { scale: 2, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const imgWidth = pageWidth - 20;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                doc.save(`لاعبين_${CATEGORY}.pdf`);
+            } catch (err) {
+                console.error(err);
+                alert('حدث خطأ أثناء تجهيز ملف PDF، حاول مرة أخرى.');
+            } finally {
+                document.body.removeChild(tempWrap);
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = originalText;
+            }
         });
 
         // ============================================================
         // SESSIONS / MATCHES / TOURNAMENTS / MESSAGES
         // ============================================================
-        const sessionStatusLabels = { scheduled: 'مجدولة', finished: 'منتهية', canceled: 'ملغاة' };
+        const sessionStatusLabels = { scheduled: 'مجدولة', ongoing: 'جارية', finished: 'منتهية', canceled: 'ملغاة' };
         function renderSessions(sessions) {
             const grid = document.getElementById('sessionsGrid');
             if (!sessions.length) { grid.innerHTML = '<div class="empty-state">لا توجد حصص مجدولة حاليًا لهذه الفئة.</div>'; return; }
             grid.innerHTML = sessions.map(s => `
                 <div class="session-card">
-                    <h4>${s.name || 'حصة تدريبية'}</h4>
-                    <div class="row"><i class="fas fa-calendar-day"></i> ${s.day || ''} - ${s.date || ''}</div>
-                    <div class="row"><i class="fas fa-clock"></i> ${s.time || ''}</div>
-                    <div class="row"><i class="fas fa-map-marker-alt"></i> ${s.field || ''}</div>
-                    <div class="row"><i class="fas fa-user-tie"></i> ${s.coach || ''}</div>
-                    <div class="status-line"><span class="status-badge active">${sessionStatusLabels[s.status] || 'مجدولة'}</span></div>
+                    <div class="sc-head">
+                        <span class="sc-cat">${s.category || CATEGORY}</span>
+                        <div class="sc-title">${s.name || 'حصة تدريبية'}</div>
+                        ${s.sessionType ? `<div class="sc-type">${s.sessionType}</div>` : ''}
+                    </div>
+                    <div class="sc-body">
+                        <div class="row"><i class="fas fa-calendar-day"></i> ${s.day || ''} ${s.date ? '- ' + s.date : ''}</div>
+                        <div class="row"><i class="fas fa-clock"></i> ${s.time || '-'} ${s.endTime ? '← ' + s.endTime : ''}</div>
+                        <div class="row"><i class="fas fa-map-marker-alt"></i> ${s.field || '-'}</div>
+                        <div class="row"><i class="fas fa-user-tie"></i> ${s.coach || '-'}</div>
+                        ${s.description ? `<div class="sc-desc">${s.description}</div>` : ''}
+                        <span class="session-status-badge ${s.status || 'scheduled'}">${sessionStatusLabels[s.status] || 'مجدولة'}</span>
+                    </div>
                 </div>
             `).join('');
         }
 
+        const matchStatusLabels = { upcoming:'قادمة', live:'جارية الآن', finished:'انتهت', canceled:'ملغاة' };
         function renderMatches(matches) {
             const grid = document.getElementById('matchesGrid');
             if (!matches.length) { grid.innerHTML = '<div class="empty-state">لا توجد مباريات مسجلة حاليًا لهذه الفئة.</div>'; return; }
             grid.innerHTML = matches.map(m => `
                 <div class="match-card">
-                    <span class="status-tag ${m.status || 'upcoming'}">${{upcoming:'قادمة',finished:'انتهت',canceled:'ملغاة'}[m.status] || 'قادمة'}</span>
+                    <div class="mc-header">
+                        <span class="mc-tournament">${m.tournament || 'مباراة ودية'}${m.round ? ' - ' + m.round : ''}</span>
+                        <span class="status-tag ${m.status || 'upcoming'}">${matchStatusLabels[m.status] || 'قادمة'}</span>
+                    </div>
                     <div class="match-top">
                         <div class="team"><img src="${m.homeLogo || LOGO_URL}" onerror="this.style.visibility='hidden'" /><span>الأكاديمية</span></div>
                         <div class="vs">${m.status === 'finished' && m.result ? `<span class="score">${m.result}</span>` : 'VS'}</div>
@@ -547,7 +628,7 @@
                         <span><i class="fas fa-map-marker-alt"></i> ${m.field || ''}</span>
                         <span><i class="fas fa-tag"></i> ${m.type || ''}</span>
                     </div>
-                    ${m.details ? `<a class="details-btn" href="${m.details}">عرض التفاصيل ←</a>` : ''}
+                    ${m.details ? `<div class="mc-details"><i class="fas fa-circle-info"></i> ${m.details}</div>` : ''}
                 </div>
             `).join('');
         }

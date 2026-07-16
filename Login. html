@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>تسجيل الدخول | لوحة التحكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+<style>
+    :root {
+        --primary-dark: #0E4832; --primary-mid: #136F46; --red-accent: #C8102E;
+        --gold: #D4AF37; --white: #F2F2F2;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family:'Cairo',sans-serif; direction: rtl; min-height:100vh;
+        display:flex; align-items:center; justify-content:center;
+        background: linear-gradient(135deg, var(--primary-dark), #061f16);
+        position: relative; overflow:hidden;
+    }
+    body::before {
+        content:'★'; position:absolute; font-size:40rem; color:rgba(255,255,255,0.03);
+        top:-100px; right:-150px; font-family:'Bebas Neue';
+    }
+    .login-card {
+        position:relative; z-index:2; background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.1);
+        border-radius: 28px; padding: 44px 38px; width: 100%; max-width: 400px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4); text-align:center;
+    }
+    .login-card .logo {
+        width:76px; height:76px; border-radius:50%; background:var(--white);
+        margin:0 auto 18px; display:flex; align-items:center; justify-content:center;
+        border:3px solid var(--gold); font-family:'Bebas Neue'; font-size:1.6rem; color:var(--primary-dark);
+    }
+    .login-card h1 { font-family:'Bebas Neue'; letter-spacing:2px; color:var(--white); font-size:1.8rem; margin-bottom:6px; }
+    .login-card p.sub { color:rgba(255,255,255,0.6); font-size:0.85rem; margin-bottom:26px; }
+    .login-card input {
+        width:100%; padding:14px 18px; border-radius:14px; border:1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.07); color:var(--white); font-family:'Cairo'; font-size:1rem;
+        margin-bottom:14px; text-align:center; letter-spacing:2px;
+    }
+    .login-card input:focus { outline:none; border-color:var(--gold); }
+    .login-card input::placeholder { color:rgba(255,255,255,0.35); letter-spacing:0; }
+    .login-card button {
+        width:100%; padding:14px; border-radius:14px; border:none; background:var(--red-accent);
+        color:var(--white); font-weight:700; font-size:1rem; cursor:pointer; transition:0.3s;
+    }
+    .login-card button:hover { background:#a00d24; transform:translateY(-2px); }
+    .login-card button:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+    .msg { margin-top:14px; font-size:0.85rem; font-weight:600; min-height:20px; }
+    .msg.error { color:#FF8A8A; }
+    .msg.info { color:var(--gold); }
+    .msg.success { color:#7CD9A8; }
+</style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">★</div>
+        <h1>لوحة التحكم</h1>
+        <p class="sub" id="modeSub">جارِ التحقق من إعدادات الدخول...</p>
+        <input type="password" id="codeInput" placeholder="كود الدخول" />
+        <input type="password" id="confirmInput" placeholder="تأكيد الكود" style="display:none;" />
+        <button id="submitBtn" disabled>تحميل...</button>
+        <div class="msg" id="msgBox"></div>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIG
+        // ============================================================
+        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        const CODE_NODE = 'adminAccess/codeHash';
+
+        const modeSub = document.getElementById('modeSub');
+        const codeInput = document.getElementById('codeInput');
+        const confirmInput = document.getElementById('confirmInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const msgBox = document.getElementById('msgBox');
+
+        let isSetupMode = false;
+
+        // ============================================================
+        // HASH HELPER (SHA-256 عبر Web Crypto API)
+        // ============================================================
+        async function sha256(text) {
+            const data = new TextEncoder().encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function showMsg(text, type) {
+            msgBox.textContent = text;
+            msgBox.className = 'msg ' + type;
+        }
+
+        // ============================================================
+        // INIT — نتأكد هل فيه كود محفوظ ولا لسه (أول مرة)
+        // ============================================================
+        (async function init() {
+            // لو الجلسة متسجلة بالفعل، نروح مباشرة للوحة التحكم
+            if (sessionStorage.getItem('adminAuthed') === 'true') {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            try {
+                const res = await fetch(`${DB_URL}${CODE_NODE}.json`);
+                const existingHash = await res.json();
+                if (existingHash) {
+                    isSetupMode = false;
+                    modeSub.textContent = 'أدخل كود الدخول للمتابعة';
+                    submitBtn.textContent = 'دخول';
+                } else {
+                    isSetupMode = true;
+                    modeSub.textContent = 'أول استخدام: أنشئ كود الدخول الخاص بك';
+                    confirmInput.style.display = 'block';
+                    submitBtn.textContent = 'إنشاء الكود والدخول';
+                }
+                submitBtn.disabled = false;
+            } catch (err) {
+                showMsg('تعذّر الاتصال بقاعدة البيانات، تحقق من الإنترنت.', 'error');
+            }
+        })();
+
+        // ============================================================
+        // SUBMIT
+        // ============================================================
+        submitBtn.addEventListener('click', async () => {
+            const code = codeInput.value.trim();
+            if (!code || code.length < 4) {
+                showMsg('الكود يجب أن يكون 4 خانات على الأقل.', 'error');
+                return;
+            }
+            submitBtn.disabled = true;
+
+            if (isSetupMode) {
+                const confirmCode = confirmInput.value.trim();
+                if (code !== confirmCode) {
+                    showMsg('الكودان غير متطابقين.', 'error');
+                    submitBtn.disabled = false;
+                    return;
+                }
+                const hash = await sha256(code);
+                try {
+                    await fetch(`${DB_URL}${CODE_NODE}.json`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(hash)
+                    });
+                    showMsg('تم إنشاء الكود بنجاح، جارِ الدخول...', 'success');
+                    sessionStorage.setItem('adminAuthed', 'true');
+                    setTimeout(() => window.location.href = 'dashboard.html', 700);
+                } catch (err) {
+                    showMsg('تعذّر حفظ الكود، حاول مرة أخرى.', 'error');
+                    submitBtn.disabled = false;
+                }
+            } else {
+                try {
+                    const res = await fetch(`${DB_URL}${CODE_NODE}.json`);
+                    const storedHash = await res.json();
+                    const inputHash = await sha256(code);
+                    if (inputHash === storedHash) {
+                        showMsg('تم التحقق، جارِ الدخول...', 'success');
+                        sessionStorage.setItem('adminAuthed', 'true');
+                        setTimeout(() => window.location.href = 'dashboard.html', 500);
+                    } else {
+                        showMsg('الكود غير صحيح.', 'error');
+                        submitBtn.disabled = false;
+                    }
+                } catch (err) {
+                    showMsg('تعذّر التحقق، تحقق من الاتصال.', 'error');
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+
+        codeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !isSetupMode) submitBtn.click(); });
+        confirmInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+    </script>
+</body>
+</html>

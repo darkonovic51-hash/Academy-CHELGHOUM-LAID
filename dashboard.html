@@ -101,6 +101,8 @@
     /* ===== ATTENDANCE ===== */
     .row-actions .att-open-btn { background:#FFF3D6; color:#B8860B; }
     .row-actions .att-open-btn:hover { background:#B8860B; color:var(--white); }
+    .row-actions .pay-open-btn { background:#EAF7EE; color:#1D8348; }
+    .row-actions .pay-open-btn:hover { background:#1D8348; color:var(--white); }
     .attendance-list { display:flex; flex-direction:column; gap:10px; max-height:50vh; overflow-y:auto; }
     .attendance-row {
         display:flex; justify-content:space-between; align-items:center; padding:12px 16px;
@@ -122,8 +124,6 @@
         text-align:center; font-size:0.85rem; font-weight:700; color:#888; transition:0.25s;
     }
     .month-toggle.paid { background:#E1F6EA; border-color:#1D8348; color:#1D8348; }
-    .pay-open-btn { background:#EAF7EE; color:#1D8348; }
-    .pay-open-btn:hover { background:#1D8348; color:var(--white); }
 
     /* Registration requests */
     .req-card {
@@ -237,12 +237,11 @@
         <main class="main">
             <div class="topbar">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="view-site" id="backBtn" style="background:var(--black);"><i class="fas fa-arrow-right"></i> رجوع</button>
+                    <a href="index.html" class="view-site" style="background:var(--black);"><i class="fas fa-arrow-right"></i> الصفحة الرئيسية</a>
                     <h2 id="panelTitle">نظرة عامة</h2>
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <button class="view-site" id="refreshBtn" style="background:var(--gold); color:var(--black);"><i class="fas fa-rotate"></i> تحديث</button>
-                    <a href="../index.html" class="view-site" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i> عرض الموقع</a>
                 </div>
             </div>
 
@@ -457,21 +456,32 @@
         };
 
         // ============================================================
-        // رفع ملف إلى Firebase Storage عبر REST API
+        // تحويل الصورة إلى Base64 مضغوط وتخزينها مباشرة (بديل فعّال عن Firebase Storage)
         // ============================================================
-        const STORAGE_BUCKET = 'academy-chelghoum-el-aide.firebasestorage.app';
-        async function uploadToStorage(file, pathPrefix) {
-            const path = `${pathPrefix}/${Date.now()}_${file.name}`;
-            const encodedPath = encodeURIComponent(path);
-            const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o?uploadType=media&name=${encodedPath}`;
-            const res = await fetch(uploadUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': file.type || 'application/octet-stream' },
-                body: file
+        function uploadToStorage(file, pathPrefix) {
+            const maxDim = 1000, quality = 0.75;
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let { width, height } = img;
+                        if (width > maxDim || height > maxDim) {
+                            const ratio = Math.min(maxDim / width, maxDim / height);
+                            width = Math.round(width * ratio);
+                            height = Math.round(height * ratio);
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = () => reject(new Error('تعذّرت معالجة الصورة'));
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => reject(new Error('تعذّرت قراءة الملف'));
+                reader.readAsDataURL(file);
             });
-            if (!res.ok) throw new Error('فشل رفع الملف');
-            const data = await res.json();
-            return `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/${encodedPath}?alt=media&token=${data.downloadTokens || ''}`;
         }
 
         // كاش محلي للبيانات بعد كل تحميل
@@ -542,16 +552,6 @@
             document.getElementById('sidebar').classList.toggle('open');
         });
 
-        // زر الرجوع: يرجع للوحة الرئيسية (نظرة عامة) إذا كنت في قسم آخر، أو للصفحة الرئيسية للموقع لو كنت أصلًا في نظرة عامة
-        document.getElementById('backBtn').addEventListener('click', () => {
-            const activePanel = document.querySelector('.nav-btn.active').dataset.panel;
-            if (activePanel !== 'overview') {
-                document.querySelector('.nav-btn[data-panel="overview"]').click();
-            } else {
-                window.location.href = '../index.html';
-            }
-        });
-
         // زر التحديث: يعيد تحميل بيانات القسم الحالي فقط دون تحديث الصفحة كاملة
         document.getElementById('refreshBtn').addEventListener('click', async () => {
             const btn = document.getElementById('refreshBtn');
@@ -607,10 +607,14 @@
                     const attendanceBtn = key === 'sessions'
                         ? `<button class="att-open-btn" data-id="${id}" title="تسجيل الحضور"><i class="fas fa-clipboard-check"></i></button>`
                         : '';
+                    const recordBtn = key === 'players'
+                        ? `<button class="pay-open-btn" data-player-record="${id}" title="سجل اللاعب"><i class="fas fa-id-card"></i></button>`
+                        : '';
                     return `<tr>
                         ${cells}
                         <td class="row-actions">
                             ${attendanceBtn}
+                            ${recordBtn}
                             <button class="edit-btn" data-key="${key}" data-id="${id}"><i class="fas fa-pen"></i></button>
                             <button class="del-btn" data-key="${key}" data-id="${id}"><i class="fas fa-trash"></i></button>
                         </td>
@@ -633,6 +637,9 @@
             });
             table.querySelectorAll('.att-open-btn').forEach(btn => {
                 btn.addEventListener('click', () => openAttendanceModal(btn.dataset.id));
+            });
+            table.querySelectorAll('[data-player-record]').forEach(btn => {
+                btn.addEventListener('click', () => openPlayerRecordModal(btn.dataset.playerRecord));
             });
         }
 
@@ -851,7 +858,59 @@
             };
         }
 
-        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+        // ============================================================
+        // PLAYER RECORD — عرض سجل اللاعب الكامل من قسم اللاعبين مباشرة
+        // ============================================================
+        async function openPlayerRecordModal(playerId) {
+            const [players, attendance, payments] = await Promise.all([
+                dbGet('players'), dbGet('attendance'), dbGet('payments')
+            ]);
+            const player = players[playerId];
+            if (!player) return;
+
+            const myAttendance = Object.values(attendance).filter(a => a.records && a.records[playerId] !== undefined)
+                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            const myPayments = payments[playerId] || {};
+            const presentCount = myAttendance.filter(a => a.records[playerId] === 'present').length;
+            const absentCount = myAttendance.filter(a => a.records[playerId] === 'absent').length;
+            const paidCount = MONTHS.filter(m => myPayments[m]).length;
+
+            document.getElementById('modalTitle').textContent = `سجل اللاعب - ${player.name || ''}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="stats-grid" style="margin-bottom:6px;">
+                    <div class="stat-card"><div class="val">${myAttendance.length}</div><div class="lbl">إجمالي الحصص</div></div>
+                    <div class="stat-card"><div class="val">${presentCount}</div><div class="lbl">حضور</div></div>
+                    <div class="stat-card"><div class="val">${absentCount}</div><div class="lbl">غياب</div></div>
+                    <div class="stat-card"><div class="val">${paidCount} / 12</div><div class="lbl">أشهر مدفوعة</div></div>
+                </div>
+                <h4 style="margin:14px 0 8px; font-family:'Bebas Neue'; color:var(--primary-dark);">سجل الحضور</h4>
+                ${myAttendance.length === 0 ? '<p style="color:#999;">لا يوجد سجل حضور بعد.</p>' : `
+                    <div style="max-height:180px; overflow-y:auto;">
+                        ${myAttendance.map(a => `
+                            <div class="attendance-row">
+                                <span class="att-name">${a.date || '-'} — ${a.sessionName || ''}</span>
+                                <span style="padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;${a.records[playerId] === 'present' ? 'background:#E1F6EA;color:#1D8348;' : 'background:#FDEAEA;color:var(--red-accent);'}">
+                                    ${a.records[playerId] === 'present' ? 'حاضر' : 'غائب'}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+                <h4 style="margin:16px 0 8px; font-family:'Bebas Neue'; color:var(--primary-dark);">سجل الدفع</h4>
+                <div class="months-grid">
+                    ${MONTHS.map(m => `<div class="month-toggle ${myPayments[m] ? 'paid' : ''}" style="cursor:default;">${MONTH_LABELS[m]}</div>`).join('')}
+                </div>
+            `;
+            document.getElementById('modalOverlay').classList.add('active');
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.textContent = 'إغلاق';
+            saveBtn.onclick = closeModal;
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('saveBtn').textContent = 'حفظ';
+        }
         document.getElementById('closeModal').addEventListener('click', closeModal);
         document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
 

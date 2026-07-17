@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>مقال | ETOILE CHELGHOUM LAID ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+<style>
+    :root { --primary-dark:#0E4832; --primary-mid:#136F46; --red-accent:#C8102E; --gold:#D4AF37; --white:#F2F2F2; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Cairo',sans-serif; direction:rtl; background:#f4f6f5; color:#1A1A1A; }
+    a { text-decoration:none; color:inherit; }
+    .container { max-width:800px; margin:0 auto; padding:0 24px; }
+    .navbar { background:var(--primary-dark); padding:16px 0; }
+    .navbar .container { display:flex; justify-content:space-between; align-items:center; }
+    .navbar a.back { color:rgba(255,255,255,0.85); font-weight:600; font-size:0.9rem; }
+    .navbar .logo { display:flex; align-items:center; gap:10px; color:var(--white); font-family:'Bebas Neue'; letter-spacing:2px; }
+    .navbar .logo img { width:36px; height:36px; border-radius:50%; background:var(--white); padding:2px; }
+    .art-hero-img { width:100%; height:360px; object-fit:cover; }
+    .art-content { background:var(--white); margin-top:-40px; position:relative; border-radius:30px 30px 0 0; padding:40px 30px; box-shadow:0 -10px 30px rgba(0,0,0,0.05); }
+    .art-content h1 { font-family:'Cairo'; font-weight:900; font-size:1.8rem; color:var(--primary-dark); line-height:1.4; margin-bottom:16px; }
+    .art-content .art-body { font-size:1.05rem; line-height:2.1; color:#333; white-space:pre-line; }
+    .not-found { text-align:center; padding:100px 20px; }
+    @media (max-width:600px) { .art-hero-img { height:220px; } .art-content { padding:26px 18px; } }
+</style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" onerror="this.style.display='none'" />
+                <span>ETOILE CHELGHOUM LAID</span>
+            </a>
+            <a href="index.html#articles" class="back"><i class="fas fa-arrow-right"></i> كل المقالات</a>
+        </div>
+    </nav>
+    <div id="content"></div>
+
+    <script>
+        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        const params = new URLSearchParams(window.location.search);
+        const articleId = params.get('id');
+
+        (async function init() {
+            try {
+                const res = await fetch(`${DB_URL}articles/${articleId}.json`);
+                const article = await res.json();
+                if (!article) return renderNotFound();
+                document.title = `${article.title} | ETOILE CHELGHOUM LAID ACADEMY`;
+                document.getElementById('content').innerHTML = `
+                    <img class="art-hero-img" src="${article.image}" onerror="this.style.display='none'" />
+                    <div class="container">
+                        <div class="art-content">
+                            <h1>${article.title}</h1>
+                            <div class="art-body">${article.content}</div>
+                        </div>
+                    </div>
+                `;
+            } catch { renderNotFound(); }
+        })();
+
+        function renderNotFound() {
+            document.getElementById('content').innerHTML = `
+                <div class="container not-found">
+                    <i class="fas fa-newspaper" style="font-size:3rem;color:#C8102E;"></i>
+                    <h2 style="font-family:'Bebas Neue';font-size:1.8rem;color:#0E4832;margin-top:16px;">لم يتم العثور على المقال</h2>
+                    <a href="index.html#articles" style="color:#136F46;font-weight:700;display:inline-block;margin-top:14px;">← العودة للمقالات</a>
+                </div>`;
+        }
+    </script>
+</body>
+</html>

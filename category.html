@@ -315,6 +315,29 @@
         .details-modal-body .d-row b { color: var(--primary-dark); display: block; margin-bottom: 4px; font-size: 0.9rem; }
         .details-modal-body .d-row span { color: #555; font-size: 0.9rem; line-height: 1.7; }
 
+        /* ===== MATCH BIG MODAL ===== */
+        .match-modal-box { max-width: 640px; }
+        .mm-score-panel {
+            background: linear-gradient(135deg, var(--primary-dark), #08281c); color: var(--white);
+            padding: 30px 20px; display: flex; align-items: center; justify-content: space-around; text-align: center;
+        }
+        .mm-score-panel .mm-team { display:flex; flex-direction:column; align-items:center; gap:10px; flex:1; }
+        .mm-score-panel .mm-team img { width:64px; height:64px; border-radius:50%; background:var(--white); padding:5px; object-fit:contain; }
+        .mm-score-panel .mm-team span { font-weight:700; font-size:0.95rem; }
+        .mm-score-panel .mm-score { font-family:'Bebas Neue'; font-size:3rem; letter-spacing:3px; color:var(--gold); }
+        .mm-tournament-bar { background:#f0f0f0; text-align:center; padding:8px; font-size:0.8rem; color:#666; font-weight:700; }
+        .mm-section { padding: 18px 22px; border-top: 1px solid #eee; }
+        .mm-section h4 { font-family:'Bebas Neue'; color:var(--primary-dark); font-size:1.1rem; margin-bottom:10px; letter-spacing:1px; }
+        .mm-goal-row { display:flex; justify-content:space-between; padding:6px 0; font-size:0.88rem; color:#444; }
+        .mm-goal-row i { color: var(--gold); margin-left:6px; }
+        .lineup-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; }
+        .lineup-slot {
+            background: linear-gradient(160deg, var(--primary-dark), var(--black)); color:var(--white); border-radius:14px;
+            padding:10px; text-align:center; position:relative; overflow:hidden;
+        }
+        .lineup-slot .pos { font-size:0.68rem; color:var(--gold-light); letter-spacing:1px; }
+        .lineup-slot .pname { font-size:0.82rem; font-weight:700; margin-top:4px; }
+
         @media (max-width: 768px) {
             .cat-banner { min-height: 34vh; }
             table.players-table { font-size: 0.8rem; }
@@ -451,7 +474,7 @@
         const params = new URLSearchParams(window.location.search);
         const CATEGORY = params.get('cat') || 'U7';
 
-        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U19:'أولمبي' };
+        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U20:'أولمبي' };
         const statusLabels = { active: 'نشيط', injured: 'مصاب', suspended: 'موقوف' };
         const msgTypeIcons = { 'إعلان':'fa-bullhorn','تنبيه':'fa-triangle-exclamation','اجتماع':'fa-people-group','إشعار':'fa-bell','تهنئة':'fa-award','تعليق':'fa-comment' };
 
@@ -700,6 +723,7 @@
         }
 
         function openSessionDetails(s) {
+            document.querySelector('.details-modal-box').classList.remove('match-modal-box');
             document.getElementById('detailsModalTitle').textContent = s.name || 'تفاصيل الحصة';
             document.getElementById('detailsModalBody').innerHTML = `
                 <div class="d-row"><b>الفئة</b><span>${s.category || CATEGORY}</span></div>
@@ -778,15 +802,51 @@
             `;
         }
 
+        function parseLineup(text) {
+            if (!text) return [];
+            return text.split('\n').filter(Boolean).map(line => {
+                const [pos, name] = line.split('-').map(s => (s || '').trim());
+                return { pos: pos || '', name: name || pos || '' };
+            });
+        }
+        function parseGoals(text) {
+            if (!text) return [];
+            return text.split('\n').filter(Boolean).map(line => {
+                const parts = line.split('-').map(s => (s || '').trim());
+                return { name: parts[0] || '', minute: parts[1] || '', team: parts[2] || '' };
+            });
+        }
+
         function openMatchDetails(m) {
-            document.getElementById('detailsModalTitle').textContent = `${m.opponent || 'مباراة'}`;
+            const goals = parseGoals(m.goalscorers);
+            const lineup = parseLineup(m.lineup);
+            const hasScore = m.homeScore !== undefined && m.homeScore !== '' && m.awayScore !== undefined && m.awayScore !== '';
+
+            document.querySelector('.details-modal-box').classList.add('match-modal-box');
+            document.getElementById('detailsModalTitle').textContent = `الأكاديمية ضد ${m.opponent || ''}`;
             document.getElementById('detailsModalBody').innerHTML = `
-                <div class="d-row"><b>البطولة</b><span>${m.tournament || 'مباراة ودية'} ${m.round ? '- ' + m.round : ''}</span></div>
-                <div class="d-row"><b>التاريخ والتوقيت</b><span>${m.date || ''} - ${m.time || ''}</span></div>
-                <div class="d-row"><b>الملعب</b><span>${m.field || '-'}</span></div>
-                <div class="d-row"><b>نوع المباراة</b><span>${m.type || '-'}</span></div>
-                ${m.result ? `<div class="d-row"><b>النتيجة</b><span>${m.result}</span></div>` : ''}
-                ${m.details ? `<div class="d-row"><b>تفاصيل إضافية</b><span>${m.details}</span></div>` : ''}
+                <div class="mm-score-panel">
+                    <div class="mm-team"><img src="${m.homeLogo || LOGO_URL}" onerror="this.style.visibility='hidden'" /><span>الأكاديمية</span></div>
+                    <div class="mm-score">${hasScore ? `${m.homeScore} - ${m.awayScore}` : 'VS'}</div>
+                    <div class="mm-team"><img src="${m.opponentLogo || ''}" onerror="this.style.visibility='hidden'" /><span>${m.opponent || ''}</span></div>
+                </div>
+                <div class="mm-tournament-bar">${m.tournament || 'مباراة ودية'} ${m.round ? '- ' + m.round : ''} • ${m.date || ''} ${m.time || ''} • ${m.field || ''}</div>
+
+                ${goals.length ? `
+                <div class="mm-section">
+                    <h4>الأهداف</h4>
+                    ${goals.map(g => `<div class="mm-goal-row"><span><i class="fas fa-futbol"></i> ${g.name}${g.team ? ' (' + g.team + ')' : ''}</span><span>${g.minute ? g.minute + "'" : ''}</span></div>`).join('')}
+                </div>` : ''}
+
+                ${lineup.length ? `
+                <div class="mm-section">
+                    <h4>التشكيلة الأساسية</h4>
+                    <div class="lineup-grid">
+                        ${lineup.map(p => `<div class="lineup-slot"><div class="pos">${p.pos}</div><div class="pname">${p.name}</div></div>`).join('')}
+                    </div>
+                </div>` : ''}
+
+                ${m.details ? `<div class="mm-section"><h4>تفاصيل إضافية</h4><p style="font-size:0.88rem;color:#555;line-height:1.7;">${m.details}</p></div>` : ''}
             `;
             document.getElementById('detailsModal').classList.add('active');
         }

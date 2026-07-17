@@ -142,6 +142,11 @@
     .req-actions .accept-btn { background:#1D8348; color:var(--white); }
     .req-actions .reject-btn { background:var(--red-accent); color:var(--white); }
     .req-actions .edit-req-btn { background:#2A5CAA; color:var(--white); }
+    .doc-download-btn {
+        background:#f0f0f0; color:#555; border:none; padding:7px 14px; border-radius:20px;
+        font-size:0.78rem; font-weight:700; cursor:pointer; transition:0.25s;
+    }
+    .doc-download-btn:hover { background:var(--primary-mid); color:var(--white); }
 
     /* Categories panel */
     .cat-coach-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
@@ -215,6 +220,7 @@
             <div class="nav-group">
                 <div class="group-label">المحتوى الرياضي</div>
                 <button class="nav-btn" data-panel="players"><i class="fas fa-user-athlete"></i> اللاعبون</button>
+                <button class="nav-btn" data-panel="featuredPlayers"><i class="fas fa-star"></i> أبرز اللاعبين</button>
                 <button class="nav-btn" data-panel="sessions"><i class="fas fa-calendar-check"></i> الحصص التدريبية</button>
                 <button class="nav-btn" data-panel="matches"><i class="fas fa-futbol"></i> المباريات</button>
                 <button class="nav-btn" data-panel="tournaments"><i class="fas fa-trophy"></i> البطولات</button>
@@ -224,6 +230,7 @@
 
             <div class="nav-group">
                 <div class="group-label">محتوى الموقع</div>
+                <button class="nav-btn" data-panel="articles"><i class="fas fa-newspaper"></i> المقالات</button>
                 <button class="nav-btn" data-panel="news"><i class="fas fa-bullhorn"></i> شريط الأخبار</button>
                 <button class="nav-btn" data-panel="gallery"><i class="fas fa-images"></i> معرض الصور</button>
                 <button class="nav-btn" data-panel="staff"><i class="fas fa-user-tie"></i> الطاقم الفني</button>
@@ -265,6 +272,10 @@
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="players"><i class="fas fa-plus"></i> إضافة لاعب</button></div>
                 <div class="data-table-wrap"><table class="data-table" id="table-players"></table></div>
             </section>
+            <section class="panel" id="panel-featuredPlayers">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="featuredPlayers"><i class="fas fa-plus"></i> إضافة لاعب مميز</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-featuredPlayers"></table></div>
+            </section>
             <section class="panel" id="panel-sessions">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="sessions"><i class="fas fa-plus"></i> إضافة حصة</button></div>
                 <div class="data-table-wrap"><table class="data-table" id="table-sessions"></table></div>
@@ -283,6 +294,10 @@
             </section>
             <section class="panel" id="panel-payments">
                 <div class="data-table-wrap"><table class="data-table" id="table-payments"></table></div>
+            </section>
+            <section class="panel" id="panel-articles">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="articles"><i class="fas fa-plus"></i> مقال جديد</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-articles"></table></div>
             </section>
             <section class="panel" id="panel-news">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="news"><i class="fas fa-plus"></i> خبر جديد</button></div>
@@ -332,7 +347,7 @@
         // CONFIG
         // ============================================================
         const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
-        const CATEGORIES = ['U7','U9','U11','U13','U15','U17','U19'];
+        const CATEGORIES = ['U7','U9','U11','U13','U15','U17','U20'];
         const catOptions = CATEGORIES.map(c => ({ value:c, label:c }));
 
         // ============================================================
@@ -358,6 +373,15 @@
                     { key:'altPhone', label:'رقم هاتف احتياطي', type:'text' },
                     { key:'address', label:'العنوان', type:'text' },
                     { key:'notes', label:'ملاحظات', type:'textarea' }
+                ]
+            },
+            featuredPlayers: {
+                node: 'featuredPlayers', title: 'أبرز اللاعبين',
+                fields: [
+                    { key:'name', label:'الاسم', type:'text', required:true },
+                    { key:'number', label:'رقم القميص', type:'number' },
+                    { key:'position', label:'المركز', type:'text' },
+                    { key:'category', label:'الفئة', type:'select', options:catOptions }
                 ]
             },
             sessions: {
@@ -398,7 +422,10 @@
                     { key:'status', label:'حالة المباراة', type:'select', options:[
                         {value:'upcoming',label:'قادمة'},{value:'live',label:'جارية الآن'},
                         {value:'finished',label:'انتهت'},{value:'canceled',label:'ملغاة'}] },
-                    { key:'result', label:'النتيجة (بعد الانتهاء)', type:'text' },
+                    { key:'homeScore', label:'نتيجة الأكاديمية', type:'number' },
+                    { key:'awayScore', label:'نتيجة المنافس', type:'number' },
+                    { key:'goalscorers', label:'الأهداف (سطر لكل هدف: الاسم - الدقيقة - الفريق)', type:'textarea' },
+                    { key:'lineup', label:'التشكيلة (11 سطر: المركز - اسم اللاعب)', type:'textarea' },
                     { key:'details', label:'تفاصيل إضافية عن المباراة', type:'textarea' }
                 ]
             },
@@ -428,13 +455,25 @@
                     { key:'date', label:'التاريخ', type:'date' }
                 ]
             },
+            articles: {
+                node: 'articles', title: 'المقالات',
+                fields: [
+                    { key:'title', label:'عنوان المقال', type:'text', required:true },
+                    { key:'image', label:'صورة المقال', type:'text', required:true },
+                    { key:'summary', label:'ملخص قصير (يظهر تحت الصورة)', type:'textarea' },
+                    { key:'content', label:'نص المقال كاملاً', type:'textarea', required:true }
+                ]
+            },
             news: {
                 node: 'news', title: 'شريط الأخبار',
                 fields: [ { key:'text', label:'نص الخبر', type:'textarea', required:true } ]
             },
             gallery: {
                 node: 'gallery', title: 'معرض الصور',
-                fields: [ { key:'url', label:'رابط الصورة', type:'text', required:true } ]
+                fields: [
+                    { key:'url', label:'الصورة', type:'text', required:true },
+                    { key:'caption', label:'الوصف', type:'textarea' }
+                ]
             },
             staff: {
                 node: 'staff', title: 'الطاقم الفني',
@@ -527,9 +566,9 @@
         // ============================================================
         const panelTitles = {
             overview:'نظرة عامة', requests:'طلبات التسجيل', categories:'إدارة الفئات',
-            players:'اللاعبون', sessions:'الحصص التدريبية', matches:'المباريات',
+            players:'اللاعبون', featuredPlayers:'أبرز اللاعبين', sessions:'الحصص التدريبية', matches:'المباريات',
             tournaments:'البطولات', messages:'رسائل الأكاديمية', news:'شريط الأخبار',
-            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية',
+            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية', articles:'المقالات',
             payments:'سجل المدفوعات'
         };
         const MONTHS = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -662,7 +701,7 @@
                 return `<input type="color" data-field="${field.key}" value="${val || '#0E4832'}" style="height:44px;padding:4px;" />`;
             }
             // أي حقل اسمه فيه "url" أو "logo" أو "photo" بياخد زرار رفع صورة اختياري بجانب الخانة النصية
-            const isImageField = /url|logo|photo/i.test(field.key);
+            const isImageField = /url|logo|photo|image/i.test(field.key);
             if (isImageField) {
                 return `
                     <input type="text" data-field="${field.key}" value="${val}" placeholder="الصق رابط أو ارفع صورة" />
@@ -947,6 +986,10 @@
                             <span><i class="fas fa-calendar"></i> ${r.birthDate || '-'}</span>
                         </div>
                         ${r.editNote ? `<div style="margin-top:8px;font-size:0.82rem;color:#2A5CAA;"><i class="fas fa-comment"></i> ملاحظة: ${r.editNote}</div>` : ''}
+                        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                            ${r.parentalConsent ? `<button class="doc-download-btn" data-file="${encodeURIComponent(r.parentalConsent)}" data-name="التصريح_الأبوي"><i class="fas fa-file-arrow-down"></i> التصريح الأبوي</button>` : ''}
+                            ${r.medicalCert ? `<button class="doc-download-btn" data-file="${encodeURIComponent(r.medicalCert)}" data-name="الشهادة_الطبية"><i class="fas fa-file-arrow-down"></i> الشهادة الطبية</button>` : ''}
+                        </div>
                     </div>
                     <div class="req-actions">
                         ${(r.status || 'pending') === 'pending' || r.status === 'needs_edit' ? `
@@ -958,6 +1001,16 @@
                 </div>
             `).join('');
 
+            list.querySelectorAll('.doc-download-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const dataUrl = decodeURIComponent(btn.dataset.file);
+                    const ext = dataUrl.includes('application/pdf') ? 'pdf' : 'jpg';
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = `${btn.dataset.name}.${ext}`;
+                    a.click();
+                });
+            });
             list.querySelectorAll('.accept-btn').forEach(btn => {
                 btn.addEventListener('click', () => acceptRequest(btn.dataset.id));
             });

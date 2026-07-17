@@ -372,13 +372,16 @@
                     { key:'phone', label:'رقم هاتف ولي الأمر', type:'text' },
                     { key:'altPhone', label:'رقم هاتف احتياطي', type:'text' },
                     { key:'address', label:'العنوان', type:'text' },
-                    { key:'notes', label:'ملاحظات', type:'textarea' }
+                    { key:'notes', label:'ملاحظات', type:'textarea' },
+                    { key:'parentalConsent', label:'التصريح الأبوي (رابط أو Base64)', type:'text' },
+                    { key:'medicalCert', label:'الشهادة الطبية (رابط أو Base64)', type:'text' }
                 ]
             },
             featuredPlayers: {
                 node: 'featuredPlayers', title: 'أبرز اللاعبين',
                 fields: [
                     { key:'name', label:'الاسم', type:'text', required:true },
+                    { key:'photoUrl', label:'صورة اللاعب', type:'text', required:true },
                     { key:'number', label:'رقم القميص', type:'number' },
                     { key:'position', label:'المركز', type:'text' },
                     { key:'category', label:'الفئة', type:'select', options:catOptions }
@@ -915,7 +918,15 @@
             const paidCount = MONTHS.filter(m => myPayments[m]).length;
 
             document.getElementById('modalTitle').textContent = `سجل اللاعب - ${player.name || ''}`;
+            const docsHTML = (player.parentalConsent || player.medicalCert) ? `
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                    ${player.parentalConsent ? `<button class="doc-download-btn" data-file="${encodeURIComponent(player.parentalConsent)}" data-name="التصريح_الأبوي"><i class="fas fa-file-arrow-down"></i> تحميل التصريح الأبوي</button>` : ''}
+                    ${player.medicalCert ? `<button class="doc-download-btn" data-file="${encodeURIComponent(player.medicalCert)}" data-name="الشهادة_الطبية"><i class="fas fa-file-arrow-down"></i> تحميل الشهادة الطبية</button>` : ''}
+                </div>
+            ` : '<p style="color:#999; font-size:0.85rem; margin-bottom:14px;">لا توجد مستندات مرفقة لهذا اللاعب.</p>';
+
             document.getElementById('modalBody').innerHTML = `
+                ${docsHTML}
                 <div class="stats-grid" style="margin-bottom:6px;">
                     <div class="stat-card"><div class="val">${myAttendance.length}</div><div class="lbl">إجمالي الحصص</div></div>
                     <div class="stat-card"><div class="val">${presentCount}</div><div class="lbl">حضور</div></div>
@@ -941,6 +952,16 @@
                 </div>
             `;
             document.getElementById('modalOverlay').classList.add('active');
+            document.querySelectorAll('.doc-download-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const dataUrl = decodeURIComponent(btn.dataset.file);
+                    const ext = dataUrl.includes('application/pdf') ? 'pdf' : 'jpg';
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = `${btn.dataset.name}.${ext}`;
+                    a.click();
+                });
+            });
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.textContent = 'إغلاق';
             saveBtn.onclick = closeModal;
@@ -1049,7 +1070,9 @@
                 phone: r.phone || '',
                 altPhone: r.altPhone || '',
                 address: r.address || '',
-                notes: r.notes || ''
+                notes: r.notes || '',
+                parentalConsent: r.parentalConsent || '',
+                medicalCert: r.medicalCert || ''
             };
             await dbPost('players', playerPayload);
             await dbPatch('registrationRequests', id, { status:'accepted' });

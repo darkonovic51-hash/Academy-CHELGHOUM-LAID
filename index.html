@@ -139,7 +139,9 @@
         }
         .ticker-item {
             display: flex; align-items: center; gap: 14px;
-            color: var(--gold-light); font-weight: 700; font-size: 1rem;
+            color: var(--gold-light); font-family: 'Bebas Neue', sans-serif;
+            font-weight: 400; font-size: 1.25rem; letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .ticker-item .dot {
             display: inline-block; width: 8px; height: 8px; background: var(--gold);
@@ -516,47 +518,23 @@
         /* ===== GALLERY ===== */
         .gallery { padding: 80px 0; background: #f8f8f8; }
         .masonry {
-            columns: 3 260px;
-            column-gap: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 26px;
         }
         .masonry .item {
-            break-inside: avoid;
-            margin-bottom: 20px;
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            position: relative;
-            box-shadow: var(--shadow-soft);
-            background: var(--primary-dark);
+            border-radius: 24px; overflow: hidden; cursor: pointer; transition: all 0.35s ease;
+            box-shadow: var(--shadow-soft); background: var(--white); border: 1px solid #eee;
         }
-        .masonry .item:hover {
-            transform: scale(1.015);
-            box-shadow: var(--shadow-heavy);
-        }
-        .masonry .item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            min-height: 200px;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .masonry .item:hover img { transform: scale(1.06); }
+        .masonry .item:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
+        .masonry .item .img-frame { position: relative; overflow: hidden; height: 240px; }
+        .masonry .item img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 0.5s ease; }
+        .masonry .item:hover img { transform: scale(1.08); }
         .masonry .item .overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 16px;
-            color: white;
-            font-size: 1.6rem;
+            position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 50%);
+            opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 16px; color: white; font-size: 1.6rem;
         }
         .masonry .item:hover .overlay { opacity: 1; }
+        .masonry .item .caption { padding: 14px 18px; font-size: 0.9rem; color: #555; line-height: 1.6; }
 
         /* Lightbox */
         .lightbox {
@@ -830,6 +808,22 @@
             letter-spacing: 2px;
         }
 
+        /* ===== ARTICLES ===== */
+        .articles-section { padding: 80px 0; background: var(--white); }
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .article-card {
+            border-radius: 24px; overflow: hidden; background: var(--white); box-shadow: var(--shadow-soft);
+            border: 1px solid #eee; transition: 0.35s; display: block;
+        }
+        .article-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
+        .article-card .art-img-frame { height: 200px; overflow: hidden; position: relative; }
+        .article-card .art-img-frame img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .article-card:hover .art-img-frame img { transform: scale(1.08); }
+        .article-card .art-body { padding: 18px 20px; }
+        .article-card h4 { font-family: 'Cairo'; font-weight: 700; font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .article-card p { font-size: 0.88rem; color: #777; line-height: 1.6; }
+        .article-card .read-more { display: inline-block; margin-top: 10px; color: var(--red-accent); font-weight: 700; font-size: 0.85rem; }
+
         /* ===== REGISTRATION ===== */
         .registration {
             padding: 80px 0;
@@ -1006,7 +1000,7 @@
             .nav-logo { width: 60px; height: 60px; top: 0px; }
             .section-title { font-size: 2.2rem; }
             .about-stats { grid-template-columns: 1fr 1fr; }
-            .masonry { columns: 2 140px; }
+            .masonry { grid-template-columns: 1fr; }
             .hero-content .sub-headline { font-size: 1rem; padding: 6px 20px; }
             .hero-buttons .btn-primary, .hero-buttons .btn-secondary {
                 padding: 12px 28px;
@@ -1027,6 +1021,7 @@
             .kit-showcase-card { padding: 20px; }
             .kit-showcase-card img { max-height: 200px; }
             .kit-showcase-card h4 { font-size: 1.3rem; }
+            .articles-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -1077,6 +1072,7 @@
                     <a href="#staff">الطاقم الفني</a>
                     <a href="#kits">الأطقم</a>
                     <a href="#ageGroups">الفئات العمرية</a>
+                    <a href="#articles">المقالات</a>
                     <a href="#register">التسجيل</a>
                 </div>
             </div>
@@ -1170,6 +1166,14 @@
         </div>
     </section>
 
+    <!-- ===== ARTICLES ===== -->
+    <section class="articles-section" id="articles">
+        <div class="container">
+            <h2 class="section-title center reveal">مقالات الأكاديمية</h2>
+            <div class="articles-grid" id="articlesGrid"></div>
+        </div>
+    </section>
+
     <!-- ===== REGISTRATION ===== -->
     <section class="registration" id="register">
         <div class="container">
@@ -1190,15 +1194,15 @@
                         <label>الفئة المطلوبة</label>
                         <select name="category">
                             <option>U7</option><option>U9</option><option>U11</option>
-                            <option>U13</option><option>U15</option><option>U17</option><option>U19</option>
+                            <option>U13</option><option>U15</option><option>U17</option><option>U20</option>
                         </select>
                     </div>
                     <div><label>اسم ولي الأمر</label><input type="text" name="guardianName" placeholder="اسم ولي الأمر" required /></div>
                     <div><label>رقم هاتف ولي الأمر</label><input type="tel" name="phone" placeholder="رقم الهاتف" required /></div>
                     <div><label>رقم هاتف احتياطي</label><input type="tel" name="altPhone" placeholder="رقم هاتف إضافي" /></div>
                     <div class="full"><label>العنوان</label><input type="text" name="address" placeholder="العنوان الكامل" /></div>
-                    <div><label>التصريح الأبوي (صورة)</label><input type="file" name="parentalConsent" accept="image/*" /></div>
-                    <div><label>الشهادة الطبية (صورة)</label><input type="file" name="medicalCert" accept="image/*" /></div>
+                    <div><label>التصريح الأبوي (صورة أو PDF)</label><input type="file" name="parentalConsent" accept="image/*,.pdf,application/pdf" /></div>
+                    <div><label>الشهادة الطبية (صورة أو PDF)</label><input type="file" name="medicalCert" accept="image/*,.pdf,application/pdf" /></div>
                     <div class="full" style="display:flex; align-items:center; gap:12px;">
                         <input type="checkbox" id="consent" required style="width:auto;" />
                         <label for="consent" style="margin:0; cursor:pointer;">موافقة ولي الأمر</label>
@@ -1232,7 +1236,7 @@
                 <div><h4>روابط سريعة</h4><a href="#home">الرئيسية</a><a href="#about">الأكاديمية</a><a href="#ageGroups">البرامج</a><a href="#players">الفرق</a></div>
                 <div><h4>الفئات</h4>
                     <a href="category.html?cat=U7">U7</a><a href="category.html?cat=U9">U9</a><a href="category.html?cat=U11">U11</a>
-                    <a href="category.html?cat=U13">U13</a><a href="category.html?cat=U15">U15</a><a href="category.html?cat=U17">U17</a><a href="category.html?cat=U19">U19</a>
+                    <a href="category.html?cat=U13">U13</a><a href="category.html?cat=U15">U15</a><a href="category.html?cat=U17">U17</a><a href="category.html?cat=U20">U20</a>
                 </div>
                 <div>
                     <h4>اتصل بنا</h4>
@@ -1261,13 +1265,13 @@
 
         const FALLBACK = {
             gallery: [
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695816008.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696257853.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696605103.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696637178.jpg?raw=true',
-                'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true'
-            ].map(url => ({ url })),
+                { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695808734.jpg?raw=true' },
+                { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783695816008.jpg?raw=true' },
+                { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696257853.jpg?raw=true' },
+                { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696605103.jpg?raw=true' },
+                { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696637178.jpg?raw=true' },
+                { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true' }
+            ],
             players: [
                 { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15' },
                 { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17' }
@@ -1291,9 +1295,9 @@
             ]
         };
 
-        const ageGroups = ['U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'U19'];
+        const ageGroups = ['U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'U20'];
         const ageIcons = ['fa-shoe-prints','fa-child-reaching','fa-child','fa-person-running','fa-person','fa-futbol','fa-trophy'];
-        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U19:'أولمبي' };
+        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U20:'أولمبي' };
 
         // ============================================================
         // FIREBASE REST HELPER
@@ -1311,19 +1315,31 @@
             }
         }
 
+        async function fetchNodeWithIds(node, fallback) {
+            try {
+                const res = await fetch(`${DB_URL}${node}.json`);
+                const data = await res.json();
+                if (!data) return fallback;
+                return Object.entries(data).map(([id, val]) => ({ ...val, id }));
+            } catch { return fallback; }
+        }
+
         // ============================================================
         // RENDER FUNCTIONS
         // ============================================================
         function renderGallery(images) {
             const grid = document.getElementById('masonryGrid');
             grid.innerHTML = images.map(g => `
-                <div class="item" data-src="${g.url}">
-                    <img src="${g.url}" alt="معرض الأكاديمية" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:white;font-size:2rem;\\'>📸</div>'" />
-                    <div class="overlay"><i class="fas fa-search-plus"></i></div>
+                <div class="item">
+                    <div class="img-frame" data-src="${g.url}">
+                        <img src="${g.url}" alt="معرض الأكاديمية" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:#ccc;font-size:2rem;\\'>📸</div>'" />
+                        <div class="overlay"><i class="fas fa-search-plus"></i></div>
+                    </div>
+                    ${g.caption ? `<div class="caption">${g.caption}</div>` : ''}
                 </div>
             `).join('');
-            document.querySelectorAll('.masonry .item').forEach(item => {
-                item.addEventListener('click', function() {
+            document.querySelectorAll('.masonry .img-frame').forEach(frame => {
+                frame.addEventListener('click', function() {
                     const img = this.querySelector('img');
                     if (img && img.src) openLightbox(img.src);
                 });
@@ -1412,6 +1428,21 @@
             `).join('');
         }
 
+        function renderArticles(articles) {
+            const grid = document.getElementById('articlesGrid');
+            if (!articles.length) { document.getElementById('articles').style.display = 'none'; return; }
+            grid.innerHTML = articles.map((a, i) => `
+                <a class="article-card" href="article.html?id=${a.id || i}">
+                    <div class="art-img-frame"><img src="${a.image}" alt="${a.title}" onerror="this.style.display='none'" /></div>
+                    <div class="art-body">
+                        <h4>${a.title}</h4>
+                        <p>${a.summary || ''}</p>
+                        <span class="read-more">اقرأ المزيد ←</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
         // ============================================================
         // SCROLL REVEAL
         // ============================================================
@@ -1472,9 +1503,16 @@
         // ============================================================
         // FORM SUBMIT — إرسال فعلي إلى Firebase
         // ============================================================
-        // تحويل أي ملف صورة إلى Base64 مضغوط
+        // تحويل أي ملف (صورة أو PDF) إلى Base64 — الصور تُضغط، والـ PDF يُخزَّن كما هو
         function fileToBase64(file, maxDim = 1200, quality = 0.75) {
             return new Promise((resolve, reject) => {
+                if (file.type === 'application/pdf') {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = () => reject(new Error('تعذّرت قراءة ملف PDF'));
+                    reader.readAsDataURL(file);
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
@@ -1619,19 +1657,21 @@
         (async function init() {
             renderAgeGroups();
 
-            const [gallery, players, staff, kits, news] = await Promise.all([
+            const [gallery, featuredPlayers, staff, kits, news, articles] = await Promise.all([
                 fetchNode('gallery', FALLBACK.gallery),
-                fetchNode('players', FALLBACK.players),
+                fetchNode('featuredPlayers', FALLBACK.players),
                 fetchNode('staff', FALLBACK.staff),
                 fetchNode('kits', FALLBACK.kits),
-                fetchNode('news', FALLBACK.news)
+                fetchNode('news', FALLBACK.news),
+                fetchNodeWithIds('articles', [])
             ]);
 
             renderGallery(gallery);
-            renderPlayers(players);
+            renderPlayers(featuredPlayers);
             renderStaff(staff);
             renderKits(kits);
             renderTicker(news);
+            renderArticles(articles);
 
             initScrollReveal();
             initCounters();

@@ -305,6 +305,14 @@
                 <button class="save-btn" id="saveSettingsBtn" style="max-width:260px; margin-top:16px;">
                     <i class="fas fa-save"></i> حفظ إعدادات الموقع
                 </button>
+
+                <div class="cat-coach-card" style="margin-top:26px; max-width:400px; border:2px dashed var(--red-accent);">
+                    <h4><i class="fas fa-key"></i> تغيير كود الدخول للوحة التحكم</h4>
+                    <input type="password" id="newAdminCode" placeholder="الكود الجديد" />
+                    <input type="password" id="confirmAdminCode" placeholder="تأكيد الكود الجديد" style="margin-top:8px;" />
+                    <button id="changeCodeBtn" style="margin-top:10px; background:var(--red-accent);"><i class="fas fa-save"></i> حفظ الكود الجديد</button>
+                    <div id="changeCodeStatus" style="font-size:0.82rem; margin-top:8px; font-weight:700;"></div>
+                </div>
             </section>
 
             <!-- Generic CRUD panels (تُبنى تلقائيًا بالجافاسكريبت) -->
@@ -377,7 +385,24 @@
 
     <script>
         // ============================================================
-        // AUTH GUARD — أول سطر ينفّذ: التأكد إن المدير مسجل دخول فعلاً
+        // HASH HELPER (نفس المنطق المستخدم في login.html، لازم يطابقه تمامًا)
+        // ============================================================
+        function normalizeCode(text) {
+            const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+            const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+            return text.replace(/[٠-٩]/g, d => arabicDigits.indexOf(d))
+                        .replace(/[۰-۹]/g, d => persianDigits.indexOf(d))
+                        .trim();
+        }
+        async function sha256(text) {
+            const normalized = normalizeCode(text);
+            const data = new TextEncoder().encode(normalized);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // ============================================================
+        // AUTH GUARD — التأكد إن المدير مسجل دخول فعلاً
         // ============================================================
         if (sessionStorage.getItem('adminAuthed') !== 'true') {
             window.location.href = 'login.html';
@@ -435,7 +460,7 @@
                 node: 'featuredPlayers', title: 'أبرز اللاعبين',
                 fields: [
                     { key:'name', label:'الاسم', type:'text', required:true },
-                    { key:'photoUrl', label:'صورة اللاعب', type:'text', required:true },
+                    { key:'photoUrl', label:'صورة اللاعب', type:'text' },
                     { key:'number', label:'رقم القميص', type:'number' },
                     { key:'position', label:'المركز', type:'text' },
                     { key:'category', label:'الفئة', type:'select', options:catOptions }
@@ -698,6 +723,9 @@
             } else {
                 bodyRows = entries.map(([id, item]) => {
                     const cells = config.fields.map(f => {
+                        if (f.type === 'pdf') {
+                            return `<td>${item[f.key] ? '<i class="fas fa-file-pdf" style="color:var(--red-accent);"></i> ملف مرفوع' : '-'}</td>`;
+                        }
                         if (/url|logo|photo|image/i.test(f.key) && item[f.key]) {
                             return `<td><img class="thumb" src="${item[f.key]}" onerror="this.style.visibility='hidden'" /></td>`;
                         }
@@ -1044,11 +1072,10 @@
             document.getElementById('modalTitle').textContent = `سجل اللاعب - ${player.name || ''}`;
             const docsHTML = (player.parentalConsent || player.medicalCert) ? `
                 <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
-                    ${player.parentalConsent ? `<button class="doc-download-btn" data-file="${encodeURIComponent(player.parentalConsent)}" data-name="التصريح_الأبوي"><i class="fas fa-file-arrow-down"></i> تحميل التصريح الأبوي</button>` : ''}
-                    ${player.medicalCert ? `<button class="doc-download-btn" data-file="${encodeURIComponent(player.medicalCert)}" data-name="الشهادة_الطبية"><i class="fas fa-file-arrow-down"></i> تحميل الشهادة الطبية</button>` : ''}
+                    ${player.parentalConsent ? `<button class="doc-download-btn" data-doc="${encodeURIComponent(player.parentalConsent)}" data-name="التصريح_الأبوي"><i class="fas fa-file-arrow-down"></i> تحميل التصريح الأبوي</button>` : ''}
+                    ${player.medicalCert ? `<button class="doc-download-btn" data-doc="${encodeURIComponent(player.medicalCert)}" data-name="الشهادة_الطبية"><i class="fas fa-file-arrow-down"></i> تحميل الشهادة الطبية</button>` : ''}
                 </div>
-            ` : '<p style="color:#999; font-size:0.85rem; margin-bottom:14px;">لا توجد مستندات مرفقة لهذا اللاعب.</p>';
-
+            ` : '';
             document.getElementById('modalBody').innerHTML = `
                 ${docsHTML}
                 <div class="stats-grid" style="margin-bottom:6px;">
@@ -1076,9 +1103,9 @@
                 </div>
             `;
             document.getElementById('modalOverlay').classList.add('active');
-            document.querySelectorAll('.doc-download-btn').forEach(btn => {
+            document.querySelectorAll('.doc-download-btn[data-doc]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const dataUrl = decodeURIComponent(btn.dataset.file);
+                    const dataUrl = decodeURIComponent(btn.dataset.doc);
                     const ext = dataUrl.includes('application/pdf') ? 'pdf' : 'jpg';
                     const a = document.createElement('a');
                     a.href = dataUrl;
@@ -1150,6 +1177,22 @@
             });
             cache.siteSettings = updated;
             showToast('تم حفظ إعدادات الموقع بنجاح');
+        });
+
+        document.getElementById('changeCodeBtn').addEventListener('click', async () => {
+            const statusEl = document.getElementById('changeCodeStatus');
+            const code = document.getElementById('newAdminCode').value.trim();
+            const confirmCode = document.getElementById('confirmAdminCode').value.trim();
+            if (!code || code.length < 4) { statusEl.style.color = 'var(--red-accent)'; statusEl.textContent = 'الكود يجب أن يكون 4 خانات على الأقل.'; return; }
+            if (code !== confirmCode) { statusEl.style.color = 'var(--red-accent)'; statusEl.textContent = 'الكودان غير متطابقين.'; return; }
+            const hash = await sha256(code);
+            await fetch(`${DB_URL}adminAccess/codeHash.json`, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hash)
+            });
+            statusEl.style.color = '#1D8348';
+            statusEl.textContent = '✅ تم تغيير الكود بنجاح. سيُطلب منك استخدامه في المرة القادمة.';
+            document.getElementById('newAdminCode').value = '';
+            document.getElementById('confirmAdminCode').value = '';
         });
 
         // ============================================================
@@ -1249,6 +1292,7 @@
                 altPhone: r.altPhone || '',
                 address: r.address || '',
                 notes: r.notes || '',
+                // المستندات المرفقة عند التسجيل تُنقل مباشرة لملف اللاعب
                 parentalConsent: r.parentalConsent || '',
                 medicalCert: r.medicalCert || ''
             };
@@ -1256,7 +1300,7 @@
             await dbPatch('registrationRequests', id, { status:'accepted' });
             cache.requests[id].status = 'accepted';
             renderRequests();
-            showToast('تم قبول الطلب وإنشاء ملف اللاعب تلقائيًا مع بياناته الكاملة');
+            showToast('تم قبول الطلب وإنشاء ملف اللاعب تلقائيًا مع بياناته والمستندات المرفقة');
         }
 
         // ============================================================

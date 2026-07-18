@@ -6,6 +6,7 @@
     <title>ETOILE CHELGHOUM LAID ACADEMY</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -118,38 +119,45 @@
             transform: translateY(-3px);
         }
 
-        /* ===== TOP NEWS TICKER ===== */
+        /* ===== TOP NEWS TICKER - beIN SPORTS STYLE ===== */
         .ticker-wrap {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--ticker-height); z-index: 1001;
-            background: linear-gradient(90deg, #0a2e20 0%, var(--primary-dark) 100%);
-            border-bottom: 3px solid var(--gold);
+            background: linear-gradient(90deg, #7a0c1e 0%, var(--red-accent) 45%, #7a0c1e 100%);
+            border-bottom: 3px solid var(--black);
             overflow: hidden; display: flex; align-items: stretch;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+        .ticker-wrap::before {
+            content: ''; position: absolute; inset: 0;
+            background: repeating-linear-gradient(-45deg, rgba(255,255,255,0.04) 0 10px, transparent 10px 22px);
+            pointer-events: none;
         }
         .ticker-label {
-            background: var(--red-accent); color: var(--white); font-family:'Bebas Neue'; font-size:1.4rem;
-            letter-spacing:2px; display:flex; align-items:center; padding:0 28px; flex-shrink:0;
-            position:relative; z-index:2; box-shadow: 6px 0 16px rgba(0,0,0,0.25); text-transform:uppercase;
+            background: var(--black); color: var(--white); font-family:'Tajawal', sans-serif; font-weight: 900; font-size:1.3rem;
+            letter-spacing:1px; display:flex; align-items:center; padding:0 30px; flex-shrink:0;
+            position:relative; z-index:2; clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
+            padding-left: 44px; margin-left: -14px;
         }
         .ticker-viewport { flex:1; overflow:hidden; display:flex; align-items:center; }
         .ticker {
-            display: flex; align-items: center; gap: 46px;
+            display: flex; align-items: center; gap: 50px;
             animation: tickerScroll 32s linear infinite;
-            white-space: nowrap; width: max-content; padding-right: 30px;
+            white-space: nowrap; width: max-content; padding-right: 34px;
         }
         .ticker-item {
             display: flex; align-items: center; gap: 16px;
-            color: var(--gold-light); font-family: 'Bebas Neue', sans-serif;
-            font-weight: 400; font-size: 1.5rem; letter-spacing: 1.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.3);
+            color: var(--white); font-family: 'Tajawal', sans-serif;
+            font-weight: 900; font-size: 1.35rem; letter-spacing: 0.3px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.5);
         }
         .ticker-item .dot {
-            display: inline-block; width: 8px; height: 8px; background: var(--gold);
-            border-radius: 50%; margin: 0 6px; animation: pulseDot 1.6s ease-in-out infinite;
+            display: inline-block; width: 9px; height: 9px; background: var(--white);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            margin: 0 6px; animation: pulseDot 1.6s ease-in-out infinite;
         }
         .ticker-item .separator-logo {
             width: 24px; height: 24px; border-radius: 50%; object-fit: contain;
-            background: var(--white); padding: 2px; margin: 0 10px; border: 1px solid rgba(212,175,55,0.4);
+            background: var(--white); padding: 2px; margin: 0 10px; border: 2px solid var(--black);
         }
         @keyframes tickerScroll {
             0% { transform: translateX(100%); }
@@ -958,7 +966,7 @@
         @media (max-width: 600px) {
             :root { --ticker-height: 50px; --navbar-height: 70px; }
             .ticker-item { font-size: 1.05rem; }
-            .ticker-label { font-size: 1rem; padding: 0 14px; }
+            .ticker-label { font-size: 1rem; padding: 0 20px; padding-left: 30px; }
             .nav-actions .nav-cta span { display: none; }
             .nav-actions .nav-cta { padding: 8px 14px; }
             .nav-logo { width: 60px; height: 60px; top: 0px; }
@@ -1163,6 +1171,15 @@
                     <div><label>اسم ولي الأمر</label><input type="text" name="guardianName" placeholder="اسم ولي الأمر" required /></div>
                     <div><label>رقم هاتف ولي الأمر</label><input type="tel" name="phone" placeholder="رقم الهاتف" required /></div>
                     <div><label>رقم هاتف احتياطي</label><input type="tel" name="altPhone" placeholder="رقم هاتف إضافي" /></div>
+                    <div><label>رقم بطاقة تعريف ولي الأمر</label><input type="text" name="guardianIdNumber" placeholder="رقم بطاقة التعريف الوطنية" /></div>
+                    <div>
+                        <label>زمرة دم اللاعب</label>
+                        <select name="bloodType">
+                            <option value="">غير معروفة</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
                     <div class="full"><label>العنوان</label><input type="text" name="address" placeholder="العنوان الكامل" /></div>
                     <div><label>التصريح الأبوي (صورة أو PDF)</label><input type="file" name="parentalConsent" accept="image/*,.pdf,application/pdf" /></div>
                     <div><label>الشهادة الطبية (صورة أو PDF)</label><input type="file" name="medicalCert" accept="image/*,.pdf,application/pdf" /></div>
@@ -1704,7 +1721,8 @@
                     ${[
                         ['الاسم', get('firstName')], ['اللقب', get('lastName')], ['تاريخ الميلاد', get('birthDate')],
                         ['الفئة', get('category')], ['اسم ولي الأمر', get('guardianName')], ['رقم هاتف ولي الأمر', get('phone')],
-                        ['رقم هاتف احتياطي', get('altPhone')], ['العنوان', get('address')]
+                        ['رقم هاتف احتياطي', get('altPhone')], ['رقم بطاقة تعريف ولي الأمر', get('guardianIdNumber')],
+                        ['زمرة الدم', get('bloodType')], ['العنوان', get('address')]
                     ].map(([label, val]) => `
                         <tr>
                             <td style="padding:10px; font-weight:700; color:#0E4832; border-bottom:1px solid #eee; width:35%;">${label}</td>

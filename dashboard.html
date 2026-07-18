@@ -16,7 +16,7 @@
         --sidebar-w: 260px;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Cairo',sans-serif; direction:rtl; background:#f4f6f5; color:var(--black); }
+    body { font-family:'Cairo',sans-serif; direction:rti; background:#f4f6f5; color:var(--black); }
     a { text-decoration:none; color:inherit; }
     button { font-family:'Cairo'; cursor:pointer; }
 
@@ -136,7 +136,11 @@
         background:var(--primary-mid); color:var(--white); border:none; padding:9px 18px; border-radius:20px;
         font-size:0.85rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
     }
-    .callups-list { margin-top:12px; max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+    .callups-filters { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .callups-filters select, .callups-filters input {
+        flex:1; min-width:120px; padding:8px 12px; border-radius:10px; border:1px solid #ddd; font-family:'Cairo'; font-size:0.85rem;
+    }
+    .callups-list { margin-top:12px; max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
     .callup-row {
         display:flex; justify-content:space-between; align-items:center; padding:9px 14px;
         background:var(--white); border-radius:12px; border:1px solid #eee;
@@ -560,6 +564,7 @@
                     { key:'period', label:'الفترة', type:'text' },
                     { key:'teamsCount', label:'عدد الفرق', type:'number' },
                     { key:'standings', label:'ترتيب المجموعة', type:'textarea' },
+                    { key:'callUps', label:'اللاعبون المستدعون', type:'callups' },
                     { key:'files', label:'رابط الملفات المرفقة', type:'text' }
                 ]
             },
@@ -932,8 +937,9 @@
                     <div class="callups-box">
                         <div class="callups-status" data-callups-status>${list.length} لاعب مستدعى حاليًا</div>
                         <button type="button" class="callups-toggle-btn" data-callups-toggle="${field.key}">
-                            <i class="fas fa-users"></i> إدارة قائمة الاستدعاء
+                            <i class="fas fa-users"></i> إدارة قائمة الاستدعاء (كل الفئات)
                         </button>
+                        <div class="callups-filters" data-callups-filters="${field.key}" style="display:none;"></div>
                         <div class="callups-list" data-callups-list="${field.key}" style="display:none;"></div>
                     </div>
                 `;
@@ -991,26 +997,47 @@
                 btn.addEventListener('click', async () => {
                     const fieldKey = btn.dataset.callupsToggle;
                     const listEl = document.querySelector(`[data-callups-list="${fieldKey}"]`);
+                    const filtersEl = document.querySelector(`[data-callups-filters="${fieldKey}"]`);
                     const isOpen = listEl.style.display !== 'none';
-                    if (isOpen) { listEl.style.display = 'none'; return; }
+                    if (isOpen) { listEl.style.display = 'none'; filtersEl.style.display = 'none'; return; }
 
                     const catSelect = document.querySelector('[data-field="category"]');
-                    const category = catSelect ? catSelect.value : '';
-                    if (!category) { alert('يرجى اختيار الفئة أولاً.'); return; }
+                    const defaultCategory = catSelect ? catSelect.value : '';
+                    const allPlayersRaw = await dbGet('players');
+                    const allPlayers = Object.entries(allPlayersRaw); // [id, playerObj][]
 
-                    const allPlayers = await dbGet('players');
-                    const catPlayers = Object.entries(allPlayers).filter(([, p]) => p.category === category);
-                    const hiddenInput = document.querySelector(`[data-field="${fieldKey}"]`);
-                    let currentList = [];
-                    try { currentList = hiddenInput.value ? JSON.parse(hiddenInput.value) : []; } catch { currentList = []; }
-                    const currentIds = new Set(currentList.map(c => c.id));
+                    // بناء خيارات الفلتر: "كل الفئات" + كل فئة موجود بها لاعبون فعليًا
+                    const usedCats = [...new Set(allPlayers.map(([, p]) => p.category).filter(Boolean))];
+                    filtersEl.innerHTML = `
+                        <select data-callups-cat-filter>
+                            <option value="">كل الفئات</option>
+                            ${usedCats.map(c => `<option value="${c}" ${c === defaultCategory ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                        <input type="text" data-callups-search placeholder="🔍 بحث بالاسم..." />
+                    `;
+                    filtersEl.style.display = 'flex';
 
-                    if (catPlayers.length === 0) {
-                        listEl.innerHTML = '<p style="text-align:center;color:#999;font-size:0.85rem;">لا يوجد لاعبون في هذه الفئة.</p>';
-                    } else {
-                        listEl.innerHTML = catPlayers.map(([pid, p]) => `
+                    function renderList() {
+                        const catFilter = filtersEl.querySelector('[data-callups-cat-filter]').value;
+                        const search = filtersEl.querySelector('[data-callups-search]').value.trim().toLowerCase();
+                        const hiddenInput = document.querySelector(`[data-field="${fieldKey}"]`);
+                        let currentList = [];
+                        try { currentList = hiddenInput.value ? JSON.parse(hiddenInput.value) : []; } catch { currentList = []; }
+                        const currentIds = new Set(currentList.map(c => c.id));
+
+                        const filtered = allPlayers.filter(([, p]) => {
+                            const matchCat = !catFilter || p.category === catFilter;
+                            const matchSearch = !search || (p.name || '').toLowerCase().includes(search);
+                            return matchCat && matchSearch;
+                        });
+
+                        if (filtered.length === 0) {
+                            listEl.innerHTML = '<p style="text-align:center;color:#999;font-size:0.85rem;">لا يوجد لاعبون مطابقون.</p>';
+                            return;
+                        }
+                        listEl.innerHTML = filtered.map(([pid, p]) => `
                             <div class="callup-row" data-player-id="${pid}" data-player-name="${p.name || ''}">
-                                <span class="cr-name">${p.name || ''} ${p.number !== undefined && p.number !== '' ? '#' + p.number : ''}</span>
+                                <span class="cr-name">${p.name || ''} ${p.category ? '(' + p.category + ')' : ''} ${p.number !== undefined && p.number !== '' ? '#' + p.number : ''}</span>
                                 <button type="button" class="call-btn ${currentIds.has(pid) ? 'called' : ''}">
                                     ${currentIds.has(pid) ? 'إزالة' : 'استدعاء'}
                                 </button>
@@ -1026,18 +1053,20 @@
                                 const exists = list.find(c => c.id === pid);
                                 if (exists) {
                                     list = list.filter(c => c.id !== pid);
-                                    callBtn.classList.remove('called');
-                                    callBtn.textContent = 'استدعاء';
                                 } else {
                                     list.push({ id: pid, name: pname });
-                                    callBtn.classList.add('called');
-                                    callBtn.textContent = 'إزالة';
                                 }
                                 hiddenInput.value = JSON.stringify(list);
                                 document.querySelector(`[data-callups-status]`).textContent = `${list.length} لاعب مستدعى حاليًا`;
+                                renderList(); // إعادة رسم فورية لتحديث نص الزرار مباشرة
                             });
                         });
                     }
+
+                    filtersEl.querySelector('[data-callups-cat-filter]').addEventListener('change', renderList);
+                    filtersEl.querySelector('[data-callups-search]').addEventListener('input', renderList);
+
+                    renderList();
                     listEl.style.display = 'flex';
                 });
             });

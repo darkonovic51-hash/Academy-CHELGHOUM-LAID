@@ -522,7 +522,7 @@
 
         let ageLabels = {};
         async function loadCategoryLabel() {
-            const raw = await fetchNode('categoriesList', {});
+            const raw = await fetchNodeRaw('categoriesList', {});
             ageLabels = Object.fromEntries(Object.entries(raw).map(([id, c]) => [id, c.ageLabel || 'فئة']));
         }
 
@@ -557,6 +557,19 @@
                 return fallback;
             }
         }
+
+        // نسخة خام تحافظ على المفاتيح الأصلية (مهم لأي بيانات معرّفة بأسماء مثل الفئات، وليس أرقام تسلسلية)
+        async function fetchNodeRaw(node, fallback) {
+            try {
+                const res = await fetch(`${DB_URL}${node}.json`);
+                if (!res.ok) throw new Error('bad response');
+                const data = await res.json();
+                return data || fallback;
+            } catch (err) {
+                return fallback;
+            }
+        }
+
         function byCategory(list) {
             return list.filter(item => item.category === CATEGORY);
         }
@@ -748,7 +761,8 @@
             return `${m} د`;
         }
 
-        function sessionCardHTML(s) {
+        let SESSIONS_DATA = [];
+        function sessionCardHTML(s, idx) {
             const duration = calcDuration(s.time, s.endTime);
             return `
                 <div class="session-card">
@@ -766,7 +780,7 @@
                         <div class="row"><i class="fas fa-map-marker-alt"></i> ${s.field || '-'}</div>
                         <div class="sc-footer">
                             <span class="session-status-badge ${s.status || 'scheduled'}">${sessionStatusLabels[s.status] || 'مجدولة'}</span>
-                            <button class="sc-details-btn" data-session-details='${JSON.stringify(s).replace(/'/g, "&apos;")}'>عرض التفاصيل</button>
+                            <button class="sc-details-btn" type="button" data-session-idx="${idx}">عرض التفاصيل</button>
                         </div>
                     </div>
                 </div>
@@ -790,29 +804,36 @@
         }
 
         function renderSessions(sessions) {
+            SESSIONS_DATA = sessions;
             const nextWrap = document.getElementById('nextSessionWrap');
             const upcomingGrid = document.getElementById('upcomingSessionsGrid');
             const archiveGrid = document.getElementById('archiveSessionsGrid');
 
-            const activeOnes = sessions.filter(s => s.status === 'scheduled' || s.status === 'ongoing')
-                .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
-            const archived = sessions.filter(s => s.status === 'finished' || s.status === 'canceled')
-                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            const indices = sessions.map((s, i) => i);
+            const activeIdx = indices.filter(i => sessions[i].status === 'scheduled' || sessions[i].status === 'ongoing')
+                .sort((a, b) => new Date(sessions[a].date || 0) - new Date(sessions[b].date || 0));
+            const archivedIdx = indices.filter(i => sessions[i].status === 'finished' || sessions[i].status === 'canceled')
+                .sort((a, b) => new Date(sessions[b].date || 0) - new Date(sessions[a].date || 0));
 
-            const featured = activeOnes.find(s => s.status === 'ongoing') || activeOnes[0];
-            const remainingUpcoming = activeOnes.filter(s => s !== featured);
+            const ongoingIdx = activeIdx.find(i => sessions[i].status === 'ongoing');
+            const featuredIdx = ongoingIdx !== undefined ? ongoingIdx : activeIdx[0];
+            const remainingIdx = activeIdx.filter(i => i !== featuredIdx);
 
-            nextWrap.innerHTML = featured
-                ? `<div class="featured-card-wrap">${sessionCardHTML(featured)}</div>`
+            nextWrap.innerHTML = featuredIdx !== undefined
+                ? `<div class="featured-card-wrap">${sessionCardHTML(sessions[featuredIdx], featuredIdx)}</div>`
                 : `<div class="empty-state">لا توجد حصة قادمة حاليًا لهذه الفئة.</div>`;
 
-            upcomingGrid.innerHTML = remainingUpcoming.length
-                ? remainingUpcoming.map(sessionCardHTML).join('')
+            upcomingGrid.innerHTML = remainingIdx.length
+                ? remainingIdx.map(i => sessionCardHTML(sessions[i], i)).join('')
                 : `<div class="empty-state">لا توجد حصص أخرى قادمة.</div>`;
 
-            archiveGrid.innerHTML = archived.length
-                ? archived.map(sessionCardHTML).join('')
+            archiveGrid.innerHTML = archivedIdx.length
+                ? archivedIdx.map(i => sessionCardHTML(sessions[i], i)).join('')
                 : `<div class="empty-state">لا يوجد أرشيف حصص بعد.</div>`;
+
+            document.querySelectorAll('[data-session-idx]').forEach(btn => {
+                btn.addEventListener('click', () => openSessionDetails(SESSIONS_DATA[btn.dataset.sessionIdx]));
+            });
         }
 
         // ============================================================
@@ -820,7 +841,8 @@
         // ============================================================
         const matchStatusLabels = { upcoming:'قادمة', live:'جارية الآن', finished:'انتهت', canceled:'ملغاة' };
 
-        function matchCardHTML(m) {
+        let MATCHES_DATA = [];
+        function matchCardHTML(m, idx) {
             return `
                 <div class="match-card">
                     <div class="mc-header">
@@ -829,7 +851,7 @@
                     </div>
                     <div class="match-top">
                         <div class="team"><img src="${m.homeLogo || LOGO_URL}" onerror="this.style.visibility='hidden'" /><span>الأكاديمية</span></div>
-                        <div class="vs">${m.status === 'finished' && m.result ? `<span class="score">${m.result}</span>` : 'VS'}</div>
+                        <div class="vs">${m.status === 'finished' && m.homeScore !== undefined ? `<span class="score">${m.homeScore} - ${m.awayScore}</span>` : 'VS'}</div>
                         <div class="team"><img src="${m.opponentLogo || ''}" onerror="this.style.visibility='hidden'" /><span>${m.opponent || 'الفريق المنافس'}</span></div>
                     </div>
                     <div class="match-meta">
@@ -840,7 +862,7 @@
                     </div>
                     <div class="sc-footer" style="padding:0 18px 14px;">
                         <span></span>
-                        <button class="sc-details-btn" data-match-details='${JSON.stringify(m).replace(/'/g, "&apos;")}'>عرض التفاصيل</button>
+                        <button class="sc-details-btn" type="button" data-match-idx="${idx}">عرض التفاصيل</button>
                     </div>
                 </div>
             `;
@@ -896,29 +918,36 @@
         }
 
         function renderMatches(matches) {
+            MATCHES_DATA = matches;
             const nextWrap = document.getElementById('nextMatchWrap');
             const upcomingGrid = document.getElementById('upcomingMatchesGrid');
             const archiveGrid = document.getElementById('archiveMatchesGrid');
 
-            const activeOnes = matches.filter(m => m.status === 'upcoming' || m.status === 'live')
-                .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
-            const archived = matches.filter(m => m.status === 'finished' || m.status === 'canceled')
-                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            const indices = matches.map((m, i) => i);
+            const activeIdx = indices.filter(i => matches[i].status === 'upcoming' || matches[i].status === 'live')
+                .sort((a, b) => new Date(matches[a].date || 0) - new Date(matches[b].date || 0));
+            const archivedIdx = indices.filter(i => matches[i].status === 'finished' || matches[i].status === 'canceled')
+                .sort((a, b) => new Date(matches[b].date || 0) - new Date(matches[a].date || 0));
 
-            const featured = activeOnes.find(m => m.status === 'live') || activeOnes[0];
-            const remainingUpcoming = activeOnes.filter(m => m !== featured);
+            const liveIdx = activeIdx.find(i => matches[i].status === 'live');
+            const featuredIdx = liveIdx !== undefined ? liveIdx : activeIdx[0];
+            const remainingIdx = activeIdx.filter(i => i !== featuredIdx);
 
-            nextWrap.innerHTML = featured
-                ? `<div class="featured-card-wrap">${matchCardHTML(featured)}</div>`
+            nextWrap.innerHTML = featuredIdx !== undefined
+                ? `<div class="featured-card-wrap">${matchCardHTML(matches[featuredIdx], featuredIdx)}</div>`
                 : `<div class="empty-state">لا توجد مباراة قادمة حاليًا لهذه الفئة.</div>`;
 
-            upcomingGrid.innerHTML = remainingUpcoming.length
-                ? remainingUpcoming.map(matchCardHTML).join('')
+            upcomingGrid.innerHTML = remainingIdx.length
+                ? remainingIdx.map(i => matchCardHTML(matches[i], i)).join('')
                 : `<div class="empty-state">لا توجد مباريات أخرى قادمة.</div>`;
 
-            archiveGrid.innerHTML = archived.length
-                ? archived.map(matchCardHTML).join('')
+            archiveGrid.innerHTML = archivedIdx.length
+                ? archivedIdx.map(i => matchCardHTML(matches[i], i)).join('')
                 : `<div class="empty-state">لا يوجد أرشيف مباريات بعد.</div>`;
+
+            document.querySelectorAll('[data-match-idx]').forEach(btn => {
+                btn.addEventListener('click', () => openMatchDetails(MATCHES_DATA[btn.dataset.matchIdx]));
+            });
         }
 
         // ============================================================
@@ -1015,7 +1044,7 @@
             const catTournaments = byCategory(tournaments);
             const catMessages = byCategory(messages);
 
-            const coachName = (await fetchNode('categoryCoaches', {}))[CATEGORY];
+            const coachName = (await fetchNodeRaw('categoryCoaches', {}))[CATEGORY];
             renderBanner(allPlayers.length, catSessions.filter(s => s.status !== 'finished').length, catMatches.length);
             renderQuickStats(
                 allPlayers.length,

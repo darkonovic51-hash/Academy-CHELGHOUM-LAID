@@ -21,7 +21,7 @@
             --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.4);
             --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.08);
             --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
-            --ticker-height: 52px;
+            --ticker-height: 62px;
             --navbar-height: 78px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -127,9 +127,9 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         .ticker-label {
-            background: var(--red-accent); color: var(--white); font-family:'Bebas Neue'; font-size:1.1rem;
-            letter-spacing:1.5px; display:flex; align-items:center; padding:0 22px; flex-shrink:0;
-            position:relative; z-index:2; box-shadow: 6px 0 16px rgba(0,0,0,0.25);
+            background: var(--red-accent); color: var(--white); font-family:'Bebas Neue'; font-size:1.4rem;
+            letter-spacing:2px; display:flex; align-items:center; padding:0 28px; flex-shrink:0;
+            position:relative; z-index:2; box-shadow: 6px 0 16px rgba(0,0,0,0.25); text-transform:uppercase;
         }
         .ticker-viewport { flex:1; overflow:hidden; display:flex; align-items:center; }
         .ticker {
@@ -138,10 +138,10 @@
             white-space: nowrap; width: max-content; padding-right: 30px;
         }
         .ticker-item {
-            display: flex; align-items: center; gap: 14px;
+            display: flex; align-items: center; gap: 16px;
             color: var(--gold-light); font-family: 'Bebas Neue', sans-serif;
-            font-weight: 400; font-size: 1.25rem; letter-spacing: 1px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            font-weight: 400; font-size: 1.5rem; letter-spacing: 1.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.3);
         }
         .ticker-item .dot {
             display: inline-block; width: 8px; height: 8px; background: var(--gold);
@@ -956,9 +956,9 @@
             .nav-links.right { justify-content: flex-start; }
         }
         @media (max-width: 600px) {
-            :root { --ticker-height: 44px; --navbar-height: 70px; }
-            .ticker-item { font-size: 0.78rem; }
-            .ticker-label { font-size: 0.85rem; padding: 0 12px; }
+            :root { --ticker-height: 50px; --navbar-height: 70px; }
+            .ticker-item { font-size: 1.05rem; }
+            .ticker-label { font-size: 1rem; padding: 0 14px; }
             .nav-actions .nav-cta span { display: none; }
             .nav-actions .nav-cta { padding: 8px 14px; }
             .nav-logo { width: 60px; height: 60px; top: 0px; }
@@ -1759,17 +1759,18 @@
         (async function init() {
             await loadCategoriesList();
 
-            const [gallery, featuredPlayers, staff, kits, news, articles, settings, documents] = await Promise.all([
+            const [gallery, featuredPlayers, staff, kits, news, articles, settings] = await Promise.all([
                 fetchNode('gallery', FALLBACK.gallery),
                 fetchNode('featuredPlayers', FALLBACK.players),
                 fetchNode('staff', FALLBACK.staff),
                 fetchNode('kits', FALLBACK.kits),
                 fetchNode('news', FALLBACK.news),
                 fetchNodeWithIds('articles', []),
-                fetchNode('siteSettings', {}),
-                fetchNodeWithIds('documents', [])
+                fetchNodeRaw('siteSettings', {})
             ]);
 
+            const documents = await fetchNodeWithIds('documents', []);
+            
             applySiteSettings(settings);
             renderGallery(gallery);
             renderPlayers(featuredPlayers);

@@ -155,6 +155,21 @@
     .cat-coach-card input { width:100%; padding:10px 14px; border-radius:12px; border:1px solid #ddd; margin-bottom:10px; font-family:'Cairo'; }
     .cat-coach-card button { width:100%; padding:9px; border:none; border-radius:12px; background:var(--primary-mid); color:var(--white); font-weight:700; }
 
+    /* ===== SITE SETTINGS ===== */
+    .settings-form { background:var(--white); border-radius:20px; padding:26px; box-shadow:var(--shadow-soft); display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .settings-form .full { grid-column:1/-1; }
+    .settings-form h4 {
+        grid-column:1/-1; font-family:'Bebas Neue'; font-size:1.2rem; color:var(--primary-dark);
+        border-bottom:2px solid var(--gold); padding-bottom:8px; margin-top:10px; letter-spacing:1px;
+    }
+    .settings-form h4:first-child { margin-top:0; }
+    .settings-form label { font-size:0.85rem; font-weight:700; color:#555; display:block; margin-bottom:4px; }
+    .settings-form input, .settings-form textarea {
+        width:100%; padding:11px 14px; border-radius:12px; border:1px solid #ddd; font-family:'Cairo'; font-size:0.92rem;
+    }
+    .settings-form textarea { min-height:70px; resize:vertical; }
+    @media (max-width:700px) { .settings-form { grid-template-columns:1fr; } }
+
     /* ===== MODAL ===== */
     .modal-overlay {
         position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none;
@@ -177,6 +192,21 @@
         width:100%; padding:11px 14px; border-radius:12px; border:1px solid #ddd; font-family:'Cairo'; font-size:0.92rem;
     }
     .modal-body textarea { min-height:80px; resize:vertical; }
+    .image-field-box { background:#f7f7f7; border:1.5px dashed #ddd; border-radius:14px; padding:14px; }
+    .image-status { display:flex; align-items:center; gap:8px; font-size:0.85rem; color:#999; margin-bottom:10px; }
+    .image-status.has-image { color:#1D8348; font-weight:700; }
+    .image-status i { font-size:1rem; }
+    .image-field-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .image-upload-btn {
+        background:var(--primary-mid); color:var(--white); padding:8px 16px; border-radius:20px;
+        font-size:0.82rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:0.25s;
+    }
+    .image-upload-btn:hover { background:var(--primary-dark); }
+    .image-remove-btn {
+        background:#FDEAEA; color:var(--red-accent); border:none; padding:8px 16px; border-radius:20px;
+        font-size:0.82rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:0.25s;
+    }
+    .image-remove-btn:hover { background:var(--red-accent); color:var(--white); }
     .modal-foot { padding:16px 24px 22px; }
     .save-btn { width:100%; padding:13px; border:none; border-radius:14px; background:var(--red-accent); color:var(--white); font-weight:700; font-size:1rem; }
     .save-btn:hover { background:#a00d24; }
@@ -215,6 +245,7 @@
                 <button class="nav-btn active" data-panel="overview"><i class="fas fa-chart-line"></i> Dashboard</button>
                 <button class="nav-btn" data-panel="requests"><i class="fas fa-inbox"></i> طلبات التسجيل <span class="count-pill" id="reqCount">0</span></button>
                 <button class="nav-btn" data-panel="categories"><i class="fas fa-layer-group"></i> إدارة الفئات</button>
+                <button class="nav-btn" data-panel="siteSettings"><i class="fas fa-gear"></i> الإعدادات العامة</button>
             </div>
 
             <div class="nav-group">
@@ -231,6 +262,7 @@
             <div class="nav-group">
                 <div class="group-label">محتوى الموقع</div>
                 <button class="nav-btn" data-panel="articles"><i class="fas fa-newspaper"></i> المقالات</button>
+                <button class="nav-btn" data-panel="documents"><i class="fas fa-file-pdf"></i> المستندات</button>
                 <button class="nav-btn" data-panel="news"><i class="fas fa-bullhorn"></i> شريط الأخبار</button>
                 <button class="nav-btn" data-panel="gallery"><i class="fas fa-images"></i> معرض الصور</button>
                 <button class="nav-btn" data-panel="staff"><i class="fas fa-user-tie"></i> الطاقم الفني</button>
@@ -267,6 +299,14 @@
                 <div class="cat-coach-grid" id="categoriesGrid"></div>
             </section>
 
+            <!-- Site Settings -->
+            <section class="panel" id="panel-siteSettings">
+                <div class="settings-form" id="settingsForm"></div>
+                <button class="save-btn" id="saveSettingsBtn" style="max-width:260px; margin-top:16px;">
+                    <i class="fas fa-save"></i> حفظ إعدادات الموقع
+                </button>
+            </section>
+
             <!-- Generic CRUD panels (تُبنى تلقائيًا بالجافاسكريبت) -->
             <section class="panel" id="panel-players">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="players"><i class="fas fa-plus"></i> إضافة لاعب</button></div>
@@ -298,6 +338,10 @@
             <section class="panel" id="panel-articles">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="articles"><i class="fas fa-plus"></i> مقال جديد</button></div>
                 <div class="data-table-wrap"><table class="data-table" id="table-articles"></table></div>
+            </section>
+            <section class="panel" id="panel-documents">
+                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="documents"><i class="fas fa-plus"></i> إضافة مستند</button></div>
+                <div class="data-table-wrap"><table class="data-table" id="table-documents"></table></div>
             </section>
             <section class="panel" id="panel-news">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="news"><i class="fas fa-plus"></i> خبر جديد</button></div>
@@ -347,8 +391,18 @@
         // CONFIG
         // ============================================================
         const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
-        const CATEGORIES = ['U7','U9','U11','U13','U15','U17','U20'];
-        const catOptions = CATEGORIES.map(c => ({ value:c, label:c }));
+        
+        // الفئات دلوقتي مخزّنة في Firebase تحت عقدة categoriesList، وتُحمَّل مرة واحدة عند فتح الداشبورد
+        let CATEGORIES = [];
+        let catOptions = [];
+        async function loadCategoriesIntoMemory() {
+            const raw = await dbGet('categoriesList');
+            const list = Object.entries(raw).map(([id, c]) => ({ id, ...c }));
+            list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            CATEGORIES = list.map(c => c.id);
+            catOptions = list.map(c => ({ value: c.id, label: c.id }));
+            cache.categoriesList = raw;
+        }
 
         // ============================================================
         // RESOURCE DEFINITIONS — إعدادات كل قسم CRUD
@@ -467,6 +521,14 @@
                     { key:'content', label:'نص المقال كاملاً', type:'textarea', required:true }
                 ]
             },
+            documents: {
+                node: 'documents', title: 'المستندات',
+                fields: [
+                    { key:'title', label:'عنوان المستند', type:'text', required:true },
+                    { key:'description', label:'وصف مختصر', type:'textarea' },
+                    { key:'fileData', label:'ملف PDF', type:'pdf', required:true }
+                ]
+            },
             news: {
                 node: 'news', title: 'شريط الأخبار',
                 fields: [ { key:'text', label:'نص الخبر', type:'textarea', required:true } ]
@@ -571,8 +633,8 @@
             overview:'نظرة عامة', requests:'طلبات التسجيل', categories:'إدارة الفئات',
             players:'اللاعبون', featuredPlayers:'أبرز اللاعبين', sessions:'الحصص التدريبية', matches:'المباريات',
             tournaments:'البطولات', messages:'رسائل الأكاديمية', news:'شريط الأخبار',
-            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية', articles:'المقالات',
-            payments:'سجل المدفوعات'
+            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية', articles:'المقالات', documents:'المستندات',
+            payments:'سجل المدفوعات', siteSettings:'الإعدادات العامة'
         };
         const MONTHS = ['01','02','03','04','05','06','07','08','09','10','11','12'];
         const MONTH_LABELS = { '01':'جانفي','02':'فيفري','03':'مارس','04':'أفريل','05':'ماي','06':'جوان',
@@ -610,6 +672,7 @@
             if (key === 'requests') return loadRequests();
             if (key === 'categories') return loadCategories();
             if (key === 'payments') return loadPayments();
+            if (key === 'siteSettings') return loadSiteSettings();
             if (RESOURCES[key]) return loadResourceTable(key);
         }
 
@@ -635,7 +698,7 @@
             } else {
                 bodyRows = entries.map(([id, item]) => {
                     const cells = config.fields.map(f => {
-                        if (f.type === 'text' && f.key.toLowerCase().includes('url') && item[f.key]) {
+                        if (/url|logo|photo|image/i.test(f.key) && item[f.key]) {
                             return `<td><img class="thumb" src="${item[f.key]}" onerror="this.style.visibility='hidden'" /></td>`;
                         }
                         let val = item[f.key] ?? '-';
@@ -692,7 +755,9 @@
         function fieldToHTML(field, value) {
             const val = value ?? '';
             if (field.type === 'select') {
-                const opts = (field.options || []).map(o =>
+                // حقل الفئة يأخذ دائمًا القائمة الحالية من catOptions المحدَّثة، بدل القيمة الثابتة وقت تعريف RESOURCES
+                const options = field.key === 'category' ? catOptions : (field.options || []);
+                const opts = options.map(o =>
                     `<option value="${o.value}" ${o.value === val ? 'selected' : ''}>${o.label}</option>`
                 ).join('');
                 return `<select data-field="${field.key}">${opts}</select>`;
@@ -703,14 +768,40 @@
             if (field.type === 'color') {
                 return `<input type="color" data-field="${field.key}" value="${val || '#0E4832'}" style="height:44px;padding:4px;" />`;
             }
-            // أي حقل اسمه فيه "url" أو "logo" أو "photo" بياخد زرار رفع صورة اختياري بجانب الخانة النصية
+            if (field.type === 'pdf') {
+                const hasValue = val && val.length > 0;
+                return `
+                    <input type="hidden" data-field="${field.key}" value="${val}" />
+                    <div class="image-field-box">
+                        <span class="image-status ${hasValue ? 'has-image' : ''}" data-status-for="${field.key}">
+                            ${hasValue ? '<i class="fas fa-circle-check"></i> تم رفع ملف PDF بنجاح' : '<i class="fas fa-file-pdf"></i> لم يتم رفع ملف بعد'}
+                        </span>
+                        <div class="image-field-actions">
+                            <label class="image-upload-btn">
+                                <i class="fas fa-upload"></i> ${hasValue ? 'استبدال الملف' : 'رفع ملف PDF'}
+                                <input type="file" accept="application/pdf" data-pdf-upload-for="${field.key}" style="display:none;" />
+                            </label>
+                        </div>
+                    </div>
+                `;
+            }
+            // أي حقل اسمه فيه "url" أو "logo" أو "photo" أو "image" يظهر بشكل مربع رفع نظيف بدون إظهار الرابط الطويل
             const isImageField = /url|logo|photo|image/i.test(field.key);
             if (isImageField) {
+                const hasValue = val && val.length > 0;
                 return `
-                    <input type="text" data-field="${field.key}" value="${val}" placeholder="الصق رابط أو ارفع صورة" />
-                    <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-                        <input type="file" accept="image/*" data-upload-for="${field.key}" style="font-size:0.8rem;" />
-                        <span class="upload-status" data-status-for="${field.key}" style="font-size:0.78rem; color:#999;"></span>
+                    <input type="hidden" data-field="${field.key}" value="${val}" />
+                    <div class="image-field-box">
+                        <span class="image-status ${hasValue ? 'has-image' : ''}" data-status-for="${field.key}">
+                            ${hasValue ? '<i class="fas fa-circle-check"></i> تم رفع الصورة بنجاح' : '<i class="fas fa-image"></i> لم يتم رفع صورة بعد'}
+                        </span>
+                        <div class="image-field-actions">
+                            <label class="image-upload-btn">
+                                <i class="fas fa-upload"></i> ${hasValue ? 'استبدال الصورة' : 'رفع صورة'}
+                                <input type="file" accept="image/*" data-upload-for="${field.key}" style="display:none;" />
+                            </label>
+                            ${hasValue ? `<button type="button" class="image-remove-btn" data-remove-for="${field.key}"><i class="fas fa-trash"></i> حذف</button>` : ''}
+                        </div>
                     </div>
                 `;
             }
@@ -730,15 +821,48 @@
                 input.addEventListener('change', async () => {
                     const file = input.files[0];
                     if (!file) return;
-                    const statusEl = document.querySelector(`[data-status-for="${input.dataset.uploadFor}"]`);
-                    statusEl.textContent = 'جارِ الرفع...';
+                    const fieldKey = input.dataset.uploadFor;
+                    const statusEl = document.querySelector(`[data-status-for="${fieldKey}"]`);
+                    statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارِ رفع الصورة...';
                     try {
-                        const url = await uploadToStorage(file, `admin-uploads/${key}/${input.dataset.uploadFor}`);
-                        document.querySelector(`[data-field="${input.dataset.uploadFor}"]`).value = url;
-                        statusEl.textContent = '✅ تم الرفع بنجاح';
+                        const dataUrl = await uploadToStorage(file, `admin-uploads/${key}/${fieldKey}`);
+                        document.querySelector(`[data-field="${fieldKey}"]`).value = dataUrl;
+                        statusEl.innerHTML = '<i class="fas fa-circle-check"></i> تم رفع الصورة بنجاح';
+                        statusEl.classList.add('has-image');
                     } catch (err) {
-                        statusEl.textContent = '⚠️ فشل الرفع، حاول مجددًا';
+                        statusEl.innerHTML = '<i class="fas fa-triangle-exclamation"></i> فشل الرفع، حاول مجددًا';
                     }
+                });
+            });
+            document.querySelectorAll('[data-pdf-upload-for]').forEach(input => {
+                input.addEventListener('change', async () => {
+                    const file = input.files[0];
+                    if (!file) return;
+                    const fieldKey = input.dataset.pdfUploadFor;
+                    const statusEl = document.querySelector(`[data-status-for="${fieldKey}"]`);
+                    statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارِ رفع الملف...';
+                    try {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            document.querySelector(`[data-field="${fieldKey}"]`).value = e.target.result;
+                            statusEl.innerHTML = '<i class="fas fa-circle-check"></i> تم رفع ملف PDF بنجاح';
+                            statusEl.classList.add('has-image');
+                        };
+                        reader.readAsDataURL(file);
+                    } catch (err) {
+                        statusEl.innerHTML = '<i class="fas fa-triangle-exclamation"></i> فشل الرفع، حاول مجددًا';
+                    }
+                });
+            });
+            document.querySelectorAll('[data-remove-for]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const fieldKey = btn.dataset.removeFor;
+                    document.querySelector(`[data-field="${fieldKey}"]`).value = '';
+                    const statusEl = document.querySelector(`[data-status-for="${fieldKey}"]`);
+                    statusEl.innerHTML = '<i class="fas fa-image"></i> لم يتم رفع صورة بعد';
+                    statusEl.classList.remove('has-image');
+                    btn.remove();
+                    document.querySelector('.image-upload-btn').innerHTML = '<i class="fas fa-upload"></i> رفع صورة';
                 });
             });
 
@@ -975,6 +1099,60 @@
         document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
 
         // ============================================================
+        // SITE SETTINGS — إعدادات عامة تُطبَّق مباشرة على الصفحة الرئيسية
+        // ============================================================
+        const SETTINGS_FIELDS = [
+            { section: 'الإحصائيات', fields: [
+                { key:'playersCount', label:'عدد اللاعبين', type:'number' },
+                { key:'coachesCount', label:'عدد المدربين', type:'number' },
+                { key:'categoriesCount', label:'عدد الفئات', type:'number' }
+            ]},
+            { section: 'النصوص التعريفية', fields: [
+                { key:'welcomeMessage', label:'رسالة الترحيب (تظهر أسفل الشعار الرئيسي)', type:'textarea' },
+                { key:'aboutText1', label:'الفقرة الأولى - نبذة عن الأكاديمية', type:'textarea' },
+                { key:'aboutText2', label:'الفقرة الثانية - نبذة عن الأكاديمية', type:'textarea' }
+            ]},
+            { section: 'معلومات التواصل', fields: [
+                { key:'phone', label:'رقم الهاتف', type:'text' },
+                { key:'email', label:'البريد الإلكتروني', type:'text' },
+                { key:'address', label:'العنوان', type:'text' }
+            ]},
+            { section: 'روابط التواصل الاجتماعي', fields: [
+                { key:'facebook', label:'رابط فيسبوك', type:'text' },
+                { key:'instagram', label:'رابط إنستغرام', type:'text' },
+                { key:'tiktok', label:'رابط تيك توك', type:'text' },
+                { key:'youtube', label:'رابط يوتيوب', type:'text' }
+            ]}
+        ];
+
+        async function loadSiteSettings() {
+            const settings = await dbGet('siteSettings');
+            cache.siteSettings = settings;
+            const form = document.getElementById('settingsForm');
+            form.innerHTML = SETTINGS_FIELDS.map(group => `
+                <h4>${group.section}</h4>
+                ${group.fields.map(f => `
+                    <div class="${f.type === 'textarea' ? 'full' : ''}">
+                        <label>${f.label}</label>
+                        ${f.type === 'textarea'
+                            ? `<textarea data-setting="${f.key}">${settings[f.key] || ''}</textarea>`
+                            : `<input type="${f.type}" data-setting="${f.key}" value="${settings[f.key] || ''}" />`}
+                    </div>
+                `).join('')}
+            `).join('');
+        }
+
+        document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+            const updated = {};
+            document.querySelectorAll('[data-setting]').forEach(el => { updated[el.dataset.setting] = el.value; });
+            await fetch(`${DB_URL}siteSettings.json`, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
+            });
+            cache.siteSettings = updated;
+            showToast('تم حفظ إعدادات الموقع بنجاح');
+        });
+
+        // ============================================================
         // REGISTRATION REQUESTS — قبول ينشئ لاعب تلقائيًا في /players
         // ============================================================
         async function loadRequests() {
@@ -1082,27 +1260,90 @@
         }
 
         // ============================================================
-        // CATEGORIES — تعيين مدرب لكل فئة
+        // CATEGORIES — CRUD كامل (إضافة، تعديل، حذف) مع تعيين مدرب
         // ============================================================
         async function loadCategories() {
+            await loadCategoriesIntoMemory();
             const raw = await dbGet('categoryCoaches');
             cache.categoryCoaches = raw;
+            renderCategoriesPanel();
+        }
+
+        function renderCategoriesPanel() {
+            const list = Object.entries(cache.categoriesList || {}).sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0));
             const grid = document.getElementById('categoriesGrid');
-            grid.innerHTML = CATEGORIES.map(cat => `
-                <div class="cat-coach-card">
-                    <h4>${cat}</h4>
-                    <input type="text" placeholder="اسم المدرب" value="${raw[cat] || ''}" data-cat="${cat}" />
-                    <button data-save-cat="${cat}"><i class="fas fa-save"></i> حفظ</button>
+            grid.innerHTML = `
+                <div class="cat-coach-card" style="border:2px dashed var(--primary-mid); grid-column:1/-1;">
+                    <h4><i class="fas fa-plus-circle"></i> إضافة فئة جديدة</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <input type="text" id="newCatId" placeholder="معرّف الفئة (مثال: U21)" />
+                        <input type="text" id="newCatAgeLabel" placeholder="التسمية العمرية (مثال: أواسط)" />
+                    </div>
+                    <button id="addCategoryBtn" style="margin-top:10px;"><i class="fas fa-plus"></i> إضافة الفئة</button>
                 </div>
-            `).join('');
-            grid.querySelectorAll('button[data-save-cat]').forEach(btn => {
+                ${list.map(([id, c]) => `
+                    <div class="cat-coach-card">
+                        <h4>
+                            <input type="text" value="${id}" data-cat-id-edit="${id}" style="font-family:'Bebas Neue'; font-size:1.3rem; border:none; border-bottom:1px solid #ddd; width:100%; margin-bottom:8px;" />
+                        </h4>
+                        <input type="text" placeholder="التسمية العمرية" value="${c.ageLabel || ''}" data-cat-agelabel="${id}" />
+                        <input type="text" placeholder="اسم المدرب" value="${cache.categoryCoaches[id] || ''}" data-cat-coach="${id}" style="margin-top:8px;" />
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button data-save-cat="${id}" style="flex:1;"><i class="fas fa-save"></i> حفظ</button>
+                            <button data-delete-cat="${id}" style="flex:1; background:var(--red-accent);"><i class="fas fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+
+            document.getElementById('addCategoryBtn').addEventListener('click', async () => {
+                const newId = document.getElementById('newCatId').value.trim();
+                const newAgeLabel = document.getElementById('newCatAgeLabel').value.trim();
+                if (!newId) { alert('يجب إدخال معرّف للفئة (مثل U21).'); return; }
+                if (cache.categoriesList[newId]) { alert('هذه الفئة موجودة بالفعل.'); return; }
+                const order = Object.keys(cache.categoriesList).length;
+                await dbPut('categoriesList', newId, { ageLabel: newAgeLabel, order });
+                cache.categoriesList[newId] = { ageLabel: newAgeLabel, order };
+                await loadCategoriesIntoMemory();
+                renderCategoriesPanel();
+                showToast(`تم إضافة فئة ${newId}`);
+            });
+
+            document.querySelectorAll('[data-save-cat]').forEach(btn => {
                 btn.addEventListener('click', async () => {
-                    const cat = btn.dataset.saveCat;
-                    const val = document.querySelector(`input[data-cat="${cat}"]`).value;
-                    await fetch(`${DB_URL}categoryCoaches/${cat}.json`, {
-                        method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(val)
-                    });
-                    showToast(`تم حفظ مدرب فئة ${cat}`);
+                    const oldId = btn.dataset.saveCat;
+                    const newId = document.querySelector(`[data-cat-id-edit="${oldId}"]`).value.trim();
+                    const ageLabel = document.querySelector(`[data-cat-agelabel="${oldId}"]`).value.trim();
+                    const coach = document.querySelector(`[data-cat-coach="${oldId}"]`).value.trim();
+
+                    if (newId !== oldId) {
+                        // إعادة تسمية الفئة: ننشئ سجل جديد بالاسم الجديد وننقل بيانات المدرب، ثم نحذف القديم
+                        // ملاحظة: هذا لا يغيّر تلقائيًا فئة اللاعبين/الحصص الحاليين المرتبطين بالاسم القديم
+                        await dbPut('categoriesList', newId, { ageLabel, order: cache.categoriesList[oldId].order ?? 0 });
+                        await dbDelete('categoriesList', oldId);
+                        await dbPut('categoryCoaches', newId, coach);
+                        await dbDelete('categoryCoaches', oldId);
+                        showToast(`تم تغيير معرّف الفئة إلى ${newId}. تنبيه: عدّل يدويًا أي لاعبين/حصص كانوا مرتبطين بـ ${oldId}.`);
+                    } else {
+                        await dbPut('categoriesList', oldId, { ageLabel, order: cache.categoriesList[oldId].order ?? 0 });
+                        await dbPut('categoryCoaches', oldId, coach);
+                        showToast(`تم حفظ فئة ${oldId}`);
+                    }
+                    await loadCategoriesIntoMemory();
+                    cache.categoryCoaches = await dbGet('categoryCoaches');
+                    renderCategoriesPanel();
+                });
+            });
+
+            document.querySelectorAll('[data-delete-cat]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.deleteCat;
+                    if (!confirm(`تأكيد حذف فئة ${id}؟ (لن يتم حذف اللاعبين المرتبطين بها تلقائيًا)`)) return;
+                    await dbDelete('categoriesList', id);
+                    delete cache.categoriesList[id];
+                    await loadCategoriesIntoMemory();
+                    renderCategoriesPanel();
+                    showToast(`تم حذف فئة ${id}`);
                 });
             });
         }
@@ -1131,7 +1372,10 @@
         // ============================================================
         // INIT
         // ============================================================
-        loadOverview();
+        (async function initDashboard() {
+            await loadCategoriesIntoMemory();
+            loadOverview();
+        })();
     </script>
 </body>
 </html>

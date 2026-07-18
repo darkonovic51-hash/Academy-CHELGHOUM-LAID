@@ -443,6 +443,42 @@
             50% { transform: translateX(-50%) translateY(8px); }
         }
 
+        /* ===== ARTICLES (أول قسم بعد الهيرو) ===== */
+        .articles-section { padding: 70px 0 80px; background: var(--white); }
+        .articles-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px;
+        }
+        .articles-grid .article-card.featured-article { grid-column: 1 / -1; }
+        .article-card {
+            border-radius: 26px; overflow: hidden; background: var(--white); box-shadow: var(--shadow-soft);
+            border: 1px solid #eee; transition: 0.35s; display: block;
+        }
+        .article-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
+        .article-card .art-img-frame { height: 210px; overflow: hidden; position: relative; }
+        .article-card .art-img-frame img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .article-card:hover .art-img-frame img { transform: scale(1.08); }
+        .article-card .art-body { padding: 20px 22px; }
+        .article-card h4 { font-family: 'Cairo'; font-weight: 700; font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .article-card p { font-size: 0.88rem; color: #777; line-height: 1.6; }
+        .article-card .read-more { display: inline-block; margin-top: 10px; color: var(--red-accent); font-weight: 700; font-size: 0.85rem; }
+
+        /* بطاقة المقال الأول: أكبر وأفقية بصورة ضخمة */
+        .article-card.featured-article {
+            display: grid; grid-template-columns: 1.3fr 1fr; border: 2px solid var(--gold);
+        }
+        .article-card.featured-article .art-img-frame { height: 100%; min-height: 320px; }
+        .article-card.featured-article .art-body { display: flex; flex-direction: column; justify-content: center; padding: 30px 34px; }
+        .article-card.featured-article h4 { font-size: 1.8rem; line-height: 1.4; }
+        .article-card.featured-article p { font-size: 0.98rem; }
+        .article-card.featured-article .featured-tag {
+            display: inline-block; background: var(--gold); color: var(--black); font-size: 0.72rem;
+            font-weight: 700; padding: 4px 14px; border-radius: 20px; margin-bottom: 10px; width: fit-content; letter-spacing: 1px;
+        }
+        @media (max-width: 700px) {
+            .article-card.featured-article { grid-template-columns: 1fr; }
+            .article-card.featured-article .art-img-frame { min-height: 220px; }
+        }
+
         /* ===== ABOUT ===== */
         .about { padding: 80px 0; background: var(--white); }
         .about-grid {
@@ -569,107 +605,78 @@
         /* ===== PLAYERS ===== */
         .players { padding: 80px 0; background: var(--white); }
         .player-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 36px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 32px;
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .player-spotlight-card {
-            position: relative;
-            width: 280px;
-            min-height: 320px;
+        .player-feature-card {
             border-radius: 28px;
             overflow: hidden;
-            background: linear-gradient(160deg, var(--primary-dark), var(--black));
+            background: var(--white);
             box-shadow: var(--shadow-medium);
             border: 2px solid transparent;
             transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px 20px;
+            display: block;
         }
-        .player-spotlight-card:hover {
-            transform: translateY(-14px);
+        .player-feature-card:hover {
+            transform: translateY(-12px);
             box-shadow: var(--shadow-heavy);
             border-color: var(--gold);
         }
-        .player-spotlight-card .big-number {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 6rem;
-            color: rgba(212,175,55,0.9);
-            line-height: 1;
-            text-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        .player-feature-card .pf-img-wrap {
+            position: relative; height: 300px; overflow: hidden;
+            background: linear-gradient(160deg, var(--primary-dark), var(--black));
         }
-        .player-spotlight-card h4 {
-            color: var(--white);
-            font-family: 'Cairo', sans-serif;
-            font-weight: 700;
-            font-size: 1.3rem;
-            margin-top: 12px;
+        .player-feature-card .pf-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .player-feature-card:hover .pf-img-wrap img { transform: scale(1.08); }
+        .player-feature-card .pf-number {
+            position: absolute; top: 14px; left: 14px; background: var(--red-accent); color: var(--white);
+            font-family: 'Bebas Neue'; font-size: 1.6rem; width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-medium); z-index: 2;
         }
-        .player-spotlight-card .position {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.9rem;
-            margin-top: 4px;
+        .player-feature-card .pf-desc-card {
+            padding: 20px 22px;
+            background: linear-gradient(180deg, var(--white) 0%, #f7faf8 100%);
+            border-top: 3px solid var(--gold);
         }
-        .player-spotlight-card .cat-tag {
-            margin-top: 14px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            font-size: 0.8rem;
-            padding: 4px 16px;
-            border-radius: 30px;
-            letter-spacing: 1px;
+        .player-feature-card .pf-name {
+            font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 1px; color: var(--primary-dark);
         }
-        .player-spotlight-card::after {
-            content: '★';
-            position: absolute;
-            font-size: 10rem;
-            color: rgba(255,255,255,0.03);
-            top: -20px;
-            left: -20px;
-            font-family: 'Bebas Neue';
+        .player-feature-card .pf-meta {
+            display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;
         }
-        .player-spotlight-card .shine {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(115deg, transparent 40%, rgba(212,175,55,0.15) 50%, transparent 60%);
-            transform: translateX(-120%);
-            transition: transform 0.7s ease;
-            pointer-events: none;
+        .player-feature-card .pf-meta span {
+            background: rgba(19,111,70,0.08); color: var(--primary-mid); font-size: 0.78rem; font-weight: 700;
+            padding: 5px 14px; border-radius: 20px; display: flex; align-items: center; gap: 6px;
         }
-        .player-spotlight-card:hover .shine { transform: translateX(120%); }
+        .player-feature-card .pf-view-link {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; color: var(--red-accent);
+            font-weight: 700; font-size: 0.85rem;
+        }
 
         /* ===== STAFF ===== */
         .staff { padding: 80px 0; background: #f8f8f8; }
         .staff-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 36px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
-        .staff-spotlight-card {
-            position: relative; width: 260px; aspect-ratio: 3 / 4; border-radius: 26px; overflow: hidden;
-            background: linear-gradient(160deg, var(--primary-dark), var(--black));
-            box-shadow: var(--shadow-medium); border: 2px solid transparent;
-            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        .staff-feature-card {
+            border-radius: 26px; overflow: hidden; background: var(--white); box-shadow: var(--shadow-medium);
+            border: 2px solid transparent; transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .staff-spotlight-card:hover { transform: translateY(-14px); border-color: var(--gold); box-shadow: var(--shadow-heavy); }
-        .staff-spotlight-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .staff-spotlight-card:hover img { transform: scale(1.08); }
-        .staff-spotlight-card::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 40%); pointer-events: none;
-        }
-        .staff-spotlight-card .gold-corner {
-            position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%;
-            background: rgba(255,255,255,0.15); border: 1px solid var(--gold);
-            display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.9rem;
-        }
+        .staff-feature-card:hover { transform: translateY(-12px); border-color: var(--gold); box-shadow: var(--shadow-heavy); }
+        .staff-feature-card .sf-img-wrap { height: 240px; overflow: hidden; background: linear-gradient(160deg, var(--primary-dark), var(--black)); }
+        .staff-feature-card .sf-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .staff-feature-card:hover .sf-img-wrap img { transform: scale(1.08); }
+        .staff-feature-card .sf-desc-card { padding: 18px 20px; border-top: 3px solid var(--red-accent); text-align: center; }
+        .staff-feature-card .sf-name { font-family: 'Bebas Neue'; font-size: 1.4rem; letter-spacing: 1px; color: var(--primary-dark); }
+        .staff-feature-card .sf-role { color: var(--red-accent); font-weight: 700; font-size: 0.88rem; margin: 4px 0 8px; }
+        .staff-feature-card .sf-bio { font-size: 0.85rem; color: #777; line-height: 1.6; }
 
         /* ===== KITS ===== */
         .kits { padding: 80px 0; background: var(--white); }
@@ -705,124 +712,57 @@
             overflow: hidden;
         }
         .age-groups::before {
-            content: '★';
-            position: absolute;
-            right: -50px;
-            top: -80px;
-            font-size: 25rem;
-            color: rgba(255,255,255,0.03);
-            font-family: 'Bebas Neue', sans-serif;
-            transform: rotate(15deg);
+            content: '★'; position: absolute; right: -50px; top: -80px; font-size: 25rem;
+            color: rgba(255,255,255,0.03); font-family: 'Bebas Neue', sans-serif; transform: rotate(15deg);
         }
         .age-groups .section-title { color: var(--white); }
         .age-groups .section-title::after { background: var(--red-accent); }
         .age-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 25px;
-            position: relative;
-            z-index: 2;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 26px;
+            position: relative; z-index: 2;
         }
-        .age-item {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 30px;
-            padding: 30px 15px 25px;
-            text-align: center;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            display: block;
-            border-top: 3px solid var(--gold);
+        .age-item-premium {
+            --cat-color: var(--gold);
+            background: rgba(255,255,255,0.07); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.12); border-top: 4px solid var(--cat-color);
+            border-radius: 26px; padding: 26px 22px; position: relative; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: block; text-align: right;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
-        .age-item::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--red-accent), var(--primary-dark));
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            border-radius: 30px;
+        .age-item-premium::before {
+            content: attr(data-age); position: absolute; font-family: 'Bebas Neue'; font-size: 6rem;
+            color: rgba(255,255,255,0.04); bottom: -20px; left: -10px; z-index: 1; letter-spacing: 2px;
         }
-        .age-item:hover::before { opacity: 0.15; }
-        .age-item .age-logo {
-            width: 30px; height: 30px; border-radius: 50%; object-fit: contain; background: var(--white);
-            padding: 3px; margin: 0 auto 8px; position: relative; z-index: 2; display: block;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        }
-        .age-item:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            border-color: var(--red-accent);
-        }
-        .age-item .icon-badge {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 10px;
-            border-radius: 50%;
+        .age-item-premium:hover {
+            transform: translateY(-10px); box-shadow: 0 20px 50px rgba(0,0,0,0.3); border-top-color: var(--gold);
             background: rgba(255,255,255,0.1);
-            border: 2px solid var(--gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
         }
-        .age-item .icon-badge i {
-            font-size: 1.6rem;
-            color: var(--gold);
+        .age-item-premium .ap-top { display: flex; align-items: center; gap: 14px; position: relative; z-index: 2; margin-bottom: 16px; }
+        .age-item-premium .ap-logo {
+            width: 48px; height: 48px; border-radius: 50%; background: var(--white); padding: 4px;
+            object-fit: contain; box-shadow: 0 4px 14px rgba(0,0,0,0.3); flex-shrink: 0;
         }
-        .age-item .label {
-            font-weight: 700;
-            font-size: 1.6rem;
-            font-family: 'Bebas Neue', sans-serif;
-            color: var(--white);
-            letter-spacing: 2px;
-            position: relative;
-            z-index: 2;
-            display: block;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        .age-item-premium .ap-title { font-family: 'Bebas Neue'; font-size: 2rem; letter-spacing: 2px; color: var(--white); line-height: 1; }
+        .age-item-premium .ap-sub { color: var(--cat-color); font-size: 0.8rem; font-weight: 700; margin-top: 2px; }
+        .age-item-premium .ap-stats {
+            display: flex; gap: 10px; margin-bottom: 14px; position: relative; z-index: 2; flex-wrap: wrap;
         }
-        .age-item .sub-label {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
-            font-weight: 300;
-            position: relative;
-            z-index: 2;
-            display: block;
-            margin-top: 4px;
-            letter-spacing: 1px;
+        .age-item-premium .ap-stat {
+            background: rgba(0,0,0,0.2); border-radius: 14px; padding: 8px 12px; text-align: center; flex: 1; min-width: 70px;
         }
-        .age-item .age-number {
-            position: absolute;
-            bottom: -10px;
-            left: -10px;
-            font-size: 4rem;
-            font-family: 'Bebas Neue', sans-serif;
-            color: rgba(255,255,255,0.04);
-            z-index: 1;
-            letter-spacing: 2px;
+        .age-item-premium .ap-stat .n { font-family: 'Bebas Neue'; font-size: 1.3rem; color: var(--white); }
+        .age-item-premium .ap-stat .l { font-size: 0.65rem; color: rgba(255,255,255,0.55); }
+        .age-item-premium .ap-next {
+            display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.7);
+            margin-bottom: 16px; position: relative; z-index: 2;
         }
-
-        /* ===== ARTICLES ===== */
-        .articles-section { padding: 80px 0; background: var(--white); }
-        .articles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .article-card {
-            border-radius: 24px; overflow: hidden; background: var(--white); box-shadow: var(--shadow-soft);
-            border: 1px solid #eee; transition: 0.35s; display: block;
+        .age-item-premium .ap-next i { color: var(--cat-color); }
+        .age-item-premium .ap-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+            background: var(--cat-color); color: var(--black); padding: 10px; border-radius: 30px;
+            font-weight: 700; font-size: 0.88rem; position: relative; z-index: 2; transition: 0.3s;
         }
-        .article-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
-        .article-card .art-img-frame { height: 200px; overflow: hidden; position: relative; }
-        .article-card .art-img-frame img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .article-card:hover .art-img-frame img { transform: scale(1.08); }
-        .article-card .art-body { padding: 18px 20px; }
-        .article-card h4 { font-family: 'Cairo'; font-weight: 700; font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 8px; }
-        .article-card p { font-size: 0.88rem; color: #777; line-height: 1.6; }
-        .article-card .read-more { display: inline-block; margin-top: 10px; color: var(--red-accent); font-weight: 700; font-size: 0.85rem; }
+        .age-item-premium:hover .ap-btn { background: var(--red-accent); color: var(--white); }
 
         /* ===== REGISTRATION ===== */
         .registration {
@@ -909,6 +849,27 @@
         }
         .form-status.success { color: #7CD9A8; }
         .form-status.error { color: #FF8A8A; }
+
+        /* ===== DOCUMENTS ===== */
+        .documents-section { padding: 70px 0; background: #f8f8f8; }
+        .documents-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+        .document-card {
+            background: var(--white); border-radius: 22px; padding: 26px; box-shadow: var(--shadow-soft);
+            border: 1px solid #eee; text-align: center; transition: 0.3s;
+        }
+        .document-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-medium); border-color: var(--red-accent); }
+        .document-card .doc-icon {
+            width: 60px; height: 60px; border-radius: 18px; background: linear-gradient(135deg, var(--red-accent), #a00d24);
+            color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.7rem;
+            margin: 0 auto 14px;
+        }
+        .document-card h4 { font-family: 'Cairo'; font-weight: 700; font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 6px; }
+        .document-card p { font-size: 0.85rem; color: #777; margin-bottom: 16px; line-height: 1.5; }
+        .document-card .doc-download-btn {
+            display: inline-flex; align-items: center; gap: 8px; background: var(--primary-mid); color: var(--white);
+            padding: 9px 22px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; transition: 0.3s;
+        }
+        .document-card .doc-download-btn:hover { background: var(--primary-dark); }
 
         /* ===== FOOTER ===== */
         .footer {
@@ -1012,16 +973,16 @@
             .reg-header img { width: 60px; height: 60px; }
             .reg-header h3 { font-size: 1.2rem; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-            .age-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
-            .age-item { padding: 20px 10px; }
-            .age-item .icon-badge { width: 50px; height: 50px; }
-            .age-item .label { font-size: 1.2rem; }
-            .player-spotlight-card { width: 220px; min-height: 280px; }
-            .staff-spotlight-card { width: 180px; }
+            .age-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+            .age-item-premium { padding: 18px 16px; }
+            .age-item-premium .ap-title { font-size: 1.6rem; }
+            .player-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .staff-grid { grid-template-columns: 1fr 1fr; }
             .kit-showcase-card { padding: 20px; }
             .kit-showcase-card img { max-height: 200px; }
             .kit-showcase-card h4 { font-size: 1.3rem; }
             .articles-grid { grid-template-columns: 1fr; }
+            .documents-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -1038,18 +999,18 @@
     <nav class="navbar" id="navbar">
         <div class="container">
             <div class="nav-social">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
-                <a href="#"><i class="fab fa-tiktok"></i></a>
+                <a href="#" id="navFacebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" id="navInstagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" id="navYoutube"><i class="fab fa-youtube"></i></a>
+                <a href="#" id="navTiktok"><i class="fab fa-tiktok"></i></a>
             </div>
             <div class="nav-logo">
                 <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" alt="ETOILE CHELGHOUM LAID" onerror="this.style.display='none';this.parentElement.innerHTML='★'" />
             </div>
             <div class="nav-actions">
-                <a href="tel:+213123456789" class="nav-phone">
+                <a href="tel:+213123456789" class="nav-phone" id="navPhoneLink">
                     <i class="fas fa-phone-alt"></i>
-                    <span>+213 123 456 789</span>
+                    <span id="navPhoneText">+213 123 456 789</span>
                 </a>
                 <button class="nav-cta" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">
                     <span>سجل الآن</span>
@@ -1064,16 +1025,17 @@
             <div class="nav-links" id="navLinks">
                 <div class="nav-links right" style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">
                     <a href="#home" class="active">الرئيسية</a>
+                    <a href="#articles">المقالات</a>
                     <a href="#about">الأكاديمية</a>
                     <a href="#gallery">المعرض</a>
-                    <a href="#players">اللاعبون</a>
                 </div>
                 <div class="nav-links left" style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">
+                    <a href="#players">اللاعبون</a>
                     <a href="#staff">الطاقم الفني</a>
                     <a href="#kits">الأطقم</a>
-                    <a href="#ageGroups">الفئات العمرية</a>
-                    <a href="#articles">المقالات</a>
+                    <a href="#ageGroups">الفئات</a>
                     <a href="#register">التسجيل</a>
+                    <a href="#documents">المستندات</a>
                 </div>
             </div>
         </div>
@@ -1087,7 +1049,7 @@
         <div class="hero-content">
             <h1>أكثر من مجرد <span class="red">أكاديمية...</span><br />نصنع <span class="red">أبطال</span> المستقبل</h1>
             <div class="sub-headline">★ ETOILE CHELGHOUM LAID ★</div>
-            <p class="description">نؤمن بأن كل موهبة تستحق فرصة، ونوفر بيئة احترافية لتطوير اللاعبين بدنيًا، فنيًا وأخلاقيًا للوصول إلى أعلى المستويات.</p>
+            <p class="description" id="welcomeMessageText">نؤمن بأن كل موهبة تستحق فرصة، ونوفر بيئة احترافية لتطوير اللاعبين بدنيًا، فنيًا وأخلاقيًا للوصول إلى أعلى المستويات.</p>
             <div class="hero-buttons">
                 <a href="#register" class="btn-primary">سجل الآن</a>
                 <a href="#about" class="btn-secondary">اكتشف الأكاديمية</a>
@@ -1099,18 +1061,26 @@
         </div>
     </section>
 
+    <!-- ===== ARTICLES (أول قسم بعد الهيرو) ===== -->
+    <section class="articles-section" id="articles">
+        <div class="container">
+            <h2 class="section-title center reveal">مقالات الأكاديمية</h2>
+            <div class="articles-grid" id="articlesGrid"></div>
+        </div>
+    </section>
+
     <!-- ===== ABOUT ===== -->
     <section class="about" id="about">
         <div class="container">
             <div class="about-grid">
                 <div class="about-text reveal">
                     <h2>نبذة عن <span>الأكاديمية</span></h2>
-                    <p>أكاديمية نجم شلغوم العيد هي صرح ريادي في تكوين المواهب الكروية، تجمع بين التدريب الاحترافي والتأطير التربوي في بيئة تحافظ على الانضباط، العمل الجماعي والتميز.</p>
-                    <p>نهدف إلى بناء جيل من اللاعبين القادرين على المنافسة في أعلى المستويات، مع غرس قيم الروح الرياضية والالتزام.</p>
+                    <p id="aboutText1Para">أكاديمية نجم شلغوم العيد هي صرح ريادي في تكوين المواهب الكروية، تجمع بين التدريب الاحترافي والتأطير التربوي في بيئة تحافظ على الانضباط، العمل الجماعي والتميز.</p>
+                    <p id="aboutText2Para">نهدف إلى بناء جيل من اللاعبين القادرين على المنافسة في أعلى المستويات، مع غرس قيم الروح الرياضية والالتزام.</p>
                     <div class="about-stats">
-                        <div class="stat-item"><div class="number" data-target="120">0</div><div class="label">لاعب</div></div>
-                        <div class="stat-item"><div class="number" data-target="12">0</div><div class="label">مدرب</div></div>
-                        <div class="stat-item"><div class="number" data-target="7">0</div><div class="label">فئات</div></div>
+                        <div class="stat-item"><div class="number" id="statPlayersCount" data-target="120">0</div><div class="label">لاعب</div></div>
+                        <div class="stat-item"><div class="number" id="statCoachesCount" data-target="12">0</div><div class="label">مدرب</div></div>
+                        <div class="stat-item"><div class="number" id="statCategoriesCount" data-target="7">0</div><div class="label">فئات</div></div>
                     </div>
                 </div>
                 <div class="about-visual reveal reveal-delay-2">
@@ -1166,14 +1136,6 @@
         </div>
     </section>
 
-    <!-- ===== ARTICLES ===== -->
-    <section class="articles-section" id="articles">
-        <div class="container">
-            <h2 class="section-title center reveal">مقالات الأكاديمية</h2>
-            <div class="articles-grid" id="articlesGrid"></div>
-        </div>
-    </section>
-
     <!-- ===== REGISTRATION ===== -->
     <section class="registration" id="register">
         <div class="container">
@@ -1192,10 +1154,7 @@
                     <div><label>تاريخ الميلاد</label><input type="date" name="birthDate" required /></div>
                     <div>
                         <label>الفئة المطلوبة</label>
-                        <select name="category">
-                            <option>U7</option><option>U9</option><option>U11</option>
-                            <option>U13</option><option>U15</option><option>U17</option><option>U20</option>
-                        </select>
+                        <select name="category" id="categorySelect"></select>
                     </div>
                     <div><label>اسم ولي الأمر</label><input type="text" name="guardianName" placeholder="اسم ولي الأمر" required /></div>
                     <div><label>رقم هاتف ولي الأمر</label><input type="tel" name="phone" placeholder="رقم الهاتف" required /></div>
@@ -1219,6 +1178,14 @@
         </div>
     </section>
 
+    <!-- ===== DOCUMENTS ===== -->
+    <section class="documents-section" id="documents">
+        <div class="container">
+            <h2 class="section-title center reveal">المستندات</h2>
+            <div class="documents-grid" id="documentsGrid"></div>
+        </div>
+    </section>
+
     <!-- ===== FOOTER ===== -->
     <footer class="footer" id="contact">
         <div class="container">
@@ -1227,22 +1194,21 @@
                     <h4>★ ETOILE</h4>
                     <p style="max-width:260px;">أكاديمية نجم شلغوم العيد – حيث يصنع الأبطال.</p>
                     <div class="social-footer">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" id="footerFacebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" id="footerInstagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" id="footerYoutube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" id="footerTiktok"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
-                <div><h4>روابط سريعة</h4><a href="#home">الرئيسية</a><a href="#about">الأكاديمية</a><a href="#ageGroups">البرامج</a><a href="#players">الفرق</a></div>
+                <div><h4>روابط سريعة</h4><a href="#home">الرئيسية</a><a href="#articles">المقالات</a><a href="#about">الأكاديمية</a><a href="#ageGroups">البرامج</a><a href="#players">الفرق</a></div>
                 <div><h4>الفئات</h4>
-                    <a href="category.html?cat=U7">U7</a><a href="category.html?cat=U9">U9</a><a href="category.html?cat=U11">U11</a>
-                    <a href="category.html?cat=U13">U13</a><a href="category.html?cat=U15">U15</a><a href="category.html?cat=U17">U17</a><a href="category.html?cat=U20">U20</a>
+                    <div id="footerCategoriesList"></div>
                 </div>
                 <div>
                     <h4>اتصل بنا</h4>
-                    <a href="tel:+213123456789"><i class="fas fa-phone-alt"></i> +213 123 456 789</a>
-                    <a href="mailto:info@academy.dz"><i class="fas fa-envelope"></i> info@academy.dz</a>
-                    <a href="#"><i class="fas fa-map-marker-alt"></i> الجزائر - شلغوم العيد</a>
+                    <a href="tel:+213123456789" id="footerPhoneLink"><i class="fas fa-phone-alt"></i> <span id="footerPhoneText">+213 123 456 789</span></a>
+                    <a href="mailto:info@academy.dz" id="footerEmailLink"><i class="fas fa-envelope"></i> <span id="footerEmailText">info@academy.dz</span></a>
+                    <a href="#"><i class="fas fa-map-marker-alt"></i> <span id="footerAddressText">الجزائر - شلغوم العيد</span></a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -1273,18 +1239,16 @@
                 { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true' }
             ],
             players: [
-                { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15' },
-                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17' }
+                { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
+                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
             ],
             staff: [
-                { name: 'نبيل شلغوم', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
-                { name: 'كريم عبدي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
-                { name: 'فوزي شرقي', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' }
+                { name: 'نبيل شلغوم', role: 'المدير الفني', bio: 'خبرة 15 سنة في التدريب', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
+                { name: 'كريم عبدي', role: 'مدرب الحراس', bio: 'مدرب معتمد في حراسة المرمى', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000e93471f49c40ca62aa33cced.png?raw=true' },
+                { name: 'فوزي شرقي', role: 'مدرب لياقة', bio: 'أخصائي تأهيل بدني', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/1783695845823.jpg?raw=true' }
             ],
             kits: [
-                { name: 'طقم الأساسي', color: '#0E4832', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
-                { name: 'طقم الاحتياطي', color: '#F2F2F2', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' },
-                { name: 'طقم الثالث', color: '#C8102E', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' }
+                { name: 'طقم الأساسي', color: '#0E4832', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000073a471f489c3c48dc02463a9.png?raw=true' }
             ],
             news: [
                 { text: '✧ افتتاح التسجيلات للموسم الجديد 2026-2027' },
@@ -1295,9 +1259,30 @@
             ]
         };
 
-        const ageGroups = ['U7', 'U9', 'U11', 'U13', 'U15', 'U17', 'U20'];
+        let ageGroups = [];
+        let ageLabels = {};
         const ageIcons = ['fa-shoe-prints','fa-child-reaching','fa-child','fa-person-running','fa-person','fa-futbol','fa-trophy'];
-        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U20:'أولمبي' };
+
+        async function loadCategoriesList() {
+            const raw = await fetchNode('categoriesList', {
+                U7:{ageLabel:'براعم',order:0}, U9:{ageLabel:'صغار',order:1}, U11:{ageLabel:'ناشئين',order:2},
+                U13:{ageLabel:'أشبال',order:3}, U15:{ageLabel:'فتيان',order:4}, U17:{ageLabel:'شباب',order:5}, U20:{ageLabel:'أولمبي',order:6}
+            });
+            const entries = Object.entries(raw).sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0));
+            ageGroups = entries.map(([id]) => id);
+            ageLabels = Object.fromEntries(entries.map(([id, c]) => [id, c.ageLabel || 'فئة']));
+            
+            // تحديث خيارات الفئة في الفورم
+            const select = document.getElementById('categorySelect');
+            if (select) {
+                select.innerHTML = ageGroups.map(a => `<option value="${a}">${a} - ${ageLabels[a] || ''}</option>`).join('');
+            }
+            // تحديث روابط الفئات في الفوتر
+            const footerList = document.getElementById('footerCategoriesList');
+            if (footerList) {
+                footerList.innerHTML = ageGroups.map(a => `<a href="category.html?cat=${a}">${a}</a>`).join('');
+            }
+        }
 
         // ============================================================
         // FIREBASE REST HELPER
@@ -1327,6 +1312,37 @@
         // ============================================================
         // RENDER FUNCTIONS
         // ============================================================
+        function applySiteSettings(s) {
+            if (!s || Object.keys(s).length === 0) return;
+            const setText = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+            const setHref = (id, val) => { const el = document.getElementById(id); if (el && val) el.href = val; };
+
+            if (s.playersCount) document.getElementById('statPlayersCount').dataset.target = s.playersCount;
+            if (s.coachesCount) document.getElementById('statCoachesCount').dataset.target = s.coachesCount;
+            if (s.categoriesCount) document.getElementById('statCategoriesCount').dataset.target = s.categoriesCount;
+
+            setText('welcomeMessageText', s.welcomeMessage);
+            setText('aboutText1Para', s.aboutText1);
+            setText('aboutText2Para', s.aboutText2);
+
+            if (s.phone) {
+                setText('navPhoneText', s.phone);
+                setHref('navPhoneLink', `tel:${s.phone}`);
+                setText('footerPhoneText', s.phone);
+                setHref('footerPhoneLink', `tel:${s.phone}`);
+            }
+            if (s.email) {
+                setText('footerEmailText', s.email);
+                setHref('footerEmailLink', `mailto:${s.email}`);
+            }
+            setText('footerAddressText', s.address);
+
+            setHref('navFacebook', s.facebook); setHref('footerFacebook', s.facebook);
+            setHref('navInstagram', s.instagram); setHref('footerInstagram', s.instagram);
+            setHref('navYoutube', s.youtube); setHref('footerYoutube', s.youtube);
+            setHref('navTiktok', s.tiktok); setHref('footerTiktok', s.tiktok);
+        }
+
         function renderGallery(images) {
             const grid = document.getElementById('masonryGrid');
             grid.innerHTML = images.map(g => `
@@ -1364,28 +1380,43 @@
             }
         });
 
-        // بطاقتين فقط، تصميم نصي احترافي (رقم القميص) بدون صور
         function renderPlayers(players) {
             const grid = document.getElementById('playerGrid');
             const featured = players.slice(0, 2);
+            if (!featured.length) { grid.innerHTML = '<div class="empty-state">لم يتم إضافة لاعبين مميزين بعد.</div>'; return; }
             grid.innerHTML = featured.map(p => `
-                <div class="player-spotlight-card">
-                    <div class="shine"></div>
-                    <div class="big-number">${p.number ?? '-'}</div>
-                    <h4>${p.name || ''}</h4>
-                    <p class="position">${p.position || ''}</p>
-                    ${p.category ? `<span class="cat-tag">${p.category}</span>` : ''}
-                </div>
+                <a class="player-feature-card" href="player.html?id=${encodeURIComponent(p.id || p.name)}">
+                    <div class="pf-img-wrap">
+                        ${p.number !== undefined && p.number !== '' ? `<span class="pf-number">${p.number}</span>` : ''}
+                        <img src="${p.photoUrl || ''}" alt="${p.name || 'لاعب مميز'}" loading="lazy" onerror="this.style.display='none'" />
+                    </div>
+                    <div class="pf-desc-card">
+                        <div class="pf-name">${p.name || ''}</div>
+                        <div class="pf-meta">
+                            ${p.category ? `<span><i class="fas fa-layer-group"></i> ${p.category}</span>` : ''}
+                            ${p.birthYear ? `<span><i class="fas fa-cake-candles"></i> ${p.birthYear}</span>` : ''}
+                            ${p.position ? `<span><i class="fas fa-shirt"></i> ${p.position}</span>` : ''}
+                        </div>
+                        <span class="pf-view-link">عرض الملف الكامل ←</span>
+                    </div>
+                </a>
             `).join('');
         }
 
         function renderStaff(staff) {
             const grid = document.getElementById('staffGrid');
             const featured = staff.slice(0, 3);
+            if (!featured.length) { grid.innerHTML = '<div class="empty-state">لم يتم إضافة أعضاء الطاقم الفني بعد.</div>'; return; }
             grid.innerHTML = featured.map(s => `
-                <div class="staff-spotlight-card">
-                    <img src="${s.photoUrl}" alt="عضو الطاقم الفني" loading="lazy" onerror="this.style.display='none'" />
-                    <span class="gold-corner"><i class="fas fa-star"></i></span>
+                <div class="staff-feature-card">
+                    <div class="sf-img-wrap">
+                        <img src="${s.photoUrl || ''}" alt="${s.name || ''}" loading="lazy" onerror="this.style.display='none'" />
+                    </div>
+                    <div class="sf-desc-card">
+                        <div class="sf-name">${s.name || ''}</div>
+                        <div class="sf-role">${s.role || ''}</div>
+                        ${s.bio ? `<p class="sf-bio">${s.bio}</p>` : ''}
+                    </div>
                 </div>
             `).join('');
         }
@@ -1401,19 +1432,6 @@
                     <h4>${kit.name}</h4>
                 </div>
             `;
-        }
-
-        function renderAgeGroups() {
-            const grid = document.getElementById('ageGrid');
-            grid.innerHTML = ageGroups.map((age, index) => `
-                <a class="age-item" href="category.html?cat=${age}" data-age="${age}">
-                    <span class="age-number">${age}</span>
-                    <img class="age-logo" src="${LOGO_URL}" onerror="this.style.display='none'" />
-                    <span class="icon-badge"><i class="fas ${ageIcons[index] || 'fa-futbol'}"></i></span>
-                    <span class="label">${age}</span>
-                    <span class="sub-label">${ageLabels[age] || 'فئة'}</span>
-                </a>
-            `).join('');
         }
 
         function renderTicker(news) {
@@ -1432,9 +1450,10 @@
             const grid = document.getElementById('articlesGrid');
             if (!articles.length) { document.getElementById('articles').style.display = 'none'; return; }
             grid.innerHTML = articles.map((a, i) => `
-                <a class="article-card" href="article.html?id=${a.id || i}">
+                <a class="article-card ${i === 0 ? 'featured-article' : ''}" href="article.html?id=${a.id || i}">
                     <div class="art-img-frame"><img src="${a.image}" alt="${a.title}" onerror="this.style.display='none'" /></div>
                     <div class="art-body">
+                        ${i === 0 ? '<span class="featured-tag">مقال مميز</span>' : ''}
                         <h4>${a.title}</h4>
                         <p>${a.summary || ''}</p>
                         <span class="read-more">اقرأ المزيد ←</span>
@@ -1443,12 +1462,81 @@
             `).join('');
         }
 
+        function renderDocuments(docs) {
+            const grid = document.getElementById('documentsGrid');
+            if (!docs.length) { document.getElementById('documents').style.display = 'none'; return; }
+            grid.innerHTML = docs.map(d => `
+                <div class="document-card">
+                    <div class="doc-icon"><i class="fas fa-file-pdf"></i></div>
+                    <h4>${d.title || 'مستند'}</h4>
+                    <p>${d.description || ''}</p>
+                    <button class="doc-download-btn" data-file="${d.fileData ? encodeURIComponent(d.fileData) : ''}" data-name="${d.title || 'مستند'}">
+                        <i class="fas fa-download"></i> تحميل PDF
+                    </button>
+                </div>
+            `).join('');
+            grid.querySelectorAll('.doc-download-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!btn.dataset.file) return;
+                    const a = document.createElement('a');
+                    a.href = decodeURIComponent(btn.dataset.file);
+                    a.download = `${btn.dataset.name}.pdf`;
+                    a.click();
+                });
+            });
+        }
+
+        const CATEGORY_COLORS = ['#D4AF37', '#C8102E', '#7CD9A8', '#4FA8D8', '#E8A33D', '#B080D0', '#5DBE8A'];
+
+        function findNextSessionLabel(sessions, cat) {
+            const upcoming = sessions.filter(s => s.category === cat && (s.status === 'scheduled' || s.status === 'ongoing'))
+                .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+            if (!upcoming.length) return 'لا توجد حصة قادمة';
+            const s = upcoming[0];
+            return `${s.date || ''} ${s.time ? '- ' + s.time : ''}`.trim() || 'قريبًا';
+        }
+
+        async function renderAgeGroups() {
+            const grid = document.getElementById('ageGrid');
+            const [players, coaches, sessions] = await Promise.all([
+                fetchNode('players', {}),
+                fetchNode('categoryCoaches', {}),
+                fetchNode('sessions', {})
+            ]);
+            const playersList = Array.isArray(players) ? players : Object.values(players);
+            const sessionsList = Array.isArray(sessions) ? sessions : Object.values(sessions);
+
+            grid.innerHTML = ageGroups.map((age, index) => {
+                const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+                const playersCount = playersList.filter(p => p.category === age).length;
+                const coachName = coaches[age];
+                const nextSession = findNextSessionLabel(sessionsList, age);
+                return `
+                    <a class="age-item-premium" href="category.html?cat=${age}" data-age="${age}" style="--cat-color:${color};">
+                        <div class="ap-top">
+                            <img class="ap-logo" src="${LOGO_URL}" onerror="this.style.display='none'" />
+                            <div>
+                                <div class="ap-title">${age}</div>
+                                <div class="ap-sub">${ageLabels[age] || 'فئة'}</div>
+                            </div>
+                        </div>
+                        <div class="ap-stats">
+                            <div class="ap-stat"><div class="n">${playersCount}</div><div class="l">لاعب</div></div>
+                            <div class="ap-stat"><div class="n">${coachName ? 1 : 0}</div><div class="l">مدرب</div></div>
+                        </div>
+                        <div class="ap-next"><i class="fas fa-calendar-check"></i> ${nextSession}</div>
+                        <span class="ap-btn">دخول ملف الفئة <i class="fas fa-arrow-left"></i></span>
+                    </a>
+                `;
+            }).join('');
+        }
+
         // ============================================================
         // SCROLL REVEAL
         // ============================================================
         function initScrollReveal() {
             const targets = document.querySelectorAll(
-                '.player-spotlight-card, .staff-spotlight-card, .kit-card, .age-item, .masonry .item, .reveal'
+                '.player-feature-card, .staff-feature-card, .kit-card, .age-item-premium, .masonry .item, .reveal'
             );
             targets.forEach(el => el.classList.add('reveal'));
             const observer = new IntersectionObserver((entries) => {
@@ -1655,23 +1743,28 @@
         // INIT
         // ============================================================
         (async function init() {
-            renderAgeGroups();
+            await loadCategoriesList();
 
-            const [gallery, featuredPlayers, staff, kits, news, articles] = await Promise.all([
+            const [gallery, featuredPlayers, staff, kits, news, articles, settings, documents] = await Promise.all([
                 fetchNode('gallery', FALLBACK.gallery),
                 fetchNode('featuredPlayers', FALLBACK.players),
                 fetchNode('staff', FALLBACK.staff),
                 fetchNode('kits', FALLBACK.kits),
                 fetchNode('news', FALLBACK.news),
-                fetchNodeWithIds('articles', [])
+                fetchNodeWithIds('articles', []),
+                fetchNode('siteSettings', {}),
+                fetchNodeWithIds('documents', [])
             ]);
 
+            applySiteSettings(settings);
             renderGallery(gallery);
             renderPlayers(featuredPlayers);
             renderStaff(staff);
             renderKits(kits);
             renderTicker(news);
             renderArticles(articles);
+            renderDocuments(documents);
+            renderAgeGroups();
 
             initScrollReveal();
             initCounters();

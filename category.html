@@ -294,6 +294,41 @@
 
         .empty-state { text-align: center; padding: 40px; color: #999; background: var(--white); border-radius: 20px; }
 
+        /* ===== QUICK STATS ===== */
+        .quick-stats-block { padding-top: 40px !important; }
+        .quick-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 18px; }
+        .qs-card {
+            background: var(--white); border-radius: 20px; padding: 22px; text-align: center;
+            box-shadow: var(--shadow-soft); border-top: 4px solid var(--gold); transition: 0.3s;
+        }
+        .qs-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
+        .qs-card i { font-size: 1.5rem; color: var(--red-accent); margin-bottom: 8px; }
+        .qs-card .n { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--primary-dark); }
+        .qs-card .l { font-size: 0.8rem; color: #888; font-weight: 700; }
+
+        /* ===== MESSAGES (مميّزة) ===== */
+        .messages-block {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #08281c 100%);
+            padding: 60px 0; position: relative; overflow: hidden; margin: 20px 0;
+        }
+        .messages-block::before {
+            content: '✉'; position: absolute; font-size: 18rem; color: rgba(255,255,255,0.03); left: -40px; top: -60px;
+        }
+        .messages-title { color: var(--white) !important; position: relative; z-index: 2; }
+        .messages-title::after { background: var(--gold) !important; }
+        .messages-block .msg-card {
+            background: rgba(255,255,255,0.07); backdrop-filter: blur(8px); border-radius: 18px; padding: 20px 22px;
+            display: flex; gap: 16px; align-items: flex-start; border-right: 4px solid var(--gold);
+            margin-bottom: 16px; position: relative; z-index: 2;
+        }
+        .messages-block .msg-card .msg-icon {
+            width: 44px; height: 44px; border-radius: 50%; background: var(--gold); color: var(--black);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;
+        }
+        .messages-block .msg-card .msg-type { font-weight: 700; color: var(--gold); font-size: 0.85rem; margin-bottom: 4px; }
+        .messages-block .msg-card .msg-date { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-top: 6px; }
+        .messages-block .msg-card p.msg-text { color: rgba(255,255,255,0.85); font-size: 0.92rem; }
+
         /* ===== DETAILS MODAL ===== */
         .details-modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 5000; display: none;
@@ -377,8 +412,13 @@
     </section>
 
     <div class="container">
+        <!-- ===== QUICK STATS ===== -->
+        <section class="section-block quick-stats-block">
+            <div class="quick-stats-grid" id="quickStatsGrid"></div>
+        </section>
+
         <!-- ===== PLAYERS TABLE ===== -->
-        <section class="section-block">
+        <section class="section-block alt">
             <h2 class="section-title">جدول اللاعبين</h2>
             <div class="table-toolbar">
                 <div class="toolbar-left">
@@ -421,18 +461,16 @@
             <div class="pagination" id="pagination"></div>
         </section>
 
-        <!-- ===== TRAINING SESSIONS (Timeline) ===== -->
-        <section class="section-block alt">
-            <h2 class="section-title">الحصص التدريبية</h2>
+        <!-- ===== TRAINING SESSION (القادمة فقط) ===== -->
+        <section class="section-block">
+            <h2 class="section-title">الحصة التدريبية</h2>
             <div id="nextSessionWrap"></div>
             <div class="timeline-divider"><span>الحصص القادمة</span></div>
             <div class="cards-grid" id="upcomingSessionsGrid"></div>
-            <div class="timeline-divider"><span>أرشيف الحصص</span></div>
-            <div class="cards-grid" id="archiveSessionsGrid"></div>
         </section>
 
-        <!-- ===== MATCHES (Timeline) ===== -->
-        <section class="section-block">
+        <!-- ===== MATCHES ===== -->
+        <section class="section-block alt">
             <h2 class="section-title">المباريات</h2>
             <div id="nextMatchWrap"></div>
             <div class="timeline-divider"><span>المباريات القادمة</span></div>
@@ -442,15 +480,23 @@
         </section>
 
         <!-- ===== TOURNAMENTS ===== -->
-        <section class="section-block alt">
+        <section class="section-block">
             <h2 class="section-title">البطولات</h2>
             <div class="cards-grid" id="tournamentsGrid"></div>
         </section>
 
-        <!-- ===== ACADEMY MESSAGES ===== -->
-        <section class="section-block" style="padding-bottom:100px;">
-            <h2 class="section-title">رسائل الأكاديمية</h2>
-            <div id="messagesList"></div>
+        <!-- ===== ACADEMY MESSAGES (مميزة بصريًا) ===== -->
+        <section class="messages-block">
+            <div class="container">
+                <h2 class="section-title messages-title">رسائل الأكاديمية</h2>
+                <div id="messagesList"></div>
+            </div>
+        </section>
+
+        <!-- ===== SESSIONS ARCHIVE (قسم مستقل) ===== -->
+        <section class="section-block alt" style="padding-bottom:100px;">
+            <h2 class="section-title">أرشيف الحصص</h2>
+            <div class="cards-grid" id="archiveSessionsGrid"></div>
         </section>
     </div>
 
@@ -474,7 +520,12 @@
         const params = new URLSearchParams(window.location.search);
         const CATEGORY = params.get('cat') || 'U7';
 
-        const ageLabels = { U7:'براعم', U9:'صغار', U11:'ناشئين', U13:'أشبال', U15:'فتيان', U17:'شباب', U20:'أولمبي' };
+        let ageLabels = {};
+        async function loadCategoryLabel() {
+            const raw = await fetchNode('categoriesList', {});
+            ageLabels = Object.fromEntries(Object.entries(raw).map(([id, c]) => [id, c.ageLabel || 'فئة']));
+        }
+
         const statusLabels = { active: 'نشيط', injured: 'مصاب', suspended: 'موقوف' };
         const msgTypeIcons = { 'إعلان':'fa-bullhorn','تنبيه':'fa-triangle-exclamation','اجتماع':'fa-people-group','إشعار':'fa-bell','تهنئة':'fa-award','تعليق':'fa-comment' };
 
@@ -762,13 +813,6 @@
             archiveGrid.innerHTML = archived.length
                 ? archived.map(sessionCardHTML).join('')
                 : `<div class="empty-state">لا يوجد أرشيف حصص بعد.</div>`;
-
-            document.querySelectorAll('[data-session-details]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const s = JSON.parse(btn.dataset.sessionDetails.replace(/&apos;/g, "'"));
-                    openSessionDetails(s);
-                });
-            });
         }
 
         // ============================================================
@@ -875,13 +919,6 @@
             archiveGrid.innerHTML = archived.length
                 ? archived.map(matchCardHTML).join('')
                 : `<div class="empty-state">لا يوجد أرشيف مباريات بعد.</div>`;
-
-            document.querySelectorAll('[data-match-details]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const m = JSON.parse(btn.dataset.matchDetails.replace(/&apos;/g, "'"));
-                    openMatchDetails(m);
-                });
-            });
         }
 
         // ============================================================
@@ -925,8 +962,19 @@
         }
 
         // ============================================================
-        // BANNER + STATS
+        // BANNER + QUICK STATS
         // ============================================================
+        function renderQuickStats(playersCount, sessionsCount, matchesCount, tournamentsCount, coach) {
+            const grid = document.getElementById('quickStatsGrid');
+            grid.innerHTML = `
+                <div class="qs-card"><i class="fas fa-users"></i><div class="n">${playersCount}</div><div class="l">لاعب مسجل</div></div>
+                <div class="qs-card"><i class="fas fa-calendar-check"></i><div class="n">${sessionsCount}</div><div class="l">حصة قادمة</div></div>
+                <div class="qs-card"><i class="fas fa-futbol"></i><div class="n">${matchesCount}</div><div class="l">مباراة</div></div>
+                <div class="qs-card"><i class="fas fa-trophy"></i><div class="n">${tournamentsCount}</div><div class="l">بطولة</div></div>
+                <div class="qs-card"><i class="fas fa-user-tie"></i><div class="n" style="font-size:1.1rem;">${coach || '-'}</div><div class="l">المدرب المسؤول</div></div>
+            `;
+        }
+
         function renderBanner(playersCount, sessionsCount, matchesCount) {
             document.getElementById('catTag').textContent = 'فئة عمرية';
             document.getElementById('catTitle').textContent = CATEGORY;
@@ -951,6 +999,7 @@
         // INIT
         // ============================================================
         (async function init() {
+            await loadCategoryLabel();
             const [players, sessions, matches, tournaments, messages, news] = await Promise.all([
                 fetchNode('players', FALLBACK.players),
                 fetchNode('sessions', FALLBACK.sessions),
@@ -966,7 +1015,15 @@
             const catTournaments = byCategory(tournaments);
             const catMessages = byCategory(messages);
 
+            const coachName = (await fetchNode('categoryCoaches', {}))[CATEGORY];
             renderBanner(allPlayers.length, catSessions.filter(s => s.status !== 'finished').length, catMatches.length);
+            renderQuickStats(
+                allPlayers.length,
+                catSessions.filter(s => s.status === 'scheduled' || s.status === 'ongoing').length,
+                catMatches.length,
+                catTournaments.length,
+                coachName
+            );
             applyFilters();
             renderSessions(catSessions);
             renderMatches(catMatches);

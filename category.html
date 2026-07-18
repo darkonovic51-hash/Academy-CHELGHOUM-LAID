@@ -330,13 +330,30 @@
         .messages-block .msg-card p.msg-text { color: rgba(255,255,255,0.85); font-size: 0.92rem; }
 
         /* ===== SECTION HEADERS مميزة لكل قسم ===== */
-        .section-block-themed { border-radius: 28px; padding: 34px 28px; margin-bottom: 30px; }
-        .themed-header { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
-        .themed-header .th-icon {
-            width:50px; height:50px; border-radius:16px; display:flex; align-items:center; justify-content:center;
-            font-size:1.3rem; color:var(--white); flex-shrink:0;
+        .section-block-themed {
+            border-radius: 28px; padding: 40px 30px 34px; margin-bottom: 50px; position: relative; overflow: hidden;
         }
-        .themed-header h2 { font-family:'Bebas Neue'; font-size:1.8rem; letter-spacing:1.5px; margin:0; }
+        .section-block-themed::before {
+            content: attr(data-step); position: absolute; font-family:'Bebas Neue'; font-size: 9rem;
+            color: rgba(0,0,0,0.035); top: -20px; left: 10px; z-index: 0; line-height: 1;
+        }
+        .section-block-themed:not(:last-child)::after {
+            content: ''; position: absolute; bottom: -50px; right: 60px; width: 3px; height: 50px;
+            background: repeating-linear-gradient(to bottom, var(--gold) 0, var(--gold) 6px, transparent 6px, transparent 12px);
+            z-index: 5;
+        }
+        .themed-header { display:flex; align-items:center; gap:16px; margin-bottom:26px; position:relative; z-index:2; }
+        .themed-header .th-icon {
+            width:58px; height:58px; border-radius:50% 16px 50% 16px; display:flex; align-items:center; justify-content:center;
+            font-size:1.5rem; color:var(--white); flex-shrink:0; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transform: rotate(-4deg); transition: transform 0.3s ease;
+        }
+        .section-block-themed:hover .th-icon { transform: rotate(0deg) scale(1.05); }
+        .themed-header .th-text { position: relative; }
+        .themed-header .th-step-label {
+            font-size: 0.7rem; letter-spacing: 3px; color: var(--gold); font-weight: 700; display: block; margin-bottom: 2px;
+        }
+        .themed-header h2 { font-family:'Bebas Neue'; font-size:2rem; letter-spacing:1.5px; margin:0; }
         .themed-header h2::after { display:none; }
 
         .sessions-theme { background: linear-gradient(180deg, #f0f7f3 0%, #ffffff 100%); border:1px solid #e0ece4; }
@@ -502,10 +519,13 @@
         </section>
 
         <!-- ===== TRAINING SESSIONS (قالب مستقل) ===== -->
-        <section class="section-block-themed sessions-theme">
+        <section class="section-block-themed sessions-theme" data-step="01">
             <div class="themed-header">
                 <div class="th-icon"><i class="fas fa-dumbbell"></i></div>
-                <h2>الحصة التدريبية</h2>
+                <div class="th-text">
+                    <span class="th-step-label">القسم 01</span>
+                    <h2>الحصة التدريبية</h2>
+                </div>
             </div>
             <div id="nextSessionWrap"></div>
             <div class="timeline-divider"><span>الحصص القادمة</span></div>
@@ -518,10 +538,13 @@
         </section>
 
         <!-- ===== MATCHES (قالب مستقل) ===== -->
-        <section class="section-block-themed matches-theme">
+        <section class="section-block-themed matches-theme" data-step="02">
             <div class="themed-header">
                 <div class="th-icon"><i class="fas fa-futbol"></i></div>
-                <h2>المباريات</h2>
+                <div class="th-text">
+                    <span class="th-step-label">القسم 02</span>
+                    <h2>المباريات</h2>
+                </div>
             </div>
             <div id="nextMatchWrap"></div>
             <div class="timeline-divider"><span>المباريات القادمة</span></div>
@@ -534,10 +557,13 @@
         </section>
 
         <!-- ===== TOURNAMENTS (قالب مستقل) ===== -->
-        <section class="section-block-themed tournaments-theme">
+        <section class="section-block-themed tournaments-theme" data-step="03">
             <div class="themed-header">
                 <div class="th-icon"><i class="fas fa-trophy"></i></div>
-                <h2>البطولات</h2>
+                <div class="th-text">
+                    <span class="th-step-label">القسم 03</span>
+                    <h2>البطولات</h2>
+                </div>
             </div>
             <div class="cards-grid" id="tournamentsGrid"></div>
         </section>

@@ -626,11 +626,14 @@
             border-color: var(--gold);
         }
         .player-feature-card .pf-img-wrap {
-            position: relative; height: 300px; overflow: hidden;
+            position: relative; width: 100%; aspect-ratio: 4 / 5; min-height: 260px; overflow: hidden;
             background: linear-gradient(160deg, var(--primary-dark), var(--black));
+            display: flex; align-items: center; justify-content: center;
         }
-        .player-feature-card .pf-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .player-feature-card:hover .pf-img-wrap img { transform: scale(1.08); }
+        .player-feature-card .pf-img-wrap img {
+            width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease;
+        }
+        .player-feature-card .pf-img-wrap img[src=""], .player-feature-card .pf-img-wrap img:not([src]) { display: none; }
         .player-feature-card .pf-number {
             position: absolute; top: 14px; left: 14px; background: var(--red-accent); color: var(--white);
             font-family: 'Bebas Neue'; font-size: 1.6rem; width: 46px; height: 46px; border-radius: 50%;
@@ -977,6 +980,7 @@
             .age-item-premium { padding: 18px 16px; }
             .age-item-premium .ap-title { font-size: 1.6rem; }
             .player-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .player-feature-card .pf-img-wrap { min-height: 200px; }
             .staff-grid { grid-template-columns: 1fr 1fr; }
             .kit-showcase-card { padding: 20px; }
             .kit-showcase-card img { max-height: 200px; }
@@ -1263,8 +1267,19 @@
         let ageLabels = {};
         const ageIcons = ['fa-shoe-prints','fa-child-reaching','fa-child','fa-person-running','fa-person','fa-futbol','fa-trophy'];
 
+        async function fetchNodeRaw(node, fallback) {
+            try {
+                const res = await fetch(`${DB_URL}${node}.json`);
+                if (!res.ok) throw new Error('bad response');
+                const data = await res.json();
+                return data || fallback;
+            } catch (err) {
+                return fallback;
+            }
+        }
+
         async function loadCategoriesList() {
-            const raw = await fetchNode('categoriesList', {
+            const raw = await fetchNodeRaw('categoriesList', {
                 U7:{ageLabel:'براعم',order:0}, U9:{ageLabel:'صغار',order:1}, U11:{ageLabel:'ناشئين',order:2},
                 U13:{ageLabel:'أشبال',order:3}, U15:{ageLabel:'فتيان',order:4}, U17:{ageLabel:'شباب',order:5}, U20:{ageLabel:'أولمبي',order:6}
             });
@@ -1405,9 +1420,8 @@
 
         function renderStaff(staff) {
             const grid = document.getElementById('staffGrid');
-            const featured = staff.slice(0, 3);
-            if (!featured.length) { grid.innerHTML = '<div class="empty-state">لم يتم إضافة أعضاء الطاقم الفني بعد.</div>'; return; }
-            grid.innerHTML = featured.map(s => `
+            if (!staff.length) { grid.innerHTML = '<div class="empty-state">لم يتم إضافة أعضاء الطاقم الفني بعد.</div>'; return; }
+            grid.innerHTML = staff.map(s => `
                 <div class="staff-feature-card">
                     <div class="sf-img-wrap">
                         <img src="${s.photoUrl || ''}" alt="${s.name || ''}" loading="lazy" onerror="this.style.display='none'" />

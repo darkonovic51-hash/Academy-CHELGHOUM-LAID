@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>ETOILE CHELGHOUM LAID ACADEMY</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -22,7 +21,7 @@
             --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.4);
             --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.08);
             --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
-            --ticker-height: 66px;
+            --ticker-height: 52px;
             --navbar-height: 78px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,26 +34,18 @@
             overflow-x: hidden;
         }
         a { text-decoration: none; color: inherit; }
-        button, a, .article-card, .player-spotlight-card, .staff-spotlight-card, .kit-showcase-card, .age-item, .masonry .item {
-            will-change: transform;
-        }
         ul { list-style: none; }
         img { max-width: 100%; display: block; }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        h1, h2, h3, .headline {
-            font-family: 'Almarai', 'Cairo', sans-serif;
-            font-weight: 800;
-        }
-        .bebas {
+        h1, h2, h3, .headline, .bebas {
             font-family: 'Bebas Neue', sans-serif;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
         .section-title {
-            font-size: 2.5rem;
-            font-family: 'Almarai', sans-serif;
-            font-weight: 800;
-            letter-spacing: 0px;
+            font-size: 3rem;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
             position: relative;
             display: inline-block;
             margin-bottom: 40px;
@@ -76,10 +67,13 @@
         /* ===== SCROLL REVEAL ===== */
         .reveal {
             opacity: 0;
-            transform: translateY(50px) scale(0.97);
-            transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .reveal.visible { transform: translateY(0) scale(1); }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
@@ -132,23 +126,12 @@
             overflow: hidden; display: flex; align-items: stretch;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
-        .ticker-brand {
-            position: relative; flex-shrink: 0; width: 78px;
-            background: linear-gradient(135deg, var(--red-accent), #8a0c1f);
-            box-shadow: 6px 0 20px rgba(0,0,0,0.3); z-index: 3;
+        .ticker-label {
+            background: var(--red-accent); color: var(--white); font-family:'Bebas Neue'; font-size:1.1rem;
+            letter-spacing:1.5px; display:flex; align-items:center; padding:0 22px; flex-shrink:0;
+            position:relative; z-index:2; box-shadow: 6px 0 16px rgba(0,0,0,0.25);
         }
-        .ticker-brand img {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 58px; height: 58px; border-radius: 50%; object-fit: contain;
-            background: var(--white); padding: 4px; border: 3px solid var(--gold);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-        }
-        .ticker-brand .live-badge {
-            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-            background: var(--gold); color: var(--black); font-size: 0.55rem; font-weight: 800;
-            padding: 2px 8px; border-radius: 10px; letter-spacing: 0.5px; white-space: nowrap;
-        }
-        .ticker-viewport { flex:1; overflow:hidden; display:flex; align-items:center; padding-right: 20px; }
+        .ticker-viewport { flex:1; overflow:hidden; display:flex; align-items:center; }
         .ticker {
             display: flex; align-items: center; gap: 46px;
             animation: tickerScroll 32s linear infinite;
@@ -156,9 +139,9 @@
         }
         .ticker-item {
             display: flex; align-items: center; gap: 14px;
-            color: var(--gold-light); font-family: 'Almarai', sans-serif;
-            font-weight: 800; font-size: 1.15rem; letter-spacing: 0.3px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            color: var(--gold-light); font-family: 'Bebas Neue', sans-serif;
+            font-weight: 400; font-size: 1.25rem; letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .ticker-item .dot {
             display: inline-block; width: 8px; height: 8px; background: var(--gold);
@@ -367,10 +350,9 @@
             padding: 40px 20px;
         }
         .hero-content h1 {
-            font-size: clamp(2.4rem, 7vw, 4.6rem);
-            font-family: 'Almarai', sans-serif;
-            font-weight: 800;
-            letter-spacing: 0px;
+            font-size: clamp(2.8rem, 8vw, 5.5rem);
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 4px;
             line-height: 1.1;
             color: var(--white);
             text-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
@@ -470,9 +452,8 @@
             align-items: center;
         }
         .about-text h2 {
-            font-size: 2.4rem;
-            font-family: 'Almarai', sans-serif;
-            font-weight: 800;
+            font-size: 2.8rem;
+            font-family: 'Bebas Neue', sans-serif;
             color: var(--primary-dark);
         }
         .about-text h2 span { color: var(--red-accent); }
@@ -594,35 +575,72 @@
             gap: 36px;
         }
         .player-spotlight-card {
-            position: relative; width: 300px; aspect-ratio: 3 / 4; border-radius: 30px; overflow: hidden;
+            position: relative;
+            width: 280px;
+            min-height: 320px;
+            border-radius: 28px;
+            overflow: hidden;
             background: linear-gradient(160deg, var(--primary-dark), var(--black));
-            box-shadow: var(--shadow-medium); border: 2px solid transparent;
+            box-shadow: var(--shadow-medium);
+            border: 2px solid transparent;
             transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
         }
-        .player-spotlight-card:hover { transform: translateY(-14px); box-shadow: var(--shadow-heavy); border-color: var(--gold); }
-        .player-spotlight-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .player-spotlight-card:hover img { transform: scale(1.08); }
-        .player-spotlight-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 45%, transparent 65%);
-            pointer-events: none; z-index: 1;
+        .player-spotlight-card:hover {
+            transform: translateY(-14px);
+            box-shadow: var(--shadow-heavy);
+            border-color: var(--gold);
         }
-        .player-spotlight-card .ps-info { position: absolute; bottom: 0; right: 0; left: 0; padding: 20px; z-index: 2; text-align: center; }
-        .player-spotlight-card .ps-number {
-            position: absolute; top: 14px; right: 14px; background: var(--red-accent); color: var(--white);
-            font-family: 'Bebas Neue'; font-size: 1.6rem; width: 42px; height: 42px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; z-index: 2; box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+        .player-spotlight-card .big-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 6rem;
+            color: rgba(212,175,55,0.9);
+            line-height: 1;
+            text-shadow: 0 8px 30px rgba(0,0,0,0.4);
         }
-        .player-spotlight-card h4 { color: var(--white); font-family: 'Almarai', sans-serif; font-weight: 800; font-size: 1.25rem; }
-        .player-spotlight-card .position { color: var(--gold-light); font-size: 0.88rem; margin-top: 4px; }
+        .player-spotlight-card h4 {
+            color: var(--white);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-top: 12px;
+        }
+        .player-spotlight-card .position {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
         .player-spotlight-card .cat-tag {
-            display: inline-block; margin-top: 10px; background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
-            color: var(--gold); font-size: 0.78rem; padding: 3px 14px; border-radius: 30px; letter-spacing: 1px;
+            margin-top: 14px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 0.8rem;
+            padding: 4px 16px;
+            border-radius: 30px;
+            letter-spacing: 1px;
+        }
+        .player-spotlight-card::after {
+            content: '★';
+            position: absolute;
+            font-size: 10rem;
+            color: rgba(255,255,255,0.03);
+            top: -20px;
+            left: -20px;
+            font-family: 'Bebas Neue';
         }
         .player-spotlight-card .shine {
-            position: absolute; inset: 0; z-index: 3;
-            background: linear-gradient(115deg, transparent 40%, rgba(212,175,55,0.2) 50%, transparent 60%);
-            transform: translateX(-120%); transition: transform 0.7s ease; pointer-events: none;
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 40%, rgba(212,175,55,0.15) 50%, transparent 60%);
+            transform: translateX(-120%);
+            transition: transform 0.7s ease;
+            pointer-events: none;
         }
         .player-spotlight-card:hover .shine { transform: translateX(120%); }
 
@@ -676,7 +694,7 @@
             filter: drop-shadow(0 15px 30px rgba(0,0,0,0.4));
         }
         .kit-showcase-card h4 {
-            font-family: 'Almarai'; font-weight: 800; font-size: 1.5rem; color: var(--white); margin-top: 20px;
+            font-family: 'Bebas Neue'; font-size: 1.8rem; letter-spacing: 2px; color: var(--white); margin-top: 20px;
         }
 
         /* ===== AGE GROUPS ===== */
@@ -791,20 +809,20 @@
         }
 
         /* ===== ARTICLES ===== */
-        .articles-section { padding: 100px 0; background: #f8f8f8; }
-        .articles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 36px; }
+        .articles-section { padding: 80px 0; background: var(--white); }
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .article-card {
-            border-radius: 26px; overflow: hidden; background: var(--white); box-shadow: var(--shadow-soft);
-            border: 1px solid #eee; transition: 0.4s; display: block;
+            border-radius: 24px; overflow: hidden; background: var(--white); box-shadow: var(--shadow-soft);
+            border: 1px solid #eee; transition: 0.35s; display: block;
         }
-        .article-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-heavy); }
-        .article-card .art-img-frame { height: 320px; overflow: hidden; position: relative; }
-        .article-card .art-img-frame img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .article-card:hover .art-img-frame img { transform: scale(1.1); }
-        .article-card .art-body { padding: 24px 26px; }
-        .article-card h4 { font-family: 'Almarai'; font-weight: 800; font-size: 1.35rem; color: var(--primary-dark); margin-bottom: 10px; line-height: 1.5; }
-        .article-card p { font-size: 0.92rem; color: #777; line-height: 1.7; }
-        .article-card .read-more { display: inline-block; margin-top: 14px; color: var(--red-accent); font-weight: 700; font-size: 0.88rem; }
+        .article-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-heavy); }
+        .article-card .art-img-frame { height: 200px; overflow: hidden; position: relative; }
+        .article-card .art-img-frame img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .article-card:hover .art-img-frame img { transform: scale(1.08); }
+        .article-card .art-body { padding: 18px 20px; }
+        .article-card h4 { font-family: 'Cairo'; font-weight: 700; font-size: 1.15rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .article-card p { font-size: 0.88rem; color: #777; line-height: 1.6; }
+        .article-card .read-more { display: inline-block; margin-top: 10px; color: var(--red-accent); font-weight: 700; font-size: 0.85rem; }
 
         /* ===== REGISTRATION ===== */
         .registration {
@@ -966,7 +984,6 @@
             .reg-form-grid { grid-template-columns: 1fr; }
             .reg-form-grid .full { grid-column: 1; }
             .hero-content h1 { font-size: 2.6rem; }
-            .articles-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
         }
         @media (min-width: 1025px) {
             .nav-toggle { display: none; }
@@ -975,10 +992,9 @@
             .nav-links.right { justify-content: flex-start; }
         }
         @media (max-width: 600px) {
-            :root { --ticker-height: 54px; --navbar-height: 70px; }
-            .ticker-item { font-size: 0.9rem; }
-            .ticker-brand { width: 60px; }
-            .ticker-brand img { width: 44px; height: 44px; }
+            :root { --ticker-height: 44px; --navbar-height: 70px; }
+            .ticker-item { font-size: 0.78rem; }
+            .ticker-label { font-size: 0.85rem; padding: 0 12px; }
             .nav-actions .nav-cta span { display: none; }
             .nav-actions .nav-cta { padding: 8px 14px; }
             .nav-logo { width: 60px; height: 60px; top: 0px; }
@@ -1000,23 +1016,19 @@
             .age-item { padding: 20px 10px; }
             .age-item .icon-badge { width: 50px; height: 50px; }
             .age-item .label { font-size: 1.2rem; }
-            .player-spotlight-card { width: 220px; }
+            .player-spotlight-card { width: 220px; min-height: 280px; }
             .staff-spotlight-card { width: 180px; }
             .kit-showcase-card { padding: 20px; }
             .kit-showcase-card img { max-height: 200px; }
             .kit-showcase-card h4 { font-size: 1.3rem; }
             .articles-grid { grid-template-columns: 1fr; }
-            .article-card .art-img-frame { height: 200px; }
         }
     </style>
 </head>
 <body>
     <!-- ===== TOP NEWS TICKER ===== -->
     <div class="ticker-wrap" id="news-section">
-        <div class="ticker-brand">
-            <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" onerror="this.style.display='none'" />
-            <span class="live-badge">مباشر</span>
-        </div>
+        <div class="ticker-label"><i class="fas fa-star" style="margin-left:8px;"></i> أخبار الأكاديمية</div>
         <div class="ticker-viewport">
             <div class="ticker" id="ticker"></div>
         </div>
@@ -1261,8 +1273,8 @@
                 { url: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696214495.jpg?raw=true' }
             ],
             players: [
-                { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_00000000381871f4b80faef61c9038da.png?raw=true' },
-                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/file_0000000092a072438f581682c7df0ddc.png?raw=true' }
+                { name: 'أحمد زروقي', number: 10, position: 'وسط ميدان', category: 'U15' },
+                { name: 'ياسين بن عمر', number: 7, position: 'مهاجم', category: 'U17' }
             ],
             staff: [
                 { name: 'نبيل شلغوم', photoUrl: 'https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/bce590e3df7e5ddf0c4e35a3932fb5b610a51192/file_00000000ed4871f4869b69de5c8e19a9.png?raw=true' },
@@ -1352,19 +1364,17 @@
             }
         });
 
+        // بطاقتين فقط، تصميم نصي احترافي (رقم القميص) بدون صور
         function renderPlayers(players) {
             const grid = document.getElementById('playerGrid');
             const featured = players.slice(0, 2);
             grid.innerHTML = featured.map(p => `
                 <div class="player-spotlight-card">
-                    <img src="${p.photoUrl || ''}" alt="${p.name || ''}" loading="lazy" onerror="this.style.visibility='hidden'" />
-                    <span class="ps-number">${p.number ?? '-'}</span>
                     <div class="shine"></div>
-                    <div class="ps-info">
-                        <h4>${p.name || ''}</h4>
-                        <p class="position">${p.position || ''}</p>
-                        ${p.category ? `<span class="cat-tag">${p.category}</span>` : ''}
-                    </div>
+                    <div class="big-number">${p.number ?? '-'}</div>
+                    <h4>${p.name || ''}</h4>
+                    <p class="position">${p.position || ''}</p>
+                    ${p.category ? `<span class="cat-tag">${p.category}</span>` : ''}
                 </div>
             `).join('');
         }

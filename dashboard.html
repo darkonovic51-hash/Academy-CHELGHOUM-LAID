@@ -117,6 +117,25 @@
     .att-btn.present.active { background:#1D8348; border-color:#1D8348; color:var(--white); }
     .att-btn.absent.active { background:var(--red-accent); border-color:var(--red-accent); color:var(--white); }
 
+    /* ===== CALL-UPS ===== */
+    .callups-box { background:#f7f7f7; border:1.5px dashed #ddd; border-radius:14px; padding:14px; }
+    .callups-status { font-size:0.85rem; font-weight:700; color:#B8860B; margin-bottom:10px; }
+    .callups-toggle-btn {
+        background:var(--primary-mid); color:var(--white); border:none; padding:9px 18px; border-radius:20px;
+        font-size:0.85rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+    }
+    .callups-list { margin-top:12px; max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+    .callup-row {
+        display:flex; justify-content:space-between; align-items:center; padding:9px 14px;
+        background:var(--white); border-radius:12px; border:1px solid #eee;
+    }
+    .callup-row .cr-name { font-size:0.88rem; font-weight:700; }
+    .callup-row button {
+        border:none; padding:6px 14px; border-radius:20px; font-size:0.78rem; font-weight:700; cursor:pointer;
+    }
+    .callup-row button.call-btn { background:#EAF7EE; color:#1D8348; }
+    .callup-row button.call-btn.called { background:#1D8348; color:var(--white); }
+
     /* ===== PAYMENTS ===== */
     .months-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; }
     .month-toggle {
@@ -508,6 +527,7 @@
                     { key:'awayScore', label:'نتيجة المنافس', type:'number' },
                     { key:'goalscorers', label:'الأهداف (سطر لكل هدف: الاسم - الدقيقة - الفريق)', type:'textarea' },
                     { key:'lineup', label:'التشكيلة (11 سطر: المركز - اسم اللاعب)', type:'textarea' },
+                    { key:'callUps', label:'اللاعبون المستدعون', type:'callups' },
                     { key:'details', label:'تفاصيل إضافية عن المباراة', type:'textarea' }
                 ]
             },
@@ -723,6 +743,11 @@
             } else {
                 bodyRows = entries.map(([id, item]) => {
                     const cells = config.fields.map(f => {
+                        if (f.type === 'callups') {
+                            let list = [];
+                            try { list = item[f.key] ? JSON.parse(item[f.key]) : []; } catch { list = []; }
+                            return `<td>${list.length} لاعب</td>`;
+                        }
                         if (f.type === 'pdf') {
                             return `<td>${item[f.key] ? '<i class="fas fa-file-pdf" style="color:var(--red-accent);"></i> ملف مرفوع' : '-'}</td>`;
                         }
@@ -796,6 +821,20 @@
             if (field.type === 'color') {
                 return `<input type="color" data-field="${field.key}" value="${val || '#0E4832'}" style="height:44px;padding:4px;" />`;
             }
+            if (field.type === 'callups') {
+                let list = [];
+                try { list = value ? JSON.parse(value) : []; } catch { list = []; }
+                return `
+                    <input type="hidden" data-field="${field.key}" value='${(value || '[]').replace(/'/g, "&apos;")}' />
+                    <div class="callups-box">
+                        <div class="callups-status" data-callups-status>${list.length} لاعب مستدعى حاليًا</div>
+                        <button type="button" class="callups-toggle-btn" data-callups-toggle="${field.key}">
+                            <i class="fas fa-users"></i> إدارة قائمة الاستدعاء
+                        </button>
+                        <div class="callups-list" data-callups-list="${field.key}" style="display:none;"></div>
+                    </div>
+                `;
+            }
             if (field.type === 'pdf') {
                 const hasValue = val && val.length > 0;
                 return `
@@ -845,6 +884,60 @@
             `).join('');
             document.getElementById('modalOverlay').classList.add('active');
 
+            document.querySelectorAll('[data-callups-toggle]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const fieldKey = btn.dataset.callupsToggle;
+                    const listEl = document.querySelector(`[data-callups-list="${fieldKey}"]`);
+                    const isOpen = listEl.style.display !== 'none';
+                    if (isOpen) { listEl.style.display = 'none'; return; }
+
+                    const catSelect = document.querySelector('[data-field="category"]');
+                    const category = catSelect ? catSelect.value : '';
+                    if (!category) { alert('يرجى اختيار الفئة أولاً.'); return; }
+
+                    const allPlayers = await dbGet('players');
+                    const catPlayers = Object.entries(allPlayers).filter(([, p]) => p.category === category);
+                    const hiddenInput = document.querySelector(`[data-field="${fieldKey}"]`);
+                    let currentList = [];
+                    try { currentList = hiddenInput.value ? JSON.parse(hiddenInput.value) : []; } catch { currentList = []; }
+                    const currentIds = new Set(currentList.map(c => c.id));
+
+                    if (catPlayers.length === 0) {
+                        listEl.innerHTML = '<p style="text-align:center;color:#999;font-size:0.85rem;">لا يوجد لاعبون في هذه الفئة.</p>';
+                    } else {
+                        listEl.innerHTML = catPlayers.map(([pid, p]) => `
+                            <div class="callup-row" data-player-id="${pid}" data-player-name="${p.name || ''}">
+                                <span class="cr-name">${p.name || ''} ${p.number !== undefined && p.number !== '' ? '#' + p.number : ''}</span>
+                                <button type="button" class="call-btn ${currentIds.has(pid) ? 'called' : ''}">
+                                    ${currentIds.has(pid) ? 'إزالة' : 'استدعاء'}
+                                </button>
+                            </div>
+                        `).join('');
+                        listEl.querySelectorAll('.call-btn').forEach(callBtn => {
+                            callBtn.addEventListener('click', () => {
+                                const row = callBtn.closest('.callup-row');
+                                const pid = row.dataset.playerId;
+                                const pname = row.dataset.playerName;
+                                let list = [];
+                                try { list = hiddenInput.value ? JSON.parse(hiddenInput.value) : []; } catch { list = []; }
+                                const exists = list.find(c => c.id === pid);
+                                if (exists) {
+                                    list = list.filter(c => c.id !== pid);
+                                    callBtn.classList.remove('called');
+                                    callBtn.textContent = 'استدعاء';
+                                } else {
+                                    list.push({ id: pid, name: pname });
+                                    callBtn.classList.add('called');
+                                    callBtn.textContent = 'إزالة';
+                                }
+                                hiddenInput.value = JSON.stringify(list);
+                                document.querySelector(`[data-callups-status]`).textContent = `${list.length} لاعب مستدعى حاليًا`;
+                            });
+                        });
+                    }
+                    listEl.style.display = 'flex';
+                });
+            });
             document.querySelectorAll('[data-upload-for]').forEach(input => {
                 input.addEventListener('change', async () => {
                     const file = input.files[0];

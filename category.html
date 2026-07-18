@@ -329,6 +329,42 @@
         .messages-block .msg-card .msg-date { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-top: 6px; }
         .messages-block .msg-card p.msg-text { color: rgba(255,255,255,0.85); font-size: 0.92rem; }
 
+        /* ===== SECTION HEADERS مميزة لكل قسم ===== */
+        .section-block-themed { border-radius: 28px; padding: 34px 28px; margin-bottom: 30px; }
+        .themed-header { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+        .themed-header .th-icon {
+            width:50px; height:50px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+            font-size:1.3rem; color:var(--white); flex-shrink:0;
+        }
+        .themed-header h2 { font-family:'Bebas Neue'; font-size:1.8rem; letter-spacing:1.5px; margin:0; }
+        .themed-header h2::after { display:none; }
+
+        .sessions-theme { background: linear-gradient(180deg, #f0f7f3 0%, #ffffff 100%); border:1px solid #e0ece4; }
+        .sessions-theme .th-icon { background: var(--primary-mid); }
+        .sessions-theme h2 { color: var(--primary-dark); }
+
+        .matches-theme { background: linear-gradient(180deg, #fdf3f4 0%, #ffffff 100%); border:1px solid #f3dde0; }
+        .matches-theme .th-icon { background: var(--red-accent); }
+        .matches-theme h2 { color: var(--red-accent); }
+
+        .tournaments-theme { background: linear-gradient(180deg, #fdf8ec 0%, #ffffff 100%); border:1px solid #f0e4bd; }
+        .tournaments-theme .th-icon { background: var(--gold); color: var(--black); }
+        .tournaments-theme h2 { color: #8a6d1a; }
+
+        /* ===== ARCHIVE AS A FOLDER FILE ===== */
+        .archive-folder {
+            border-radius: 22px; border: 2px dashed #ccc; background: #fafafa; margin-top: 20px; overflow: hidden;
+        }
+        .archive-folder summary {
+            cursor: pointer; padding: 18px 22px; display: flex; align-items: center; gap: 12px;
+            font-family: 'Bebas Neue'; font-size: 1.2rem; letter-spacing: 1px; color: #666; list-style: none;
+        }
+        .archive-folder summary::-webkit-details-marker { display: none; }
+        .archive-folder summary i.folder-icon { color: var(--gold); font-size: 1.3rem; }
+        .archive-folder summary i.chevron { margin-right: auto; transition: transform 0.3s ease; }
+        .archive-folder[open] summary i.chevron { transform: rotate(90deg); }
+        .archive-folder .archive-body { padding: 0 22px 22px; }
+
         /* ===== DETAILS MODAL ===== */
         .details-modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 5000; display: none;
@@ -372,6 +408,10 @@
         }
         .lineup-slot .pos { font-size:0.68rem; color:var(--gold-light); letter-spacing:1px; }
         .lineup-slot .pname { font-size:0.82rem; font-weight:700; margin-top:4px; }
+
+        .callups-table { width:100%; border-collapse:collapse; }
+        .callups-table th { background:var(--primary-dark); color:var(--white); padding:8px; font-size:0.8rem; text-align:center; }
+        .callups-table td { padding:8px; text-align:center; border-bottom:1px solid #eee; font-size:0.85rem; }
 
         @media (max-width: 768px) {
             .cat-banner { min-height: 34vh; }
@@ -461,27 +501,44 @@
             <div class="pagination" id="pagination"></div>
         </section>
 
-        <!-- ===== TRAINING SESSION (القادمة فقط) ===== -->
-        <section class="section-block">
-            <h2 class="section-title">الحصة التدريبية</h2>
+        <!-- ===== TRAINING SESSIONS (قالب مستقل) ===== -->
+        <section class="section-block-themed sessions-theme">
+            <div class="themed-header">
+                <div class="th-icon"><i class="fas fa-dumbbell"></i></div>
+                <h2>الحصة التدريبية</h2>
+            </div>
             <div id="nextSessionWrap"></div>
             <div class="timeline-divider"><span>الحصص القادمة</span></div>
             <div class="cards-grid" id="upcomingSessionsGrid"></div>
+
+            <details class="archive-folder">
+                <summary><i class="fas fa-folder folder-icon"></i> ملف أرشيف الحصص المنتهية <i class="fas fa-chevron-left chevron"></i></summary>
+                <div class="archive-body"><div class="cards-grid" id="archiveSessionsGrid"></div></div>
+            </details>
         </section>
 
-        <!-- ===== MATCHES ===== -->
-        <section class="section-block alt">
-            <h2 class="section-title">المباريات</h2>
+        <!-- ===== MATCHES (قالب مستقل) ===== -->
+        <section class="section-block-themed matches-theme">
+            <div class="themed-header">
+                <div class="th-icon"><i class="fas fa-futbol"></i></div>
+                <h2>المباريات</h2>
+            </div>
             <div id="nextMatchWrap"></div>
             <div class="timeline-divider"><span>المباريات القادمة</span></div>
             <div class="cards-grid" id="upcomingMatchesGrid"></div>
-            <div class="timeline-divider"><span>أرشيف المباريات</span></div>
-            <div class="cards-grid" id="archiveMatchesGrid"></div>
+
+            <details class="archive-folder">
+                <summary><i class="fas fa-folder folder-icon"></i> ملف أرشيف المباريات المنتهية <i class="fas fa-chevron-left chevron"></i></summary>
+                <div class="archive-body"><div class="cards-grid" id="archiveMatchesGrid"></div></div>
+            </details>
         </section>
 
-        <!-- ===== TOURNAMENTS ===== -->
-        <section class="section-block">
-            <h2 class="section-title">البطولات</h2>
+        <!-- ===== TOURNAMENTS (قالب مستقل) ===== -->
+        <section class="section-block-themed tournaments-theme">
+            <div class="themed-header">
+                <div class="th-icon"><i class="fas fa-trophy"></i></div>
+                <h2>البطولات</h2>
+            </div>
             <div class="cards-grid" id="tournamentsGrid"></div>
         </section>
 
@@ -491,12 +548,6 @@
                 <h2 class="section-title messages-title">رسائل الأكاديمية</h2>
                 <div id="messagesList"></div>
             </div>
-        </section>
-
-        <!-- ===== SESSIONS ARCHIVE (قسم مستقل) ===== -->
-        <section class="section-block alt" style="padding-bottom:100px;">
-            <h2 class="section-title">أرشيف الحصص</h2>
-            <div class="cards-grid" id="archiveSessionsGrid"></div>
         </section>
     </div>
 
@@ -887,6 +938,8 @@
             const goals = parseGoals(m.goalscorers);
             const lineup = parseLineup(m.lineup);
             const hasScore = m.homeScore !== undefined && m.homeScore !== '' && m.awayScore !== undefined && m.awayScore !== '';
+            let callUps = [];
+            try { callUps = m.callUps ? JSON.parse(m.callUps) : []; } catch { callUps = []; }
 
             document.querySelector('.details-modal-box').classList.add('match-modal-box');
             document.getElementById('detailsModalTitle').textContent = `الأكاديمية ضد ${m.opponent || ''}`;
@@ -910,6 +963,15 @@
                     <div class="lineup-grid">
                         ${lineup.map(p => `<div class="lineup-slot"><div class="pos">${p.pos}</div><div class="pname">${p.name}</div></div>`).join('')}
                     </div>
+                </div>` : ''}
+
+                ${callUps.length ? `
+                <div class="mm-section">
+                    <h4>قائمة اللاعبين المستدعين (${callUps.length})</h4>
+                    <table class="callups-table">
+                        <thead><tr><th>#</th><th>اسم اللاعب</th></tr></thead>
+                        <tbody>${callUps.map((c, i) => `<tr><td>${i + 1}</td><td>${c.name}</td></tr>`).join('')}</tbody>
+                    </table>
                 </div>` : ''}
 
                 ${m.details ? `<div class="mm-section"><h4>تفاصيل إضافية</h4><p style="font-size:0.88rem;color:#555;line-height:1.7;">${m.details}</p></div>` : ''}

@@ -1039,12 +1039,12 @@
         }
 
         // ============================================================
-        // TOURNAMENTS / MESSAGES
+        // TOURNAMENTS
         // ============================================================
         function renderTournaments(tournaments) {
             const grid = document.getElementById('tournamentsGrid');
             if (!tournaments.length) { grid.innerHTML = '<div class="empty-state">الفئة غير مشاركة في أي بطولة حاليًا.</div>'; return; }
-            grid.innerHTML = tournaments.map(t => `
+            grid.innerHTML = tournaments.map((t, idx) => `
                 <div class="tournament-card">
                     <div class="t-head">
                         <img src="${t.logo || LOGO_URL}" onerror="this.style.visibility='hidden'" />
@@ -1057,11 +1057,46 @@
                         <div class="row"><i class="fas fa-users"></i> عدد الفرق: ${t.teamsCount || '-'}</div>
                         ${t.standings ? `<div class="row"><i class="fas fa-list-ol"></i> ${t.standings}</div>` : ''}
                         ${t.files ? `<a class="files-link" href="${t.files}" target="_blank"><i class="fas fa-paperclip"></i> الملفات المرفقة</a>` : ''}
+                        <div class="sc-footer" style="margin-top:10px;">
+                            <span></span>
+                            <button class="sc-details-btn" type="button" data-tournament-idx="${idx}">عرض التفاصيل</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
+            document.querySelectorAll('[data-tournament-idx]').forEach(btn => {
+                btn.addEventListener('click', () => openTournamentDetails(tournaments[btn.dataset.tournamentIdx]));
+            });
         }
 
+        function openTournamentDetails(t) {
+            let callUps = [];
+            try { callUps = t.callUps ? JSON.parse(t.callUps) : []; } catch { callUps = []; }
+
+            document.querySelector('.details-modal-box').classList.remove('match-modal-box');
+            document.getElementById('detailsModalTitle').textContent = t.name || 'تفاصيل البطولة';
+            document.getElementById('detailsModalBody').innerHTML = `
+                <div class="d-row"><b>المنظم</b><span>${t.organizer || '-'}</span></div>
+                <div class="d-row"><b>المكان</b><span>${t.place || '-'}</span></div>
+                <div class="d-row"><b>التاريخ</b><span>${t.date || ''} ${t.period ? '(' + t.period + ')' : ''}</span></div>
+                <div class="d-row"><b>عدد الفرق</b><span>${t.teamsCount || '-'}</span></div>
+                ${t.standings ? `<div class="d-row"><b>ترتيب المجموعة</b><span>${t.standings}</span></div>` : ''}
+                ${callUps.length ? `
+                    <div class="d-row">
+                        <b>اللاعبون المستدعون (${callUps.length})</b>
+                        <table class="callups-table" style="margin-top:6px;">
+                            <thead><tr><th>#</th><th>اسم اللاعب</th></tr></thead>
+                            <tbody>${callUps.map((c, i) => `<tr><td>${i + 1}</td><td>${c.name}</td></tr>`).join('')}</tbody>
+                        </table>
+                    </div>
+                ` : ''}
+            `;
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        // ============================================================
+        // MESSAGES
+        // ============================================================
         function renderMessages(messages) {
             const list = document.getElementById('messagesList');
             if (!messages.length) { list.innerHTML = '<div class="empty-state">لا توجد رسائل جديدة من إدارة الأكاديمية.</div>'; return; }

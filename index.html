@@ -681,9 +681,15 @@
             border: 2px solid transparent; transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .staff-feature-card:hover { transform: translateY(-12px); border-color: var(--gold); box-shadow: var(--shadow-heavy); }
-        .staff-feature-card .sf-img-wrap { height: 240px; overflow: hidden; background: linear-gradient(160deg, var(--primary-dark), var(--black)); }
-        .staff-feature-card .sf-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .staff-feature-card:hover .sf-img-wrap img { transform: scale(1.08); }
+        .staff-feature-card .sf-img-wrap {
+            aspect-ratio: 4 / 5; min-height: 340px; overflow: hidden;
+            background: linear-gradient(160deg, var(--primary-dark), var(--black));
+            display: flex; align-items: center; justify-content: center;
+        }
+        .staff-feature-card .sf-img-wrap img {
+            width: 100%; height: 100%; object-fit: contain; transition: transform 0.6s ease;
+        }
+        .staff-feature-card:hover .sf-img-wrap img { transform: scale(1.04); }
         .staff-feature-card .sf-desc-card { padding: 18px 20px; border-top: 3px solid var(--red-accent); text-align: center; }
         .staff-feature-card .sf-name { font-family: 'Bebas Neue'; font-size: 1.4rem; letter-spacing: 1px; color: var(--primary-dark); }
         .staff-feature-card .sf-role { color: var(--red-accent); font-weight: 700; font-size: 0.88rem; margin: 4px 0 8px; }
@@ -748,21 +754,13 @@
             transform: translateY(-10px); box-shadow: 0 20px 50px rgba(0,0,0,0.3); border-top-color: var(--gold);
             background: rgba(255,255,255,0.1);
         }
-        .age-item-premium .ap-top { display: flex; align-items: center; gap: 14px; position: relative; z-index: 2; margin-bottom: 16px; }
+        .age-item-premium .ap-top { display: flex; align-items: center; gap: 14px; position: relative; z-index: 2; margin-bottom: 12px; }
         .age-item-premium .ap-logo {
             width: 48px; height: 48px; border-radius: 50%; background: var(--white); padding: 4px;
             object-fit: contain; box-shadow: 0 4px 14px rgba(0,0,0,0.3); flex-shrink: 0;
         }
         .age-item-premium .ap-title { font-family: 'Bebas Neue'; font-size: 2rem; letter-spacing: 2px; color: var(--white); line-height: 1; }
         .age-item-premium .ap-sub { color: var(--cat-color); font-size: 0.8rem; font-weight: 700; margin-top: 2px; }
-        .age-item-premium .ap-stats {
-            display: flex; gap: 10px; margin-bottom: 14px; position: relative; z-index: 2; flex-wrap: wrap;
-        }
-        .age-item-premium .ap-stat {
-            background: rgba(0,0,0,0.2); border-radius: 14px; padding: 8px 12px; text-align: center; flex: 1; min-width: 70px;
-        }
-        .age-item-premium .ap-stat .n { font-family: 'Bebas Neue'; font-size: 1.3rem; color: var(--white); }
-        .age-item-premium .ap-stat .l { font-size: 0.65rem; color: rgba(255,255,255,0.55); }
         .age-item-premium .ap-next {
             display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.7);
             margin-bottom: 16px; position: relative; z-index: 2;
@@ -990,6 +988,7 @@
             .player-grid { grid-template-columns: 1fr; max-width: 400px; }
             .player-feature-card .pf-img-wrap { min-height: 200px; }
             .staff-grid { grid-template-columns: 1fr 1fr; }
+            .staff-feature-card .sf-img-wrap { min-height: 220px; }
             .kit-showcase-card { padding: 20px; }
             .kit-showcase-card img { max-height: 200px; }
             .kit-showcase-card h4 { font-size: 1.3rem; }
@@ -1539,8 +1538,6 @@
 
             grid.innerHTML = ageGroups.map((age, index) => {
                 const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
-                const playersCount = playersList.filter(p => p.category === age).length;
-                const coachName = coaches[age];
                 const nextSession = findNextSessionLabel(sessionsList, age);
                 return `
                     <a class="age-item-premium" href="category.html?cat=${age}" data-age="${age}" style="--cat-color:${color};">
@@ -1550,10 +1547,6 @@
                                 <div class="ap-title">${age}</div>
                                 <div class="ap-sub">${ageLabels[age] || 'فئة'}</div>
                             </div>
-                        </div>
-                        <div class="ap-stats">
-                            <div class="ap-stat"><div class="n">${playersCount}</div><div class="l">لاعب</div></div>
-                            <div class="ap-stat"><div class="n">${coachName ? 1 : 0}</div><div class="l">مدرب</div></div>
                         </div>
                         <div class="ap-next"><i class="fas fa-calendar-check"></i> ${nextSession}</div>
                         <span class="ap-btn">دخول ملف الفئة <i class="fas fa-arrow-left"></i></span>

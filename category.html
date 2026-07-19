@@ -469,54 +469,7 @@
     </section>
 
     <div class="container">
-        <!-- ===== QUICK STATS ===== -->
-        <section class="section-block quick-stats-block">
-            <div class="quick-stats-grid" id="quickStatsGrid"></div>
-        </section>
-
-        <!-- ===== PLAYERS TABLE ===== -->
-        <section class="section-block alt">
-            <h2 class="section-title">جدول اللاعبين</h2>
-            <div class="table-toolbar">
-                <div class="toolbar-left">
-                    <input type="text" id="searchInput" placeholder="🔍 بحث بالاسم..." />
-                    <select id="positionFilter">
-                        <option value="">كل المراكز</option>
-                        <option value="حارس مرمى">حارس مرمى</option>
-                        <option value="مدافع">مدافع</option>
-                        <option value="وسط">وسط</option>
-                        <option value="مهاجم">مهاجم</option>
-                    </select>
-                    <select id="statusFilter">
-                        <option value="">كل الحالات</option>
-                        <option value="active">نشيط</option>
-                        <option value="injured">مصاب</option>
-                        <option value="suspended">موقوف</option>
-                    </select>
-                </div>
-                <div class="toolbar-right">
-                    <button class="export-btn pdf" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-                    <button class="export-btn excel" id="exportExcelBtn"><i class="fas fa-file-excel"></i> Excel</button>
-                </div>
-            </div>
-            <div class="players-table-wrap">
-                <table class="players-table">
-                    <thead>
-                        <tr>
-                            <th data-sort="photo">الصورة</th>
-                            <th data-sort="name">الاسم <i class="fas fa-sort"></i></th>
-                            <th data-sort="birthYear">سنة الميلاد <i class="fas fa-sort"></i></th>
-                            <th data-sort="position">المركز <i class="fas fa-sort"></i></th>
-                            <th data-sort="number">الرقم <i class="fas fa-sort"></i></th>
-                            <th data-sort="status">الحالة <i class="fas fa-sort"></i></th>
-                        </tr>
-                    </thead>
-                    <tbody id="playersTableBody"></tbody>
-                </table>
-                <div id="noResults" class="no-results" style="display:none;">لا توجد نتائج مطابقة للبحث.</div>
-            </div>
-            <div class="pagination" id="pagination"></div>
-        </section>
+        <!-- تم حجب قسم الإحصائيات السريعة وجدول اللاعبين عن الموقع العام بناءً على طلبك -->
 
         <!-- ===== TRAINING SESSIONS (قالب مستقل) ===== -->
         <section class="section-block-themed sessions-theme" data-step="01">
@@ -665,7 +618,7 @@
         }
 
         // ============================================================
-        // PLAYERS TABLE STATE
+        // PLAYERS TABLE STATE (محجوب عن الواجهة لكن الشيفرة جاهزة للاستخدام)
         // ============================================================
         let allPlayers = [];
         let filteredPlayers = [];
@@ -739,87 +692,8 @@
             });
         }
 
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('positionFilter').addEventListener('change', applyFilters);
-        document.getElementById('statusFilter').addEventListener('change', applyFilters);
-
-        document.querySelectorAll('table.players-table th[data-sort]').forEach(th => {
-            th.addEventListener('click', () => {
-                const key = th.dataset.sort;
-                if (key === 'photo') return;
-                if (sortKey === key) { sortAsc = !sortAsc; } else { sortKey = key; sortAsc = true; }
-                applyFilters();
-            });
-        });
-
-        // ===== EXPORT =====
-        document.getElementById('exportExcelBtn').addEventListener('click', () => {
-            const rows = filteredPlayers.map(p => ({
-                'الاسم': p.name || '', 'سنة الميلاد': p.birthYear || '', 'المركز': p.position || '',
-                'الرقم': p.number ?? '', 'الحالة': statusLabels[p.status] || 'نشيط'
-            }));
-            const ws = XLSX.utils.json_to_sheet(rows);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, CATEGORY);
-            XLSX.writeFile(wb, `لاعبين_${CATEGORY}.xlsx`);
-        });
-
-        document.getElementById('exportPdfBtn').addEventListener('click', async () => {
-            const exportBtn = document.getElementById('exportPdfBtn');
-            exportBtn.disabled = true;
-            const originalText = exportBtn.innerHTML;
-            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارِ التجهيز...';
-
-            const tempWrap = document.createElement('div');
-            tempWrap.style.cssText = 'position:fixed; top:-9999px; left:-9999px; width:900px; background:#fff; padding:20px; direction:rtl;';
-            tempWrap.innerHTML = `
-                <h2 style="font-family:'Bebas Neue',sans-serif; color:#0E4832; margin-bottom:14px; text-align:center;">
-                    قائمة لاعبي فئة ${CATEGORY}
-                </h2>
-                <table style="width:100%; border-collapse:collapse; font-family:'Cairo',sans-serif; font-size:14px;">
-                    <thead>
-                        <tr style="background:#0E4832; color:#fff;">
-                            <th style="padding:10px;">الاسم</th>
-                            <th style="padding:10px;">سنة الميلاد</th>
-                            <th style="padding:10px;">المركز</th>
-                            <th style="padding:10px;">الرقم</th>
-                            <th style="padding:10px;">الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${filteredPlayers.map((p, i) => `
-                            <tr style="background:${i % 2 === 0 ? '#f7faf8' : '#ffffff'};">
-                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.name || '-'}</td>
-                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.birthYear || '-'}</td>
-                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.position || '-'}</td>
-                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${p.number ?? '-'}</td>
-                                <td style="padding:8px; text-align:center; border-bottom:1px solid #eee;">${statusLabels[p.status] || 'نشيط'}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            document.body.appendChild(tempWrap);
-
-            try {
-                const canvas = await html2canvas(tempWrap, { scale: 2, backgroundColor: '#ffffff' });
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const imgWidth = pageWidth - 20;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-                doc.save(`لاعبين_${CATEGORY}.pdf`);
-            } catch (err) {
-                console.error(err);
-                alert('حدث خطأ أثناء تجهيز ملف PDF، حاول مرة أخرى.');
-            } finally {
-                document.body.removeChild(tempWrap);
-                exportBtn.disabled = false;
-                exportBtn.innerHTML = originalText;
-            }
-        });
+        // ===== EXPORT (محجوب عن الواجهة لكن الشيفرة جاهزة) =====
+        // تم إخفاء أزرار التصدير مع الجدول
 
         // ============================================================
         // SESSIONS (Timeline)
@@ -1114,19 +988,8 @@
         }
 
         // ============================================================
-        // BANNER + QUICK STATS
+        // BANNER
         // ============================================================
-        function renderQuickStats(playersCount, sessionsCount, matchesCount, tournamentsCount, coach) {
-            const grid = document.getElementById('quickStatsGrid');
-            grid.innerHTML = `
-                <div class="qs-card"><i class="fas fa-users"></i><div class="n">${playersCount}</div><div class="l">لاعب مسجل</div></div>
-                <div class="qs-card"><i class="fas fa-calendar-check"></i><div class="n">${sessionsCount}</div><div class="l">حصة قادمة</div></div>
-                <div class="qs-card"><i class="fas fa-futbol"></i><div class="n">${matchesCount}</div><div class="l">مباراة</div></div>
-                <div class="qs-card"><i class="fas fa-trophy"></i><div class="n">${tournamentsCount}</div><div class="l">بطولة</div></div>
-                <div class="qs-card"><i class="fas fa-user-tie"></i><div class="n" style="font-size:1.1rem;">${coach || '-'}</div><div class="l">المدرب المسؤول</div></div>
-            `;
-        }
-
         function renderBanner(playersCount, sessionsCount, matchesCount) {
             document.getElementById('catTag').textContent = 'فئة عمرية';
             document.getElementById('catTitle').textContent = CATEGORY;
@@ -1169,14 +1032,8 @@
 
             const coachName = (await fetchNodeRaw('categoryCoaches', {}))[CATEGORY];
             renderBanner(allPlayers.length, catSessions.filter(s => s.status !== 'finished').length, catMatches.length);
-            renderQuickStats(
-                allPlayers.length,
-                catSessions.filter(s => s.status === 'scheduled' || s.status === 'ongoing').length,
-                catMatches.length,
-                catTournaments.length,
-                coachName
-            );
-            applyFilters();
+            // applyFilters() و renderQuickStats() كانتا خاصتين بجدول اللاعبين المحجوب الآن عن الموقع العام
+
             renderSessions(catSessions);
             renderMatches(catMatches);
             renderTournaments(catTournaments);

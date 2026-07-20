@@ -16,7 +16,7 @@
         --sidebar-w: 260px;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Cairo',sans-serif; direction:rti; background:#f4f6f5; color:var(--black); }
+    body { font-family:'Cairo',sans-serif; direction:rtl; background:#f4f6f5; color:var(--black); }
     a { text-decoration:none; color:inherit; }
     button { font-family:'Cairo'; cursor:pointer; }
 
@@ -298,6 +298,7 @@
                 <div class="group-label">محتوى الموقع</div>
                 <button class="nav-btn" data-panel="articles"><i class="fas fa-newspaper"></i> المقالات</button>
                 <button class="nav-btn" data-panel="documents"><i class="fas fa-file-pdf"></i> المستندات</button>
+                <button class="nav-btn" data-panel="testimonials"><i class="fas fa-comment-dots"></i> آراء المتابعين</button>
                 <button class="nav-btn" data-panel="news"><i class="fas fa-bullhorn"></i> شريط الأخبار</button>
                 <button class="nav-btn" data-panel="gallery"><i class="fas fa-images"></i> معرض الصور</button>
                 <button class="nav-btn" data-panel="staff"><i class="fas fa-user-tie"></i> الطاقم الفني</button>
@@ -386,6 +387,9 @@
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="documents"><i class="fas fa-plus"></i> إضافة مستند</button></div>
                 <div class="data-table-wrap"><table class="data-table" id="table-documents"></table></div>
             </section>
+            <section class="panel" id="panel-testimonials">
+                <div class="data-table-wrap"><table class="data-table" id="table-testimonials"></table></div>
+            </section>
             <section class="panel" id="panel-news">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="news"><i class="fas fa-plus"></i> خبر جديد</button></div>
                 <div class="data-table-wrap"><table class="data-table" id="table-news"></table></div>
@@ -437,8 +441,7 @@
         }
 
         // ============================================================
-        // AUTH GUARD — التأكد إن المدير مسجل دخول فعلاً
-        // ============================================================
+        // AUTH GUARD — التأكد إن المدير مسجل دخول فعلاً        // ============================================================
         if (sessionStorage.getItem('adminAuthed') !== 'true') {
             window.location.href = 'login.html';
         }
@@ -596,6 +599,14 @@
                     { key:'fileData', label:'ملف PDF', type:'pdf', required:true }
                 ]
             },
+            testimonials: {
+                node: 'testimonials', title: 'آراء المتابعين',
+                fields: [
+                    { key:'name', label:'الاسم', type:'text' },
+                    { key:'role', label:'الصفة', type:'text' },
+                    { key:'opinion', label:'الرأي', type:'textarea' }
+                ]
+            },
             news: {
                 node: 'news', title: 'شريط الأخبار',
                 fields: [ { key:'text', label:'نص الخبر', type:'textarea', required:true } ]
@@ -700,7 +711,7 @@
             overview:'نظرة عامة', requests:'طلبات التسجيل', categories:'إدارة الفئات',
             players:'اللاعبون', featuredPlayers:'أبرز اللاعبين', sessions:'الحصص التدريبية', matches:'المباريات',
             tournaments:'البطولات', messages:'رسائل الأكاديمية', news:'شريط الأخبار',
-            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية', articles:'المقالات', documents:'المستندات',
+            gallery:'معرض الصور', staff:'الطاقم الفني', kits:'أطقم الأكاديمية', articles:'المقالات', documents:'المستندات', testimonials:'آراء المتابعين',
             payments:'سجل المدفوعات', siteSettings:'الإعدادات العامة'
         };
         const MONTHS = ['01','02','03','04','05','06','07','08','09','10','11','12'];

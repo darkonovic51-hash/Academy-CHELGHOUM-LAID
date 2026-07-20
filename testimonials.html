@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>آراء أولياء اللاعبين | ETOILE CHELGHOUM LAID ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+<style>
+    :root {
+        --primary-dark:#0E4832; --primary-mid:#136F46; --red-accent:#C8102E;
+        --gold:#D4AF37; --gold-light:#F3DFA0; --white:#F2F2F2; --black:#1A1A1A;
+        --shadow-soft: 0 8px 32px rgba(0,0,0,0.08);
+        --shadow-medium: 0 12px 40px rgba(0,0,0,0.15);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Cairo',sans-serif; direction:rtl; background:#f4f6f5; color:var(--black); line-height:1.7; }
+    a { text-decoration:none; color:inherit; }
+    .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+    .navbar { background:var(--primary-dark); padding:16px 0; }
+    .navbar .container { display:flex; justify-content:space-between; align-items:center; }
+    .navbar .logo { display:flex; align-items:center; gap:10px; color:var(--white); font-family:'Bebas Neue'; letter-spacing:2px; }
+    .navbar .logo img { width:38px; height:38px; border-radius:50%; background:var(--white); padding:2px; }
+    .navbar .back { color:rgba(255,255,255,0.85); font-weight:600; font-size:0.9rem; }
+    .navbar .back:hover { color:var(--gold); }
+
+    .t-hero {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-mid));
+        padding: 60px 0; text-align:center; color:var(--white); position:relative; overflow:hidden;
+    }
+    .t-hero::before { content:'★'; position:absolute; font-size:18rem; color:rgba(255,255,255,0.04); top:-50px; right:-40px; font-family:'Bebas Neue'; }
+    .t-hero img { width:70px; height:70px; border-radius:50%; background:var(--white); padding:4px; border:2px solid var(--gold); margin-bottom:16px; position:relative; z-index:2; }
+    .t-hero h1 { font-family:'Bebas Neue'; font-size:2.6rem; letter-spacing:2px; position:relative; z-index:2; }
+    .t-hero p { color:rgba(255,255,255,0.75); margin-top:8px; position:relative; z-index:2; }
+
+    .t-section { padding:60px 0; }
+    .t-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:26px; margin-bottom:20px; }
+    .t-card {
+        background:var(--white); border-radius:22px; padding:26px; box-shadow:var(--shadow-soft);
+        border-top:4px solid var(--gold); position:relative; transition:0.3s;
+    }
+    .t-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-medium); }
+    .t-card .t-quote-icon { color:rgba(212,175,55,0.25); font-size:1.8rem; margin-bottom:10px; }
+    .t-card .t-opinion { font-size:0.95rem; color:#444; line-height:1.8; margin-bottom:16px; }
+    .t-card .t-footer { display:flex; align-items:center; gap:12px; border-top:1px solid #f0f0f0; padding-top:14px; }
+    .t-card .t-avatar {
+        width:42px; height:42px; border-radius:50%; background:var(--primary-dark); color:var(--gold);
+        display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue'; font-size:1.2rem; flex-shrink:0;
+    }
+    .t-card .t-name { font-weight:700; color:var(--primary-dark); font-size:0.95rem; }
+    .t-card .t-role { color:var(--red-accent); font-size:0.78rem; font-weight:700; }
+
+    .t-empty { text-align:center; padding:40px; color:#999; background:var(--white); border-radius:20px; }
+
+    .t-form-wrap {
+        background:var(--white); border-radius:28px; padding:36px; box-shadow:var(--shadow-medium);
+        max-width:600px; margin:0 auto; border:2px solid var(--gold);
+    }
+    .t-form-wrap h2 { font-family:'Bebas Neue'; font-size:1.7rem; color:var(--primary-dark); text-align:center; margin-bottom:22px; letter-spacing:1px; }
+    .t-form-wrap label { font-size:0.88rem; font-weight:700; color:#555; display:block; margin-bottom:5px; }
+    .t-form-wrap input, .t-form-wrap select, .t-form-wrap textarea {
+        width:100%; padding:12px 16px; border-radius:14px; border:1px solid #ddd; font-family:'Cairo'; font-size:0.95rem; margin-bottom:16px;
+    }
+    .t-form-wrap textarea { min-height:110px; resize:vertical; }
+    .t-form-wrap button {
+        width:100%; padding:14px; border:none; border-radius:16px; background:var(--red-accent); color:var(--white);
+        font-weight:700; font-size:1rem; cursor:pointer; transition:0.3s;
+    }
+    .t-form-wrap button:hover { background:#a00d24; }
+    .t-form-wrap button:disabled { opacity:0.6; cursor:not-allowed; }
+    .t-status { text-align:center; font-weight:700; font-size:0.9rem; margin-top:12px; min-height:20px; }
+    .t-status.success { color:#1D8348; }
+    .t-status.error { color:var(--red-accent); }
+</style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" onerror="this.style.display='none'" />
+                <span>ETOILE CHELGHOUM LAID</span>
+            </a>
+            <a href="index.html" class="back"><i class="fas fa-arrow-right"></i> الصفحة الرئيسية</a>
+        </div>
+    </nav>
+
+    <section class="t-hero">
+        <img src="https://github.com/darkonovic51-hash/Academy-CHELGHOUM-LAID/blob/375f8eeeb142420ea9e8d4682208f3a33825ef7b/1783696246097.jpg?raw=true" onerror="this.style.display='none'" />
+        <h1>آراء أولياء اللاعبين</h1>
+        <p>ماذا يقول أولياء أمور لاعبينا ومتابعو الأكاديمية عنا</p>
+    </section>
+
+    <div class="container">
+        <section class="t-section">
+            <div class="t-grid" id="testimonialsGrid"></div>
+        </section>
+
+        <section class="t-section" style="padding-top:0;">
+            <div class="t-form-wrap">
+                <h2>شاركنا رأيك</h2>
+                <form id="testimonialForm">
+                    <div><label>الاسم الكامل</label><input type="text" name="name" placeholder="اسمك" required /></div>
+                    <div>
+                        <label>صفتك</label>
+                        <select name="role">
+                            <option>ولي أمر لاعب</option>
+                            <option>لاعب سابق</option>
+                            <option>لاعب حالي</option>
+                            <option>متابع للأكاديمية</option>
+                            <option>أخرى</option>
+                        </select>
+                    </div>
+                    <div><label>رأيك في الأكاديمية</label><textarea name="opinion" placeholder="اكتب رأيك هنا..." required></textarea></div>
+                    <button type="submit" id="submitTestimonialBtn">إرسال الرأي</button>
+                    <div class="t-status" id="testimonialStatus"></div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        const MAX_DISPLAY = 15;
+
+        async function fetchNodeWithIds(node, fallback) {
+            try {
+                const res = await fetch(`${DB_URL}${node}.json`);
+                const data = await res.json();
+                if (!data) return fallback;
+                return Object.entries(data).map(([id, val]) => ({ ...val, id }));
+            } catch { return fallback; }
+        }
+
+        function renderTestimonials(list) {
+            const grid = document.getElementById('testimonialsGrid');
+            if (!list.length) {
+                grid.innerHTML = '<div class="t-empty">كن أول من يشارك رأيه عن الأكاديمية!</div>';
+                return;
+            }
+            const sorted = [...list].sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0)).slice(0, MAX_DISPLAY);
+            grid.innerHTML = sorted.map(t => `
+                <div class="t-card">
+                    <div class="t-quote-icon"><i class="fas fa-quote-right"></i></div>
+                    <p class="t-opinion">${t.opinion || ''}</p>
+                    <div class="t-footer">
+                        <div class="t-avatar">${(t.name || '؟').charAt(0)}</div>
+                        <div>
+                            <div class="t-name">${t.name || ''}</div>
+                            <div class="t-role">${t.role || ''}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        (async function init() {
+            const list = await fetchNodeWithIds('testimonials', []);
+            renderTestimonials(list);
+        })();
+
+        document.getElementById('testimonialForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitTestimonialBtn');
+            const status = document.getElementById('testimonialStatus');
+            const fd = new FormData(this);
+            const payload = { name: fd.get('name'), role: fd.get('role'), opinion: fd.get('opinion'), submittedAt: new Date().toISOString() };
+
+            btn.disabled = true; btn.textContent = 'جارِ الإرسال...';
+            status.className = 't-status'; status.textContent = '';
+
+            try {
+                const res = await fetch(`${DB_URL}testimonials.json`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('failed');
+                status.classList.add('success');
+                status.textContent = '✅ شكرًا لمشاركة رأيك!';
+                this.reset();
+                const list = await fetchNodeWithIds('testimonials', []);
+                renderTestimonials(list);
+            } catch (err) {
+                status.classList.add('error');
+                status.textContent = '⚠️ تعذّر إرسال رأيك، حاول مرة أخرى.';
+            } finally {
+                btn.disabled = false; btn.textContent = 'إرسال الرأي';
+            }
+        });
+    </script>
+</body>
+</html>

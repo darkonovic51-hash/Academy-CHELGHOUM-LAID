@@ -109,12 +109,6 @@
         }
         .cat-banner h1 { font-size: clamp(3rem, 10vw, 6rem); text-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .cat-banner .sub { font-size: 1.2rem; font-weight: 300; color: rgba(255,255,255,0.85); margin-top: 8px; }
-        .cat-banner .stats-row { display: flex; gap: 30px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
-        .cat-banner .stat-pill {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-            padding: 10px 22px; border-radius: 40px; font-size: 0.9rem;
-        }
-        .cat-banner .stat-pill b { color: var(--gold); font-family: 'Bebas Neue'; font-size: 1.1rem; margin-left: 6px; }
 
         /* ===== PLAYERS TABLE ===== */
         .table-toolbar {
@@ -460,11 +454,6 @@
             <span class="cat-tag" id="catTag">فئة</span>
             <h1 id="catTitle">U--</h1>
             <p class="sub" id="catSubLabel">فئة عمرية</p>
-            <div class="stats-row">
-                <div class="stat-pill"><b id="statPlayers">0</b> لاعب</div>
-                <div class="stat-pill"><b id="statSessions">0</b> حصة قادمة</div>
-                <div class="stat-pill"><b id="statMatches">0</b> مباراة</div>
-            </div>
         </div>
     </section>
 
@@ -990,13 +979,10 @@
         // ============================================================
         // BANNER
         // ============================================================
-        function renderBanner(playersCount, sessionsCount, matchesCount) {
+        function renderBanner() {
             document.getElementById('catTag').textContent = 'فئة عمرية';
             document.getElementById('catTitle').textContent = CATEGORY;
             document.getElementById('catSubLabel').textContent = ageLabels[CATEGORY] || 'فئة';
-            document.getElementById('statPlayers').textContent = playersCount;
-            document.getElementById('statSessions').textContent = sessionsCount;
-            document.getElementById('statMatches').textContent = matchesCount;
             document.title = `فئة ${CATEGORY} | ETOILE CHELGHOUM LAID ACADEMY`;
         }
 
@@ -1030,9 +1016,8 @@
             const catTournaments = byCategory(tournaments);
             const catMessages = byCategory(messages);
 
-            const coachName = (await fetchNodeRaw('categoryCoaches', {}))[CATEGORY];
-            renderBanner(allPlayers.length, catSessions.filter(s => s.status !== 'finished').length, catMatches.length);
-            // applyFilters() و renderQuickStats() كانتا خاصتين بجدول اللاعبين المحجوب الآن عن الموقع العام
+            renderBanner();
+            // allPlayers ما زالت تُستخدم داخليًا لأقسام أخرى (الأرشيف، الرسائل...)، والإحصائيات هنا محجوبة عن الموقع العام
 
             renderSessions(catSessions);
             renderMatches(catMatches);

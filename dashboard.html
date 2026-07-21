@@ -110,6 +110,36 @@
     }
     .doc-mini-btn:hover { background:var(--primary-mid); color:var(--white); }
 
+    /* ===== PLAYERS CATEGORY FOLDERS ===== */
+    .cat-folders-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
+    .cat-folder-card {
+        background: linear-gradient(160deg, var(--primary-dark), #08281c); border-radius:22px; padding:24px;
+        color:var(--white); cursor:pointer; transition:0.3s; position:relative; overflow:hidden;
+        border:2px solid transparent;
+    }
+    .cat-folder-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-medium); border-color:var(--gold); }
+    .cat-folder-card::before {
+        content:'\f07b'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute;
+        font-size:6rem; color:rgba(255,255,255,0.05); left:-10px; bottom:-20px;
+    }
+    .cat-folder-card .cf-title { font-family:'Bebas Neue'; font-size:2rem; letter-spacing:2px; position:relative; z-index:2; }
+    .cat-folder-card .cf-sub { color:var(--gold); font-size:0.82rem; margin-bottom:16px; position:relative; z-index:2; }
+    .cat-folder-card .cf-count {
+        display:flex; align-items:center; gap:10px; font-size:1.1rem; font-weight:700; position:relative; z-index:2;
+    }
+    .cat-folder-card .cf-count i { color:var(--gold); }
+    .cat-folder-card .cf-open {
+        margin-top:16px; display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--gold);
+        font-weight:700; position:relative; z-index:2;
+    }
+    .table-toolbar { margin-bottom:14px; }
+    .toolbar-left { display:flex; gap:10px; flex-wrap:wrap; }
+    .toolbar-left input, .toolbar-left select {
+        padding:8px 14px; border-radius:12px; border:1px solid #ddd; font-family:'Cairo'; font-size:0.85rem;
+        background:var(--white); min-width:120px;
+    }
+    .toolbar-left input { min-width:180px; }
+
     /* ===== ATTENDANCE ===== */
     .row-actions .att-open-btn { background:#FFF3D6; color:#B8860B; }
     .row-actions .att-open-btn:hover { background:#B8860B; color:var(--white); }
@@ -353,8 +383,42 @@
 
             <!-- Generic CRUD panels (تُبنى تلقائيًا بالجافاسكريبت) -->
             <section class="panel" id="panel-players">
-                <div class="panel-toolbar"><div></div><button class="add-btn" data-add="players"><i class="fas fa-plus"></i> إضافة لاعب</button></div>
-                <div id="playersByCategory"></div>
+                <!-- شاشة 1: بطاقات الفئات -->
+                <div id="playersCategoryFolders"></div>
+
+                <!-- شاشة 2: جدول لاعبي الفئة المختارة (مخفية افتراضيًا) -->
+                <div id="playersCategoryDetail" style="display:none;">
+                    <div class="panel-toolbar">
+                        <button class="view-site" id="backToCategoryFolders" style="background:var(--black);"><i class="fas fa-arrow-right"></i> كل الفئات</button>
+                        <button class="add-btn" id="addPlayerInCategoryBtn"><i class="fas fa-plus"></i> إضافة لاعب</button>
+                    </div>
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <input type="text" id="dashPlayerSearch" placeholder="🔍 بحث بالاسم..." />
+                            <select id="dashPlayerPosition">
+                                <option value="">كل المراكز</option>
+                                <option value="حارس مرمى">حارس مرمى</option>
+                                <option value="مدافع">مدافع</option>
+                                <option value="وسط">وسط</option>
+                                <option value="مهاجم">مهاجم</option>
+                            </select>
+                            <select id="dashPlayerStatus">
+                                <option value="">كل الحالات</option>
+                                <option value="active">نشيط</option>
+                                <option value="injured">مصاب</option>
+                                <option value="suspended">موقوف</option>
+                            </select>
+                            <select id="dashPlayerBlood">
+                                <option value="">كل زمر الدم</option>
+                                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                                <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="data-table-wrap">
+                        <table class="data-table" id="table-players-detail"></table>
+                    </div>
+                </div>
             </section>
             <section class="panel" id="panel-featuredPlayers">
                 <div class="panel-toolbar"><div></div><button class="add-btn" data-add="featuredPlayers"><i class="fas fa-plus"></i> إضافة لاعب مميز</button></div>
@@ -441,7 +505,8 @@
         }
 
         // ============================================================
-        // AUTH GUARD — التأكد إن المدير مسجل دخول فعلاً        // ============================================================
+        // AUTH GUARD — التأكد إن المدير مسجل دخول فعلاً
+        // ============================================================
         if (sessionStorage.getItem('adminAuthed') !== 'true') {
             window.location.href = 'login.html';
         }
@@ -458,12 +523,14 @@
         // الفئات دلوقتي مخزّنة في Firebase تحت عقدة categoriesList، وتُحمَّل مرة واحدة عند فتح الداشبورد
         let CATEGORIES = [];
         let catOptions = [];
+        let ageLabelsGlobal = {};
         async function loadCategoriesIntoMemory() {
             const raw = await dbGet('categoriesList');
             const list = Object.entries(raw).map(([id, c]) => ({ id, ...c }));
             list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
             CATEGORIES = list.map(c => c.id);
             catOptions = list.map(c => ({ value: c.id, label: c.id }));
+            ageLabelsGlobal = Object.fromEntries(list.map(c => [c.id, c.ageLabel || 'فئة']));
             cache.categoriesList = raw;
         }
 
@@ -761,27 +828,33 @@
             const config = RESOURCES[key];
             const raw = await dbGet(config.node);
             cache[key] = raw;
-            if (key === 'players') { renderPlayersGrouped(); return; }
+            if (key === 'players') { showPlayersFolders(); return; }
             renderResourceTable(key);
         }
 
         // ============================================================
-        // PLAYERS — جداول منفصلة لكل فئة، مع أزرار تحميل مستندات بدل روابط طويلة
+        // PLAYERS — بطاقات ملفات لكل فئة، ثم جدول تفصيلي عند الدخول لفئة
         // ============================================================
-        function docButtonsHTML(id, p) {
+        const statusLabelsPlayers = { active:'نشيط', injured:'مصاب', suspended:'موقوف' };
+        let currentPlayersCategory = null;
+
+        function docButtonsHTML(p) {
             const btns = [];
-            if (p.parentalConsent) btns.push(`<button class="doc-mini-btn" data-doc="${encodeURIComponent(p.parentalConsent)}" data-name="التصريح_الأبوي"><i class="fas fa-file-pdf"></i> التصريح الأبوي</button>`);
-            if (p.medicalCert) btns.push(`<button class="doc-mini-btn" data-doc="${encodeURIComponent(p.medicalCert)}" data-name="الشهادة_الطبية"><i class="fas fa-file-pdf"></i> الشهادة الطبية</button>`);
+            if (p.parentalConsent) btns.push(`<button class="doc-mini-btn" data-doc="${encodeURIComponent(p.parentalConsent)}" data-name="التصريح_الأبوي"><i class="fas fa-file-pdf"></i> التصريح</button>`);
+            if (p.medicalCert) btns.push(`<button class="doc-mini-btn" data-doc="${encodeURIComponent(p.medicalCert)}" data-name="الشهادة_الطبية"><i class="fas fa-file-pdf"></i> الشهادة</button>`);
             return btns.length ? btns.join('') : '<span style="color:#bbb;font-size:0.8rem;">لا يوجد</span>';
         }
 
-        function renderPlayersGrouped() {
-            const wrap = document.getElementById('playersByCategory');
+        function showPlayersFolders() {
+            document.getElementById('playersCategoryDetail').style.display = 'none';
+            document.getElementById('playersCategoryFolders').style.display = 'block';
+            currentPlayersCategory = null;
+            renderPlayersFolders();
+        }
+
+        function renderPlayersFolders() {
+            const wrap = document.getElementById('playersCategoryFolders');
             const entries = Object.entries(cache.players || {});
-            if (entries.length === 0) {
-                wrap.innerHTML = '<div class="empty-state" style="background:var(--white);border-radius:16px;padding:30px;text-align:center;color:#999;">لا يوجد لاعبون مسجلون بعد.</div>';
-                return;
-            }
             const byCategory = {};
             entries.forEach(([id, p]) => {
                 const cat = p.category || 'غير محدد';
@@ -790,65 +863,113 @@
             });
             const orderedCats = CATEGORIES.filter(c => byCategory[c]).concat(Object.keys(byCategory).filter(c => !CATEGORIES.includes(c)));
 
-            wrap.innerHTML = orderedCats.map(cat => `
-                <div class="category-players-block">
-                    <div class="category-players-header">
-                        <h3>${cat}</h3>
-                        <span class="cnt">${byCategory[cat].length} لاعب</span>
-                    </div>
-                    <div class="data-table-wrap">
-                        <table class="data-table">
-                            <thead><tr><th>الاسم</th><th>الرقم</th><th>المركز</th><th>سنة الميلاد</th><th>الحالة</th><th>زمرة الدم</th><th>المستندات</th><th>إجراءات</th></tr></thead>
-                            <tbody>
-                                ${byCategory[cat].map(([id, p]) => `
-                                    <tr>
-                                        <td>${p.name || '-'}</td>
-                                        <td>${p.number ?? '-'}</td>
-                                        <td>${p.position || '-'}</td>
-                                        <td>${p.birthYear || '-'}</td>
-                                        <td>${statusLabelsPlayers[p.status] || 'نشيط'}</td>
-                                        <td>${p.bloodType || '-'}</td>
-                                        <td>${docButtonsHTML(id, p)}</td>
-                                        <td class="row-actions">
-                                            <button class="pay-open-btn" data-player-record="${id}" title="سجل اللاعب"><i class="fas fa-id-card"></i></button>
-                                            <button class="edit-btn" data-key="players" data-id="${id}"><i class="fas fa-pen"></i></button>
-                                            <button class="del-btn" data-key="players" data-id="${id}"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `).join('');
+            if (orderedCats.length === 0) {
+                wrap.innerHTML = '<div class="empty-state" style="background:var(--white);border-radius:16px;padding:30px;text-align:center;color:#999;">لا يوجد لاعبون مسجلون بعد في أي فئة.</div>';
+                return;
+            }
 
-            wrap.querySelectorAll('.doc-mini-btn').forEach(btn => {
+            wrap.innerHTML = `<div class="cat-folders-grid">${orderedCats.map(cat => {
+                const list = byCategory[cat];
+                const activeCount = list.filter(([, p]) => (p.status || 'active') === 'active').length;
+                return `
+                    <div class="cat-folder-card" data-open-cat="${cat}">
+                        <div class="cf-title">${cat}</div>
+                        <div class="cf-sub">${ageLabelsGlobal[cat] || 'فئة'}</div>
+                        <div class="cf-count"><i class="fas fa-users"></i> ${list.length} لاعب مسجل</div>
+                        <div class="cf-count" style="font-size:0.9rem; margin-top:4px;"><i class="fas fa-circle-check" style="color:#7CD9A8;"></i> ${activeCount} نشيط</div>
+                        <div class="cf-open">فتح ملف الفئة <i class="fas fa-arrow-left"></i></div>
+                    </div>
+                `;
+            }).join('')}</div>`;
+
+            wrap.querySelectorAll('[data-open-cat]').forEach(card => {
+                card.addEventListener('click', () => openPlayersCategoryDetail(card.dataset.openCat));
+            });
+        }
+
+        function openPlayersCategoryDetail(cat) {
+            currentPlayersCategory = cat;
+            document.getElementById('playersCategoryFolders').style.display = 'none';
+            document.getElementById('playersCategoryDetail').style.display = 'block';
+            document.getElementById('dashPlayerSearch').value = '';
+            document.getElementById('dashPlayerPosition').value = '';
+            document.getElementById('dashPlayerStatus').value = '';
+            document.getElementById('dashPlayerBlood').value = '';
+            renderPlayersDetailTable();
+        }
+
+        function renderPlayersDetailTable() {
+            const table = document.getElementById('table-players-detail');
+            const search = document.getElementById('dashPlayerSearch').value.trim().toLowerCase();
+            const posFilter = document.getElementById('dashPlayerPosition').value;
+            const statusFilter = document.getElementById('dashPlayerStatus').value;
+            const bloodFilter = document.getElementById('dashPlayerBlood').value;
+
+            const entries = Object.entries(cache.players || {}).filter(([, p]) => p.category === currentPlayersCategory);
+            const filtered = entries.filter(([, p]) => {
+                const matchSearch = !search || (p.name || '').toLowerCase().includes(search);
+                const matchPos = !posFilter || p.position === posFilter;
+                const matchStatus = !statusFilter || (p.status || 'active') === statusFilter;
+                const matchBlood = !bloodFilter || p.bloodType === bloodFilter;
+                return matchSearch && matchPos && matchStatus && matchBlood;
+            });
+
+            const head = `<thead><tr><th>الاسم</th><th>الرقم</th><th>المركز</th><th>سنة الميلاد</th><th>الحالة</th><th>زمرة الدم</th><th>ولي الأمر</th><th>المستندات</th><th>إجراءات</th></tr></thead>`;
+            if (filtered.length === 0) {
+                table.innerHTML = head + `<tbody><tr class="empty-row"><td colspan="9">لا يوجد لاعبون مطابقون لهذا البحث.</td></tr></tbody>`;
+                return;
+            }
+            table.innerHTML = head + `<tbody>${filtered.map(([id, p]) => `
+                <tr>
+                    <td>${p.name || '-'}</td>
+                    <td>${p.number ?? '-'}</td>
+                    <td>${p.position || '-'}</td>
+                    <td>${p.birthYear || '-'}</td>
+                    <td>${statusLabelsPlayers[p.status] || 'نشيط'}</td>
+                    <td>${p.bloodType || '-'}</td>
+                    <td>${p.guardianName || '-'}</td>
+                    <td>${docButtonsHTML(p)}</td>
+                    <td class="row-actions">
+                        <button class="pay-open-btn" data-player-record="${id}" title="سجل اللاعب"><i class="fas fa-id-card"></i></button>
+                        <button class="edit-btn" data-key="players" data-id="${id}"><i class="fas fa-pen"></i></button>
+                        <button class="del-btn" data-key="players" data-id="${id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('')}</tbody>`;
+
+            table.querySelectorAll('.doc-mini-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const dataUrl = decodeURIComponent(btn.dataset.doc);
                     const ext = dataUrl.includes('application/pdf') ? 'pdf' : 'jpg';
                     const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = `${btn.dataset.name}.${ext}`;
-                    a.click();
+                    a.href = dataUrl; a.download = `${btn.dataset.name}.${ext}`; a.click();
                 });
             });
-            wrap.querySelectorAll('.edit-btn').forEach(btn => {
+            table.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', () => openResourceModal(btn.dataset.key, btn.dataset.id));
             });
-            wrap.querySelectorAll('.del-btn').forEach(btn => {
+            table.querySelectorAll('.del-btn').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     if (!confirm('تأكيد حذف هذا اللاعب؟')) return;
                     await dbDelete('players', btn.dataset.id);
                     delete cache.players[btn.dataset.id];
-                    renderPlayersGrouped();
+                    renderPlayersDetailTable();
                     showToast('تم الحذف بنجاح');
                 });
             });
-            wrap.querySelectorAll('[data-player-record]').forEach(btn => {
+            table.querySelectorAll('[data-player-record]').forEach(btn => {
                 btn.addEventListener('click', () => openPlayerRecordModal(btn.dataset.playerRecord));
             });
         }
-        const statusLabelsPlayers = { active:'نشيط', injured:'مصاب', suspended:'موقوف' };
+
+        document.getElementById('backToCategoryFolders').addEventListener('click', showPlayersFolders);
+        document.getElementById('dashPlayerSearch').addEventListener('input', renderPlayersDetailTable);
+        document.getElementById('dashPlayerPosition').addEventListener('change', renderPlayersDetailTable);
+        document.getElementById('dashPlayerStatus').addEventListener('change', renderPlayersDetailTable);
+        document.getElementById('dashPlayerBlood').addEventListener('change', renderPlayersDetailTable);
+        document.getElementById('addPlayerInCategoryBtn').addEventListener('click', () => {
+            openResourceModal('players', null, { category: currentPlayersCategory });
+        });
 
         function renderResourceTable(key) {
             const config = RESOURCES[key];
@@ -908,7 +1029,7 @@
                     if (!confirm('تأكيد حذف هذا العنصر؟')) return;
                     await dbDelete(RESOURCES[btn.dataset.key].node, btn.dataset.id);
                     delete cache[btn.dataset.key][btn.dataset.id];
-                    if (btn.dataset.key === 'players') { renderPlayersGrouped(); } else { renderResourceTable(btn.dataset.key); }
+                    if (btn.dataset.key === 'players') { renderPlayersDetailTable(); } else { renderResourceTable(btn.dataset.key); }
                     showToast('تم الحذف بنجاح');
                 });
             });
@@ -995,9 +1116,9 @@
             return `<input type="${field.type}" data-field="${field.key}" value="${val}" ${field.required ? 'required' : ''} />`;
         }
 
-        function openResourceModal(key, id) {
+        function openResourceModal(key, id, defaults) {
             const config = RESOURCES[key];
-            const item = id ? cache[key][id] : {};
+            const item = id ? cache[key][id] : (defaults || {});
             document.getElementById('modalTitle').textContent = id ? `تعديل - ${config.title}` : `إضافة - ${config.title}`;
             document.getElementById('modalBody').innerHTML = config.fields.map(f => `
                 <div><label>${f.label}</label>${fieldToHTML(f, item[f.key])}</div>
@@ -1143,7 +1264,11 @@
                     const res = await dbPost(config.node, payload);
                     cache[key][res.name] = payload;
                 }
-                if (key === 'players') { renderPlayersGrouped(); } else { renderResourceTable(key); }
+                if (key === 'players') {
+                    if (currentPlayersCategory) { renderPlayersDetailTable(); } else { renderPlayersFolders(); }
+                } else {
+                    renderResourceTable(key);
+                }
                 closeModal();
                 showToast('تم الحفظ بنجاح');
             };

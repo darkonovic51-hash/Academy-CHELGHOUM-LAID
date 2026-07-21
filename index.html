@@ -859,6 +859,32 @@
         .form-status.success { color: #7CD9A8; }
         .form-status.error { color: #FF8A8A; }
 
+        /* ===== TESTIMONIALS ===== */
+        .testimonials-section {
+            padding: 80px 0; background: linear-gradient(135deg, var(--primary-dark) 0%, #08281c 100%);
+            position: relative; overflow: hidden;
+        }
+        .testimonials-section::before { content:'"'; position:absolute; font-family:'Bebas Neue'; font-size:26rem; color:rgba(255,255,255,0.03); top:-100px; left:-40px; }
+        .testimonials-section .section-title { color: var(--white); }
+        .testimonials-section .section-title::after { background: var(--gold); }
+        .testimonials-sub { text-align:center; color:rgba(255,255,255,0.6); margin-bottom:36px; font-size:1rem; position:relative; z-index:2; }
+        .testimonials-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:26px; position:relative; z-index:2; }
+        .testimonial-home-card {
+            background:rgba(255,255,255,0.06); backdrop-filter:blur(8px); border-radius:22px; padding:26px;
+            border:1px solid rgba(255,255,255,0.1); border-top:3px solid var(--gold); transition:0.3s;
+        }
+        .testimonial-home-card:hover { transform:translateY(-8px); background:rgba(255,255,255,0.1); }
+        .testimonial-home-card .th-quote { color:rgba(212,175,55,0.4); font-size:1.6rem; margin-bottom:10px; }
+        .testimonial-home-card p { color:rgba(255,255,255,0.85); font-size:0.95rem; line-height:1.8; margin-bottom:16px; }
+        .testimonial-home-card .th-footer { display:flex; align-items:center; gap:12px; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px; }
+        .testimonial-home-card .th-avatar {
+            width:40px; height:40px; border-radius:50%; background:var(--gold); color:var(--black);
+            display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue'; font-size:1.1rem; flex-shrink:0;
+        }
+        .testimonial-home-card .th-name { color:var(--white); font-weight:700; font-size:0.92rem; }
+        .testimonial-home-card .th-role { color:var(--gold); font-size:0.75rem; font-weight:700; }
+        .testimonials-cta { text-align:center; margin-top:36px; position:relative; z-index:2; }
+
         /* ===== DOCUMENTS ===== */
         .documents-section { padding: 70px 0; background: #f8f8f8; }
         .documents-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
@@ -981,6 +1007,7 @@
             .reg-header { flex-direction: column; text-align: center; gap: 12px; }
             .reg-header img { width: 60px; height: 60px; }
             .reg-header h3 { font-size: 1.2rem; }
+            .testimonials-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .age-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
             .age-item-premium { padding: 18px 16px; }
@@ -1195,6 +1222,20 @@
                     </div>
                     <div class="form-status full" id="regStatus"></div>
                 </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="testimonials-section" id="testimonials">
+        <div class="container">
+            <h2 class="section-title center reveal">آراء أولياء اللاعبين</h2>
+            <p class="testimonials-sub reveal">ماذا يقول أولياء الأمور والمتابعون عن أكاديميتنا</p>
+            <div class="testimonials-grid" id="testimonialsHomeGrid"></div>
+            <div class="testimonials-cta">
+                <a href="testimonials.html" class="btn-secondary" style="border-color:var(--primary-dark); color:var(--primary-dark);">
+                    عرض كل الآراء ومشاركة رأيك ←
+                </a>
             </div>
         </div>
     </section>
@@ -1490,6 +1531,25 @@
             `).join('');
         }
 
+        function renderTestimonialsHome(list) {
+            const grid = document.getElementById('testimonialsHomeGrid');
+            if (!list.length) { document.getElementById('testimonials').style.display = 'none'; return; }
+            const preview = [...list].sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0)).slice(0, 3);
+            grid.innerHTML = preview.map(t => `
+                <div class="testimonial-home-card">
+                    <div class="th-quote"><i class="fas fa-quote-right"></i></div>
+                    <p>${t.opinion || ''}</p>
+                    <div class="th-footer">
+                        <div class="th-avatar">${(t.name || '؟').charAt(0)}</div>
+                        <div>
+                            <div class="th-name">${t.name || ''}</div>
+                            <div class="th-role">${t.role || ''}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function renderDocuments(docs) {
             const grid = document.getElementById('documentsGrid');
             if (!docs.length) { document.getElementById('documents').style.display = 'none'; return; }
@@ -1779,6 +1839,10 @@
             ]);
 
             const documents = await fetchNodeWithIds('documents', []);
+            renderDocuments(documents);
+
+            const testimonials = await fetchNodeWithIds('testimonials', []);
+            renderTestimonialsHome(testimonials);
             
             applySiteSettings(settings);
             renderGallery(gallery);
@@ -1787,7 +1851,7 @@
             renderKits(kits);
             renderTicker(news);
             renderArticles(articles);
-            renderDocuments(documents);
+
             renderAgeGroups();
 
             initScrollReveal();

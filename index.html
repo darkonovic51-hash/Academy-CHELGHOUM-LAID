@@ -1553,25 +1553,54 @@
         function renderDocuments(docs) {
             const grid = document.getElementById('documentsGrid');
             if (!docs.length) { document.getElementById('documents').style.display = 'none'; return; }
-            grid.innerHTML = docs.map(d => `
+            grid.innerHTML = docs.map((d, i) => `
                 <div class="document-card">
                     <div class="doc-icon"><i class="fas fa-file-pdf"></i></div>
                     <h4>${d.title || 'مستند'}</h4>
                     <p>${d.description || ''}</p>
-                    <button class="doc-download-btn" data-file="${d.fileData ? encodeURIComponent(d.fileData) : ''}" data-name="${d.title || 'مستند'}">
-                        <i class="fas fa-download"></i> تحميل PDF
+                    <button class="doc-download-btn" data-doc-idx="${i}">
+                        <i class="fas fa-eye"></i> فتح / تحميل PDF
                     </button>
                 </div>
             `).join('');
             grid.querySelectorAll('.doc-download-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    if (!btn.dataset.file) return;
-                    const a = document.createElement('a');
-                    a.href = decodeURIComponent(btn.dataset.file);
-                    a.download = `${btn.dataset.name}.pdf`;
-                    a.click();
+                    const doc = docs[btn.dataset.docIdx];
+                    if (!doc || !doc.fileData) return;
+                    openPdfCompat(doc.fileData);
                 });
             });
+        }
+
+        // ============================================================
+        // فتح ملف PDF بطريقة متوافقة مع كل الأجهزة (خصوصًا آيفون/Safari)
+        // ============================================================
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // آيباد الحديث
+        }
+
+        function openPdfCompat(dataUrl) {
+            try {
+                const [meta, base64] = dataUrl.split(',');
+                const mime = meta.match(/:(.*?);/)[1] || 'application/pdf';
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                const blob = new Blob([bytes], { type: mime });
+                const blobUrl = URL.createObjectURL(blob);
+
+                if (isIOS()) {
+                    // على آيفون/آيباد: التنقل داخل نفس التبويب هو الأضمن لفتح مشغّل PDF المدمج
+                    window.location.href = blobUrl;
+                } else {
+                    window.open(blobUrl, '_blank');
+                }
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+            } catch (err) {
+                console.error(err);
+                window.location.href = dataUrl; // حل أخير: فتح الرابط الخام مباشرة
+            }
         }
 
         const CATEGORY_COLORS = ['#D4AF37', '#C8102E', '#7CD9A8', '#4FA8D8', '#E8A33D', '#B080D0', '#5DBE8A'];

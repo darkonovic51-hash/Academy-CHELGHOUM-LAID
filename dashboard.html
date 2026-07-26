@@ -1679,7 +1679,8 @@
             });
         }
 
-        // عند القبول: يتم إنشاء ملف اللاعب تلقائيًا في /players بنفس بيانات الطلب        async function acceptRequest(id) {
+        // عند القبول: يتم إنشاء ملف اللاعب تلقائيًا في /players بنفس بيانات الطلب
+        async function acceptRequest(id) {
             const r = cache.requests[id];
             const playerPayload = {
                 name: `${r.firstName || ''} ${r.lastName || ''}`.trim(),

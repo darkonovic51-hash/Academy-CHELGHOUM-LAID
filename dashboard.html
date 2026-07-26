@@ -207,11 +207,18 @@
     .req-actions .accept-btn { background:#1D8348; color:var(--white); }
     .req-actions .reject-btn { background:var(--red-accent); color:var(--white); }
     .req-actions .edit-req-btn { background:#2A5CAA; color:var(--white); }
-    .doc-download-btn {
-        background:#f0f0f0; color:#555; border:none; padding:7px 14px; border-radius:20px;
-        font-size:0.78rem; font-weight:700; cursor:pointer; transition:0.25s;
+    .req-docs-row { margin-top:12px; display:flex; gap:12px; flex-wrap:wrap; }
+    .req-doc-slot {
+        display:flex; align-items:center; gap:10px; background:#f7f7f7; border-radius:14px;
+        padding:8px 14px; flex:1; min-width:220px;
     }
-    .doc-download-btn:hover { background:var(--primary-mid); color:var(--white); }
+    .req-doc-label { font-size:0.82rem; font-weight:700; color:#555; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+    .doc-preview-btn {
+        margin-right:auto; background:var(--primary-mid); color:var(--white); border:none; padding:6px 14px;
+        border-radius:20px; font-size:0.78rem; font-weight:700; cursor:pointer; transition:0.25s;
+    }
+    .doc-preview-btn:hover { background:var(--primary-dark); }
+    .req-doc-missing { margin-right:auto; color:var(--red-accent); font-size:0.78rem; font-weight:700; }
 
     /* Categories panel */
     .cat-coach-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
@@ -762,6 +769,34 @@
             await fetch(`${DB_URL}${node}/${id}.json`, {
                 method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
             });
+        }
+
+        // ============================================================
+        // فتح ملف (PDF أو صورة) بطريقة متوافقة مع كل الأجهزة (خصوصًا آيفون/Safari)
+        // ============================================================
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+        function openPdfCompat(dataUrl) {
+            try {
+                const [meta, base64] = dataUrl.split(',');
+                const mime = meta.match(/:(.*?);/)[1] || 'application/pdf';
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                const blob = new Blob([bytes], { type: mime });
+                const blobUrl = URL.createObjectURL(blob);
+                if (isIOS()) {
+                    window.location.href = blobUrl;
+                } else {
+                    window.open(blobUrl, '_blank');
+                }
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+            } catch (err) {
+                console.error(err);
+                window.location.href = dataUrl;
+            }
         }
 
         function showToast(text) {
@@ -1589,9 +1624,19 @@
                             <span><i class="fas fa-calendar"></i> ${r.birthDate || '-'}</span>
                         </div>
                         ${r.editNote ? `<div style="margin-top:8px;font-size:0.82rem;color:#2A5CAA;"><i class="fas fa-comment"></i> ملاحظة: ${r.editNote}</div>` : ''}
-                        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-                            ${r.parentalConsent ? `<button class="doc-download-btn" data-file="${encodeURIComponent(r.parentalConsent)}" data-name="التصريح_الأبوي"><i class="fas fa-file-arrow-down"></i> التصريح الأبوي</button>` : ''}
-                            ${r.medicalCert ? `<button class="doc-download-btn" data-file="${encodeURIComponent(r.medicalCert)}" data-name="الشهادة_الطبية"><i class="fas fa-file-arrow-down"></i> الشهادة الطبية</button>` : ''}
+                        <div class="req-docs-row">
+                            <div class="req-doc-slot">
+                                <span class="req-doc-label"><i class="fas fa-file-shield"></i> التصريح الأبوي</span>
+                                ${r.parentalConsent
+                                    ? `<button class="doc-preview-btn" data-doc="${encodeURIComponent(r.parentalConsent)}"><i class="fas fa-eye"></i> معاينة</button>`
+                                    : `<span class="req-doc-missing"><i class="fas fa-triangle-exclamation"></i> لم يتم إرفاق الملف</span>`}
+                            </div>
+                            <div class="req-doc-slot">
+                                <span class="req-doc-label"><i class="fas fa-notes-medical"></i> الشهادة الطبية</span>
+                                ${r.medicalCert
+                                    ? `<button class="doc-preview-btn" data-doc="${encodeURIComponent(r.medicalCert)}"><i class="fas fa-eye"></i> معاينة</button>`
+                                    : `<span class="req-doc-missing"><i class="fas fa-triangle-exclamation"></i> لم يتم إرفاق الملف</span>`}
+                            </div>
                         </div>
                     </div>
                     <div class="req-actions">
@@ -1604,14 +1649,10 @@
                 </div>
             `).join('');
 
-            list.querySelectorAll('.doc-download-btn').forEach(btn => {
+            list.querySelectorAll('.doc-preview-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const dataUrl = decodeURIComponent(btn.dataset.file);
-                    const ext = dataUrl.includes('application/pdf') ? 'pdf' : 'jpg';
-                    const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = `${btn.dataset.name}.${ext}`;
-                    a.click();
+                    const dataUrl = decodeURIComponent(btn.dataset.doc);
+                    openPdfCompat(dataUrl);
                 });
             });
             list.querySelectorAll('.accept-btn').forEach(btn => {
@@ -1638,8 +1679,7 @@
             });
         }
 
-        // عند القبول: يتم إنشاء ملف اللاعب تلقائيًا في /players بنفس بيانات الطلب
-        async function acceptRequest(id) {
+        // عند القبول: يتم إنشاء ملف اللاعب تلقائيًا في /players بنفس بيانات الطلب        async function acceptRequest(id) {
             const r = cache.requests[id];
             const playerPayload = {
                 name: `${r.firstName || ''} ${r.lastName || ''}`.trim(),

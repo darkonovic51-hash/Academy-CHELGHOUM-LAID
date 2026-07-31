@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -74,6 +73,53 @@
     .t-status { text-align:center; font-weight:700; font-size:0.9rem; margin-top:12px; min-height:20px; }
     .t-status.success { color:#1D8348; }
     .t-status.error { color:var(--red-accent); }
+
+    /* التعديل المطلوب: تنسيق رسالة عدم وجود آراء */
+    .no-testimonials-msg {
+        text-align: center;
+        padding: 50px 30px;
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+        border: 2px dashed var(--gold);
+        margin: 20px 0;
+    }
+    .no-testimonials-msg .icon {
+        font-size: 4rem;
+        color: var(--gold);
+        margin-bottom: 16px;
+        display: block;
+        opacity: 0.6;
+    }
+    .no-testimonials-msg h3 {
+        font-family: 'Bebas Neue';
+        font-size: 1.8rem;
+        color: var(--primary-dark);
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+    .no-testimonials-msg p {
+        color: #777;
+        font-size: 1rem;
+        max-width: 400px;
+        margin: 0 auto;
+        line-height: 1.8;
+    }
+    .no-testimonials-msg .invite-cta {
+        display: inline-block;
+        margin-top: 18px;
+        padding: 12px 30px;
+        background: var(--red-accent);
+        color: var(--white);
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: 0.3s;
+    }
+    .no-testimonials-msg .invite-cta:hover {
+        background: #a00d24;
+        transform: scale(1.05);
+    }
 </style>
 </head>
 <body>
@@ -122,7 +168,8 @@
     </div>
 
     <script>
-        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        // تم تحديث رابط قاعدة البيانات
+        const DB_URL = 'https://academy-chelghoum-el-aid-new-default-rtdb.firebaseio.com/';
         const MAX_DISPLAY = 15;
 
         async function fetchNodeWithIds(node, fallback) {
@@ -137,7 +184,14 @@
         function renderTestimonials(list) {
             const grid = document.getElementById('testimonialsGrid');
             if (!list.length) {
-                grid.innerHTML = '<div class="t-empty">كن أول من يشارك رأيه عن الأكاديمية!</div>';
+                grid.innerHTML = `
+                    <div class="no-testimonials-msg" style="grid-column: 1 / -1;">
+                        <span class="icon"><i class="fas fa-star"></i></span>
+                        <h3>لا توجد آراء بعد</h3>
+                        <p>كن أول من يشارك رأيه عن الأكاديمية ويساعدنا في التطوير المستمر!</p>
+                        <a href="#testimonialForm" class="invite-cta"><i class="fas fa-pen-fancy"></i> شارك رأيك الآن</a>
+                    </div>
+                `;
                 return;
             }
             const sorted = [...list].sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0)).slice(0, MAX_DISPLAY);

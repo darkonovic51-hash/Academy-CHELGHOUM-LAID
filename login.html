@@ -70,7 +70,7 @@
         // ============================================================
         // CONFIG
         // ============================================================
-        const DB_URL = 'https://academy-chelghoum-el-aide-default-rtdb.firebaseio.com/';
+        const DB_URL = 'https://academy-chelghoum-el-aid-new-default-rtdb.firebaseio.com/';
         const CODE_NODE = 'adminAccess/codeHash';
 
         const modeSub = document.getElementById('modeSub');
@@ -175,8 +175,20 @@
             }
         });
 
-        codeInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !isSetupMode) submitBtn.click(); });
-        confirmInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+        // دعم دخول بالضغط على Enter
+        codeInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                if (isSetupMode) {
+                    // في وضع الإعداد، ننتقل لحقل التأكيد
+                    confirmInput.focus();
+                } else {
+                    submitBtn.click();
+                }
+            }
+        });
+        confirmInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') submitBtn.click();
+        });
     </script>
 </body>
 </html>
